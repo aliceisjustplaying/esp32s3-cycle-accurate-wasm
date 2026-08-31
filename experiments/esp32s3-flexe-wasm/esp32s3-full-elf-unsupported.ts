@@ -1,0 +1,73 @@
+export interface Esp32s3FullElfUnsupportedInventory {
+  readonly schemaVersion: 1;
+  readonly elfSha256: string;
+  readonly objdumpSha256: string;
+  readonly flexeDecoderSha256: string;
+  readonly unsupportedRows: number;
+  readonly excludedByteRows: number;
+  readonly markers: readonly (readonly [pc: number, encoding: number])[];
+}
+
+export const ESP32S3_FULL_ELF_UNSUPPORTED_INVENTORY: Esp32s3FullElfUnsupportedInventory = Object.freeze({
+  schemaVersion: 1,
+  elfSha256: "4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8",
+  objdumpSha256: "90a91caa519b895bd457f4eb7c5fd6b14a9c64c0c7d946e78e7f332ea57d7466",
+  flexeDecoderSha256: "68f98a684b964dd36d778f755441242496f624f0ffbc68c789c7c25e2862f3d0",
+  unsupportedRows: 1651,
+  excludedByteRows: 1598,
+  markers: Object.freeze<readonly [number, number][]>([
+    [0x40375367, 0xb7ff],
+    [0x40375375, 0x58e],
+    [0x403754b9, 0xffde],
+    [0x4037552a, 0x3fce],
+    [0x40377845, 0x12e],
+    [0x40377849, 0x412e],
+    [0x4037785e, 0x812e],
+    [0x40377862, 0xc12e],
+    [0x40377878, 0x12e],
+    [0x4037787c, 0xdc1314],
+    [0x40377890, 0x812e],
+    [0x40377894, 0xcc3334],
+    [0x40377a18, 0x18e],
+    [0x40377a1c, 0x418e],
+    [0x40377a32, 0x818e],
+    [0x40377a36, 0xc18e],
+    [0x40377a4c, 0x18e],
+    [0x40377a50, 0xdc1314],
+    [0x40377a64, 0x818e],
+    [0x40377a68, 0xcc3334],
+    [0x403800f1, 0xd39e],
+    [0x42001ce9, 0xf0f],
+    [0x42004bf5, 0x16e],
+    [0x420060f6, 0xe9ae],
+    [0x420082e1, 0x319f],
+    [0x420093c1, 0x860244],
+    [0x4200b80d, 0x3dff],
+    [0x4201ba53, 0xa2de],
+    [0x4201ebb2, 0x47bf],
+    [0x4201f293, 0xe520c4],
+    [0x4201fa60, 0xc77004],
+    [0x4201fd78, 0xfc5674],
+    [0x42022c62, 0x886e],
+    [0x420240aa, 0x87a814],
+    [0x4202726a, 0x40ae],
+    [0x42032763, 0xa660e4],
+    [0x4203277a, 0x365e],
+    [0x420335a1, 0x7d3f],
+    [0x42040763, 0xab3e],
+    [0x42040767, 0xb73e],
+    [0x4204079d, 0xffff],
+    [0x420407e8, 0xd74e],
+    [0x42040813, 0x342f],
+    [0x420409bd, 0xa2e],
+    [0x42040e71, 0xa4f],
+    [0x4204262e, 0xc2f],
+    [0x42042632, 0xc75c14],
+    [0x42048792, 0xdddcb4],
+    [0x420492be, 0x81ff],
+    [0x420514d4, 0xac0e],
+    [0x42053023, 0x878104],
+    [0x4205318e, 0xb4be],
+    [0x42055388, 0xc10f],
+  ]),
+});

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "inputs": {
+    "traceSha256": "833a31ab8b4de8a961fd08ec5836050d6989fbb88b20aea7bb923ad4361e3b8f",
+    "stagingElfSha256": "4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8",
+    "sdkconfigSha256": "44c7f88aecb794db451976084dc2f57f715968ec23953a082e5e5fc01ff23cf5",
+    "timingProfileSha256": "31a83ab4fe2253ef7ff5a0bcc944aa5c9ca38f90eef485f48f8f725fd790402a",
+    "timingMachineSha256": "c35fbbfcd9a01649f0ada4bef3bbb46dda999bb169f61bd9ef1f532c2eadd7de",
+    "mmuSha256": "6119e6ad9db25e9f2bda9aa91760e2c960800aecd173d91ba704e9489a05a933",
+    "cacheSha256": "1545e87b17e7efdc908fd8fa6be4fe81a9b7c6876229693824fe5463b323bb00"
+  },
+  "configuration": {
+    "iromMmuEntry": 5,
+    "flashPhysicalPage": 0,
+    "sramBase": "0x3fca0000",
+    "sramBytes": 65536,
+    "coreSteadyStateCycles": {
+      "instructionIssueCycles": 1,
+      "independentSramAccessAdditiveCycles": {
+        "instructionFetch": 0,
+        "load": 0,
+        "store": 0
+      },
+      "dependentLoadUseHazard": {
+        "status": "unmodeled",
+        "observedAdditionalCycles": 1,
+        "reason": "runtime traces do not identify register dependencies"
+      }
+    },
+    "cacheHitAdditiveCycles": {
+      "status": "partially-calibrated",
+      "evidence": "packs/esp32-s3-touch-amoled-18/timing/evidence/esp32s3-rev02-tinydraw-1ddd64b-4a2c659-hot-hit-adoption.json",
+      "instructionFetch": 0,
+      "load": 0,
+      "store": null
+    },
+    "instructionCache": {
+      "bytes": 16384,
+      "lineBytes": 32,
+      "sets": 64,
+      "ways": 8
+    },
+    "dataCache": {
+      "bytes": 32768,
+      "lineBytes": 64,
+      "sets": 64,
+      "ways": 8
+    },
+    "latencyStatus": "partially-calibrated"
+  },
+  "summary": {
+    "status": "complete",
+    "traceRecords": 53,
+    "instructionFetches": 43,
+    "loads": 5,
+    "stores": 5,
+    "cpuExecutions": 43,
+    "dependentSramLoadUseHazards": 0,
+    "issuedEvents": 100,
+    "emissions": {
+      "hit": 44,
+      "line-fill": 3,
+      "sram-bypass": 10
+    },
+    "mspiEvents": 3,
+    "totalCycles": "655",
+    "totalCyclesReason": "complete for caller-reported events; the observed one-cycle dependent load-use hazard is not represented by this trace",
+    "perRecordSha256": "579133c0aaa00d5ec666ff24599bf2873ccfcc022e0b3c9098851398823d3c22"
+  }
+}

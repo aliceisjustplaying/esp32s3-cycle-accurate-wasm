@@ -1,0 +1,233 @@
+[emu] ROM loaded from /Users/sarah/.espressif/tools/esp-rom-elfs/20241011/esp32s3_rev0_rom.elf
+[emu] ROM boot from reset vector 0x40000400
+[periph] R ASSIST_DEBUG+0x05c (0x600ce05c)  pc=0x40043889
+[periph] W ASSIST_DEBUG+0x048 (0x600ce048) = 0x1 pc=0x400436ff
+[periph] W ASSIST_DEBUG+0x04c (0x600ce04c) = 0x1 pc=0x40043707
+[periph] R SENSITIVE+0x004 (0x600c1004)  pc=0x4004f6b4
+[periph] W SENSITIVE+0x004 (0x600c1004) = 0x20 pc=0x4004f6d1
+[periph] R SENSITIVE+0x014 (0x600c1014)  pc=0x4004f6db
+[periph] W SENSITIVE+0x014 (0x600c1014) = 0x4 pc=0x4004f6f0
+ESP-ROM:esp32s3-20210327
+Build:Mar 27 2021
+rst:0x1 (POWERON),boot:0xf (SPI_FAST_FLASH_BOOT)
+configspi:0x00000008
+SPIWP:0x00
+mode:DIO, clock div:1
+load:0x3fce2820,len:0x1664
+load:0x403c8700,len:0xf38
+load:0x403cb700,len:0x31e8
+entry 0x403c8930
+I (7) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (7) boot: compile time Aug 23 2026 22:38:05
+I (7) boot: Multicore bootloader
+I (7) boot: chip revision: v0.0
+[periph] R APB_CTRL+0x014 (0x60026014)  pc=0x403c8c57
+[periph] W APB_CTRL+0x014 (0x60026014) = 0x8000 pc=0x403c8c62
+[periph] R APB_SARADC+0x070 (0x60040070)  pc=0x403c8cc0
+[periph] W APB_SARADC+0x070 (0x60040070) = 0x400000 pc=0x403c8cd6
+[periph] R APB_SARADC+0x000 (0x60040000)  pc=0x403c8cdc
+[periph] W APB_SARADC+0x000 (0x60040000) = 0x40 pc=0x403c8ce6
+[periph] R APB_SARADC+0x018 (0x60040018)  pc=0x403c8daa
+[periph] W APB_SARADC+0x018 (0x60040018) = 0xac0000 pc=0x403c8dd5
+[periph] R APB_SARADC+0x028 (0x60040028)  pc=0x403c8dda
+[periph] W APB_SARADC+0x028 (0x60040028) = 0x2b000 pc=0x403c8dfe
+[periph] R APB_SARADC+0x038 (0x60040038)  pc=0x403c8e8c
+[periph] W APB_SARADC+0x038 (0x60040038) = 0x0 pc=0x403c8e97
+[periph] R APB_SARADC+0x004 (0x60040004)  pc=0x403c8ede
+[periph] W APB_SARADC+0x004 (0x60040004) = 0x46000 pc=0x403c8eee
+I (7) boot: efuse block revision: v1.0
+I (7) qio_mode: Enabling default flash chip QIO
+I (7) boot.esp32s3: Boot SPI Speed : 80MHz
+I (7) boot.esp32s3: SPI Mode       : QIO
+I (8) boot.esp32s3: SPI Flash Size : 16MB
+I (8) boot: Enabling RNG early entropy source...
+I (8) boot: Partition Table:
+I (8) boot: ## Label            Usage          Type ST Offset   Length
+I (8) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (8) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (8) boot:  2 factory          factory app      00 00 00010000 001c0000
+I (8) boot:  3 drawing          Unknown data     01 40 001d0000 00400000
+I (8) boot:  4 export           Unknown data     01 41 005d0000 00a20000
+I (8) boot:  5 coredump         Unknown data     01 03 00ff0000 00010000
+I (9) boot: End of partition table
+I (9) esp_image: segment 0: paddr=00010020 vaddr=3c0f0020 size=4799ch (293276) map
+I (29) esp_image: segment 1: paddr=000579c4 vaddr=3fca6800 size=05658h ( 22104) load
+I (31) esp_image: segment 2: paddr=0005d024 vaddr=40374000 size=02ff4h ( 12276) load
+I (32) esp_image: segment 3: paddr=00060020 vaddr=42000020 size=e1c9ch (924828) map
+I (94) esp_image: segment 4: paddr=00141cc4 vaddr=40376ff4 size=1f718h (128792) load
+I (106) esp_image: segment 5: paddr=001613e4 vaddr=50000000 size=00024h (    36) load
+[periph] R APB_SARADC+0x01c (0x6004001c)  pc=0x403ccafe
+[periph] W APB_SARADC+0x01c (0x6004001c) = 0xffffff pc=0x403ccb06
+[periph] R APB_SARADC+0x02c (0x6004002c)  pc=0x403ccb10
+[periph] W APB_SARADC+0x02c (0x6004002c) = 0xffffff pc=0x403ccb1a
+[periph] R APB_SARADC+0x020 (0x60040020)  pc=0x403ccafe
+[periph] W APB_SARADC+0x020 (0x60040020) = 0xffffff pc=0x403ccb06
+[periph] R APB_SARADC+0x030 (0x60040030)  pc=0x403ccb10
+[periph] W APB_SARADC+0x030 (0x60040030) = 0xffffff pc=0x403ccb1a
+[periph] R APB_SARADC+0x024 (0x60040024)  pc=0x403ccafe
+[periph] W APB_SARADC+0x024 (0x60040024) = 0xffffff pc=0x403ccb06
+[periph] R APB_SARADC+0x034 (0x60040034)  pc=0x403ccb10
+[periph] W APB_SARADC+0x034 (0x60040034) = 0xffffff pc=0x403ccb1a
+[periph] W APB_CTRL+0x0a8 (0x600260a8) = 0x0 pc=0x420de2b1
+[periph] R APB_CTRL+0x09c (0x6002609c)  pc=0x4037f890
+[periph] W APB_CTRL+0x09c (0x6002609c) = 0x0 pc=0x4037f8a1
+[periph] R BB+0x054 (0x6001d054)  pc=0x4037f8d0
+[periph] W BB+0x054 (0x6001d054) = 0x0 pc=0x4037f8e1
+[periph] R NRX+0xcd4 (0x6001ccd4)  pc=0x4037f8fd
+[periph] W NRX+0xcd4 (0x6001ccd4) = 0x0 pc=0x4037f911
+[periph] R FE+0x090 (0x60006090)  pc=0x4037f93e
+[periph] W FE+0x090 (0x60006090) = 0x0 pc=0x4037f94f
+[periph] R FE2+0x0f0 (0x600050f0)  pc=0x4037f954
+[periph] W FE2+0x0f0 (0x600050f0) = 0x0 pc=0x4037f965
+[periph] R APB_CTRL+0x0b0 (0x600260b0)  pc=0x4037f96d
+[periph] W APB_CTRL+0x0b0 (0x600260b0) = 0x0 pc=0x4037f989
+[periph] R APB_CTRL+0x058 (0x60026058)  pc=0x403809bf
+[periph] W APB_CTRL+0x058 (0x60026058) = 0x0 pc=0x403809ca
+I (111) boot: Loaded app from partition at offset 0x10000
+I (111) boot: Disabling RNG early entropy source...
+I (112) octal_psram: vendor id    : 0x0d (AP)
+I (112) octal_psram: dev id       : 0x01 (generation 2)
+I (112) octal_psram: density      : 0x03 (64 Mbit)
+I (112) octal_psram: good-die     : 0x01 (Pass)
+I (112) octal_psram: Latency      : 0x01 (Fixed)
+I (112) octal_psram: VCC          : 0x00 (1.8V)
+I (112) octal_psram: SRF          : 0x00 (Slow Refresh)
+I (112) octal_psram: BurstType    : 0x00 ( Wrap)
+I (112) octal_psram: BurstLen     : 0x03 (1024 Byte)
+I (113) octal_psram: Readlatency  : 0x02 (10 cycles@Fixed)
+I (113) octal_psram: DriveStrength: 0x00 (1/1)
+I (113) MSPI Timing: Enter psram timing tuning
+[periph] W ASSIST_DEBUG+0x0d8 (0x600ce0d8) = 0x1 pc=0x40375bbc
+[periph] W ASSIST_DEBUG+0x0dc (0x600ce0dc) = 0x1 pc=0x40375bc4
+W MSPI Timing: tuning fail, best point is fallen back to index 5
+I (113) esp_psram: Found 8MB PSRAM device
+I (113) esp_psram: Speed: 80MHz
+I (113) cpu_start: Multicore app
+I (153) esp_psram: SPI SRAM memory test OK
+[periph] R APB_CTRL+0x018 (0x60026018)  pc=0x420ddc6a
+[periph] W APB_CTRL+0x018 (0x60026018) = 0x0 pc=0x420ddcca
+[periph] W APB_CTRL+0x038 (0x60026038) = 0x0 pc=0x4200375c
+[periph] R APB_CTRL+0x048 (0x60026048)  pc=0x42003761
+[periph] W APB_CTRL+0x048 (0x60026048) = 0x4000 pc=0x42003773
+[periph] R APB_CTRL+0x04c (0x6002604c)  pc=0x42003779
+[periph] W APB_CTRL+0x04c (0x6002604c) = 0x0 pc=0x42003788
+[periph] R APB_CTRL+0x050 (0x60026050)  pc=0x4200378e
+[periph] W APB_CTRL+0x050 (0x60026050) = 0x0 pc=0x4200379a
+[periph] R APB_CTRL+0x054 (0x60026054)  pc=0x420037a0
+[periph] W APB_CTRL+0x054 (0x60026054) = 0x0 pc=0x420037ac
+[periph] R APB_CTRL+0x028 (0x60026028)  pc=0x420037b2
+[periph] W APB_CTRL+0x028 (0x60026028) = 0xdb pc=0x420037c0
+[periph] R SENSITIVE+0x0e8 (0x600c10e8)  pc=0x42006606
+[periph] W SENSITIVE+0x0e8 (0x600c10e8) = 0x0 pc=0x4200669d
+[periph] R SENSITIVE+0x0f4 (0x600c10f4)  pc=0x42006616
+[periph] W SENSITIVE+0x0f4 (0x600c10f4) = 0x0 pc=0x4200669d
+[periph] R SENSITIVE+0x108 (0x600c1108)  pc=0x42006644
+[periph] W SENSITIVE+0x108 (0x600c1108) = 0x0 pc=0x4200664c
+[periph] R SENSITIVE+0x118 (0x600c1118)  pc=0x42006670
+[periph] W SENSITIVE+0x118 (0x600c1118) = 0x0 pc=0x42006678
+[periph] R SENSITIVE+0x1a0 (0x600c11a0)  pc=0x4200668e
+[periph] W SENSITIVE+0x1a0 (0x600c11a0) = 0x0 pc=0x4200669d
+[periph] R SENSITIVE+0x24c (0x600c124c)  pc=0x420066aa
+[periph] W SENSITIVE+0x24c (0x600c124c) = 0x0 pc=0x4200669d
+[periph] W SENSITIVE+0x0cc (0x600c10cc) = 0x1a3fe0 pc=0x42006f00
+[periph] W SENSITIVE+0x0c8 (0x600c10c8) = 0x1a3fe0 pc=0x42005b7a
+[periph] W SENSITIVE+0x0c4 (0x600c10c4) = 0x1a3fe0 pc=0x42005ab1
+[periph] W SENSITIVE+0x0d0 (0x600c10d0) = 0x1a3fe0 pc=0x42005d2a
+[periph] W SENSITIVE+0x0d4 (0x600c10d4) = 0x1a3fe0 pc=0x42005e02
+[periph] R SENSITIVE+0x0e0 (0x600c10e0)  pc=0x42006fbd
+[periph] W SENSITIVE+0x0e0 (0x600c10e0) = 0x0 pc=0x42006fc5
+[periph] R SENSITIVE+0x100 (0x600c1100)  pc=0x420076d8
+[periph] W SENSITIVE+0x100 (0x600c1100) = 0x1 pc=0x420076e5
+[periph] R SENSITIVE+0x148 (0x600c1148)  pc=0x42005e4f
+[periph] W SENSITIVE+0x148 (0x600c1148) = 0x0 pc=0x42005e57
+[periph] R SENSITIVE+0x14c (0x600c114c)  pc=0x420060f6
+[periph] W SENSITIVE+0x14c (0x600c114c) = 0x0 pc=0x4200610b
+[periph] R SENSITIVE+0x1f4 (0x600c11f4)  pc=0x42005e4f
+[periph] W SENSITIVE+0x1f4 (0x600c11f4) = 0x0 pc=0x42005e57
+[periph] R SENSITIVE+0x1f8 (0x600c11f8)  pc=0x420060f6
+[periph] W SENSITIVE+0x1f8 (0x600c11f8) = 0x0 pc=0x4200610b
+[periph] W SENSITIVE+0x0c0 (0x600c10c0) = 0x1 pc=0x42007117
+[periph] W SENSITIVE+0x0d8 (0x600c10d8) = 0x1 pc=0x4200711c
+[periph] W SENSITIVE+0x0e4 (0x600c10e4) = 0x1 pc=0x4200646e
+[periph] W SENSITIVE+0x0f0 (0x600c10f0) = 0x1 pc=0x4200647a
+[periph] W SENSITIVE+0x0fc (0x600c10fc) = 0x1 pc=0x42007148
+[periph] W SENSITIVE+0x104 (0x600c1104) = 0x1 pc=0x42006490
+[periph] W SENSITIVE+0x114 (0x600c1114) = 0x1 pc=0x4200649b
+[periph] W SENSITIVE+0x124 (0x600c1124) = 0x1 pc=0x42005ee0
+[periph] W SENSITIVE+0x19c (0x600c119c) = 0x1 pc=0x420064b4
+[periph] W SENSITIVE+0x1d0 (0x600c11d0) = 0x1 pc=0x42005eef
+[periph] W SENSITIVE+0x248 (0x600c1248) = 0x1 pc=0x420064c2
+[periph] R SENSITIVE+0x0c4 (0x600c10c4)  pc=0x42007238
+[periph] R SENSITIVE+0x0c8 (0x600c10c8)  pc=0x42007259
+[periph] R SENSITIVE+0x0cc (0x600c10cc)  pc=0x42007278
+[periph] R SENSITIVE+0x0d0 (0x600c10d0)  pc=0x4200734d
+[periph] R SENSITIVE+0x0d4 (0x600c10d4)  pc=0x42007370
+[periph] R SENSITIVE+0x0c0 (0x600c10c0)  pc=0x42007561
+[periph] R SENSITIVE+0x0d8 (0x600c10d8)  pc=0x42007588
+[periph] R SENSITIVE+0x0e4 (0x600c10e4)  pc=0x4200651e
+[periph] R SENSITIVE+0x0f0 (0x600c10f0)  pc=0x4200652e
+[periph] R SENSITIVE+0x0fc (0x600c10fc)  pc=0x42007618
+[periph] R SENSITIVE+0x104 (0x600c1104)  pc=0x4200654a
+[periph] R SENSITIVE+0x114 (0x600c1114)  pc=0x4200655e
+I (161) cpu_start: GPIO 44 and 43 are used as console UART I/O pins
+I (161) cpu_start: Pro cpu start user code
+I (161) cpu_start: cpu freq: 240000000 Hz
+I (161) app_init: Application information:
+I (161) app_init: Project name:     tinydraw_esp32
+I (161) app_init: App version:      2.1.0-187-g273727c-dirty
+I (161) app_init: Compile time:     Aug 24 2026 03:09:35
+I (161) app_init: ELF file SHA256:  51cc32238...
+I (161) app_init: ESP-IDF:          v6.0.2
+I (161) efuse_init: Min chip rev:     v0.0
+I (161) efuse_init: Max chip rev:     v0.99 
+I (161) efuse_init: Chip rev:         v0.0
+I (161) heap_init: Initializing. RAM available for dynamic allocation:
+I (161) heap_init: At 3FCB1140 len 000385D0 (225 KiB): RAM
+I (161) heap_init: At 3FCE9710 len 00005724 (21 KiB): RAM
+I (161) heap_init: At 3FCF0000 len 00008000 (32 KiB): DRAM
+I (162) heap_init: At 600FE000 len 00001FE8 (7 KiB): RTCRAM
+I (162) esp_psram: Adding pool of 8192K of PSRAM memory to heap allocator
+I (162) spi_flash: detected chip: generic
+I (162) spi_flash: flash io: qio
+I (162) sleep_gpio: Configure to isolate all GPIO pins in sleep state
+I (162) sleep_gpio: Enable automatic switching of GPIO sleep configuration
+I (162) main_task: Started on CPU0
+I (162) main_task: Calling app_main()
+TINYDRAW_COVERAGE_WORKSPACE_ALLOC method=aligned overlay=1 all_internal=1 free_internal_before=207952 largest_internal_before=155648 free_external_before=1037704 largest_external_before=1032192 free_internal_after=166968 largest_internal_after=122880 free_external_after=1037704 largest_external_after=1032192
+TINYDRAW_COVERAGE_WORKSPACE_SEGMENT name=operation_alpha address=0x3fced8e0 requested_bytes=4096 allocated_bytes=4096 alignment_offset=0 internal=1 external=0 byte_accessible=1
+TINYDRAW_COVERAGE_WORKSPACE_SEGMENT name=accumulated_alpha address=0x3fcc1bf0 requested_bytes=4096 allocated_bytes=4096 alignment_offset=0 internal=1 external=0 byte_accessible=1
+TINYDRAW_COVERAGE_WORKSPACE_SEGMENT name=red address=0x3fcc2c10 requested_bytes=8192 allocated_bytes=8192 alignment_offset=0 internal=1 external=0 byte_accessible=1
+TINYDRAW_COVERAGE_WORKSPACE_SEGMENT name=green address=0x3fcc4c30 requested_bytes=8192 allocated_bytes=8192 alignment_offset=0 internal=1 external=0 byte_accessible=1
+TINYDRAW_COVERAGE_WORKSPACE_SEGMENT name=blue address=0x3fcc6c50 requested_bytes=8192 allocated_bytes=8192 alignment_offset=0 internal=1 external=0 byte_accessible=1
+TINYDRAW_COVERAGE_WORKSPACE_SEGMENT name=output_arena_metadata address=0x3fcc8c70 requested_bytes=8192 allocated_bytes=8192 alignment_offset=0 internal=1 external=0 byte_accessible=1
+TINYDRAW_PRODUCER_SCRATCH supertask_internal=1 settle_internal=1 free_internal=166968 free_psram=943108 frame_phase=0
+TINYDRAW_GATE_SCRATCH harness_external=1 harness_bytes=8192 dma_free=159180 dma_largest=122880
+TINYDRAW_AUTOSAVE_RESTORE status=1 generation=0 active=0 retained=0
+TINYDRAW_PANEL_HARD_RESET=0 attempts=3 bus_resets=3 first_failure_stage=configure first_failure=ESP_ERR_INVALID_RESPONSE last_bus_reset=ESP_OK device_remove=ESP_OK bus_delete=ESP_OK
+E (190) lcd_panel.io.i2c: panel_io_i2c_rx_buffer(145): i2c transaction failed
+E (190) CST816S: touch_cst816s_read_id(200): I2C read failed
+E (190) CST816S: esp_lcd_touch_new_i2c_cst816s(89): Read ID failed
+E (190) CST816S: Initialization failed!
+I (190) PCF85063A: PCF85063A initialized successfully
+TINYDRAW_VECTOR_V2_PRESENTATION experiment=boundary-top-sweep te_edge=rising clock_mhz=40 optical_acceptance=external_manual
+TINYDRAW_LIVE_FAIL reason=bootstrap canvas=1 log=1 presenter=0 touch=0 builder=1 producer=1
+I (192) main_task: Returned from app_main()
+
+[emu] stop: Halted — core0 36308481 + core1 21733225 insns in 0.9s wall = 64.9 Minsn/s; emulated 15.000s (3600000448 cycles); 121926 exceptions, 29911 interrupts
+[irq] per core, cpu-int: count (peripheral sources mapped to it)
+  core0 int3          7  sources [79]
+  core0 int5      14947  sources [57]
+  core0 int9          6  sources [42]
+  core1 int0          5  sources [80]
+  core1 int1      14946  sources [58]
+
+[emu] i2s frames out: 0 (i2s0 @ 44100 Hz) 0 (i2s1 @ 44100 Hz)
+[emu] crypto: 0 AES blocks, 21937 SHA blocks, 0 RSA/MPI operations
+[emu] blocks: 9325 built (1 cache flushes) core0, 878 (1) core1; jit: 10203 compiled, 9231 KB code
+core0: pc=4037e1be esp_cpu_wait_for_intr+0x6  ps=00060420 wb=6 ws=0054 sar=27 lcount=0 exccause=4 excvaddr=00000000 epc1=420de685 intenable=1300032e interrupt=00000000 ccount=3626204585 insns=36308481
+a0 =820de685 a1 =3fcb9200 a2 =00000000 a3 =3fca7370 a4 =3fca7370 a5 =00000000 a6 =00060420 a7 =3fca7380 
+a8 =82062516 a9 =3fcb91c0 a10=00000000 a11=3fcb1504 a12=00000000 a13=3c859f90 a14=3fca8954 a15=3fcb93b8 
+core1: pc=4037e1be esp_cpu_wait_for_intr+0x6  ps=00060320 wb=5 ws=002a sar=0 lcount=0 exccause=4 excvaddr=00000000 epc1=420de685 intenable=13000003 interrupt=00000000 ccount=3591269944 insns=21733225
+a0 =820de685 a1 =3fcb9860 a2 =00000000 a3 =00000003 a4 =00060023 a5 =3fca73c8 a6 =01ffffff a7 =00000001 
+a8 =82062516 a9 =3fcb9820 a10=00000000 a11=3fcb1504 a12=3fcb14f0 a13=00000001 a14=00000002 a15=3fcb9a24 
+

@@ -1,0 +1,704 @@
+{
+  "schemaVersion": 1,
+  "inputs": {
+    "elfBytes": 15230428,
+    "elfSha256": "4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8",
+    "entryPoint": "0x40375c34",
+    "loadSegments": 8,
+    "sparsePages": 328,
+    "inheritedPages": 3,
+    "initialStack": "0x3fce9700",
+    "initialStackProvenance": "gate-harness bootloader.map lines 4588-4592: bootloader_usable_dram_end",
+    "runnerPatchSha256": "f4a7a5b9b2073dcf93aa1729e190a9f85923d09ac1dc983fa5c805e96653ddc4",
+    "esp32s3PatchSha256": "d843d494c37903a4e54fc03eb8fffc9337ff0f20d054bb9df5f92dd6de0ece0c",
+    "moduleBytes": 93998,
+    "moduleSha256": "27e547da2868c6661c7f397a43a9fb27c08c9c76b839d85ef9f0558e9777f366"
+  },
+  "bounded": {
+    "reason": "maxSteps",
+    "steps": 4,
+    "pc": "0x40375c3f",
+    "trace": [
+      "0x40375c34",
+      "0x40375c37",
+      "0x40375c3a",
+      "0x40375c3d"
+    ]
+  },
+  "firstStop": {
+    "reason": "unloadedPage",
+    "steps": 6,
+    "pc": "0x4000057c",
+    "instructions": [
+      {
+        "pc": "0x40375c34",
+        "encoding": "008136"
+      },
+      {
+        "pc": "0x40375c37",
+        "encoding": "fa2c81"
+      },
+      {
+        "pc": "0x40375c3a",
+        "encoding": "13e780"
+      },
+      {
+        "pc": "0x40375c3d",
+        "encoding": "0a0c"
+      },
+      {
+        "pc": "0x40375c3f",
+        "encoding": "fa4181"
+      },
+      {
+        "pc": "0x40375c42",
+        "encoding": "0008e0"
+      }
+    ],
+    "stackPointer": "0x3fce96c0",
+    "registers": [
+      "0x00000000",
+      "0x3fce96c0",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x80375c45",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000"
+    ]
+  },
+  "romProgress": {
+    "resetReasons": [
+      1,
+      1
+    ],
+    "reason": "unsupported",
+    "steps": 24,
+    "pc": "0x40375c77",
+    "unsupportedEncoding": "f3e780",
+    "traceSha256": "0a5fff661aab7ad9d7b0ac5c9756f4a090bdd80ee0df9b3e606b9c42812b9a80",
+    "stackPointer": "0x3fce96c0",
+    "registers": [
+      "0x00000000",
+      "0x3fce96c0",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000001",
+      "0x3fca0b98",
+      "0x00000000",
+      "0x50000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000"
+    ],
+    "events": [
+      {
+        "kind": "resetReason",
+        "pc": "0x4000057c",
+        "core": 0,
+        "result": 1
+      },
+      {
+        "kind": "resetReason",
+        "pc": "0x4000057c",
+        "core": 1,
+        "result": 1
+      },
+      {
+        "kind": "memset",
+        "pc": "0x400011e8",
+        "destination": "0x3fca0ac0",
+        "value": 0,
+        "length": 6352
+      },
+      {
+        "kind": "memset",
+        "pc": "0x400011e8",
+        "destination": "0x50000000",
+        "value": 0,
+        "length": 0
+      }
+    ]
+  },
+  "lx7Progress": {
+    "reason": "readPermission",
+    "steps": 31,
+    "pc": "0x40375bdc",
+    "traceSha256": "5efd4d01f3f299a64b9b817155f4add4b7f3d1ea361402676125f4493b48d017",
+    "stackPointer": "0x3fce96a0",
+    "registers": [
+      "0x80375c7f",
+      "0x3fce96a0",
+      "0x50000000",
+      "0x00000000",
+      "0x00000000",
+      "0x600c4064",
+      "0x600c4004",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000"
+    ],
+    "memoryFault": {
+      "pc": "0x40375bdc",
+      "address": "0x600c4064",
+      "width": 4,
+      "isWrite": false,
+      "deniedAddress": "0x600c4064",
+      "deniedPage": "0x600c4000",
+      "deniedFlags": 0
+    }
+  },
+  "cacheProgress": {
+    "reason": "romRefused",
+    "steps": 940,
+    "pc": "0x40001c38",
+    "traceSha256": "0b9273bbe152acf41f5e3bccb74d50438653c2cabc90a1e0f3d1fdfbaaaeae1c",
+    "memoryTraceRecords": 1228,
+    "memoryTraceSha256": "e025823c09a8c5558dbd2147bde05e8396c6d0f4b6103ca77947d11b4bc27d2d",
+    "stackPointer": "0x3fce95e0",
+    "registers": [
+      "0x8037d18e",
+      "0x3fce95e0",
+      "0x00000000",
+      "0x00000001",
+      "0x00000005",
+      "0x00000002",
+      "0x00000000",
+      "0x00000000",
+      "0x8037f958",
+      "0x3fca10f8",
+      "0x00040c03",
+      "0x00000000",
+      "0xb33fffff",
+      "0x00000000",
+      "0x00000000",
+      "0x00000000"
+    ],
+    "cacheBootstrap": {
+      "sequenceIndex": 6,
+      "complete": true,
+      "registers": {
+        "dataControl1": 3,
+        "dataAutoloadControl": 8,
+        "instructionControl1": 0,
+        "instructionAutoloadControl": 8,
+        "cacheState": 4097
+      },
+      "instructionMode": {
+        "sizeBytes": 16384,
+        "ways": 8,
+        "lineBytes": 32
+      },
+      "dataSuspended": false,
+      "dataMode": {
+        "sizeBytes": 32768,
+        "ways": 8,
+        "lineBytes": 64
+      },
+      "dataSuspendReturn": 0,
+      "mmuSizes": {
+        "instructionBytes": 28,
+        "dataBytes": 996
+      }
+    },
+    "systemMmio": {
+      "sysclkConf": 0,
+      "readCount": 6,
+      "lastReadPc": 1077401375,
+      "cpuPerConf": 4,
+      "cpuPerReadCount": 5,
+      "cpuPerLastReadPc": 1077401576,
+      "writeCount": 3,
+      "lastWritePc": 1077375092,
+      "cpuPerWriteCount": 1,
+      "cpuPerLastWritePc": 1077401587
+    },
+    "rtcMmio": {
+      "xtalFreqReg": 2621480,
+      "readCount": 2,
+      "lastReadPc": 1077374741,
+      "dateReg": 34665073,
+      "dateReadCount": 1,
+      "dateLastReadPc": 1077375165,
+      "dateWriteCount": 1,
+      "dateLastWritePc": 1077375179,
+      "optionsReg": 469794816,
+      "optionsReadCount": 2,
+      "optionsLastReadPc": 1077401472,
+      "optionsWriteCount": 2,
+      "optionsLastWritePc": 1077401481
+    },
+    "regi2cMmio": {
+      "anaConf0": 16777224,
+      "readCount": 2,
+      "lastReadPc": 1077401607,
+      "writeCount": 2,
+      "lastWritePc": 1077401617
+    },
+    "intlevel": {
+      "intlevel": 0,
+      "restoreCount": 10,
+      "lastPc": 1073749048
+    },
+    "bbpllRom": {
+      "modeHf": 107,
+      "refDiv": 80,
+      "div7_0": 8,
+      "dr1": 0,
+      "writeCount": 3,
+      "maskedWriteCount": 1,
+      "lastPc": 1073765740
+    },
+    "cpuTicks": {
+      "configured": true,
+      "ticksPerUs": 40,
+      "lastPc": 1073748556
+    },
+    "events": [
+      {
+        "kind": "resetReason",
+        "pc": "0x4000057c",
+        "core": 0,
+        "result": 1
+      },
+      {
+        "kind": "resetReason",
+        "pc": "0x4000057c",
+        "core": 1,
+        "result": 1
+      },
+      {
+        "kind": "memset",
+        "pc": "0x400011e8",
+        "destination": "0x3fca0ac0",
+        "value": 0,
+        "length": 6352
+      },
+      {
+        "kind": "memset",
+        "pc": "0x400011e8",
+        "destination": "0x50000000",
+        "value": 0,
+        "length": 0
+      },
+      {
+        "kind": "cache",
+        "pc": "0x4000186c",
+        "sequenceIndex": 0,
+        "argument": null,
+        "returnValue": 0
+      },
+      {
+        "kind": "cache",
+        "pc": "0x40001884",
+        "sequenceIndex": 1,
+        "argument": null,
+        "returnValue": 0
+      },
+      {
+        "kind": "cache",
+        "pc": "0x40001878",
+        "sequenceIndex": 2,
+        "argument": 0,
+        "returnValue": null
+      },
+      {
+        "kind": "cache",
+        "pc": "0x40001890",
+        "sequenceIndex": 3,
+        "argument": 0,
+        "returnValue": null
+      },
+      {
+        "kind": "cache",
+        "pc": "0x40001878",
+        "sequenceIndex": 4,
+        "argument": 0,
+        "returnValue": null
+      },
+      {
+        "kind": "cache",
+        "pc": "0x40001890",
+        "sequenceIndex": 5,
+        "argument": 0,
+        "returnValue": null
+      },
+      {
+        "kind": "cacheMode",
+        "pc": "0x40001a1c",
+        "cache": "instruction",
+        "sizeBytes": 16384,
+        "ways": 8,
+        "lineBytes": 32
+      },
+      {
+        "kind": "cacheSuspend",
+        "pc": "0x400018b4",
+        "cache": "data",
+        "returnValue": 0
+      },
+      {
+        "kind": "cacheMode",
+        "pc": "0x40001a28",
+        "cache": "data",
+        "sizeBytes": 32768,
+        "ways": 8,
+        "lineBytes": 64
+      },
+      {
+        "kind": "cacheResume",
+        "pc": "0x400018c0",
+        "cache": "data",
+        "argument": 0
+      },
+      {
+        "kind": "cacheMmuSizes",
+        "pc": "0x40001914",
+        "instructionBytes": 28,
+        "dataBytes": 996
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40376f61",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40376f92",
+        "address": "0x600c0010",
+        "width": 4,
+        "value": "0x4"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40376fbb",
+        "address": "0x600c0010",
+        "width": 4,
+        "value": "0x4"
+      },
+      {
+        "kind": "rtcMmioRead",
+        "pc": "0x40376f15",
+        "address": "0x600080c0",
+        "width": 4,
+        "value": "0x280028"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40376f61",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40376f92",
+        "address": "0x600c0010",
+        "width": 4,
+        "value": "0x4"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40376fbb",
+        "address": "0x600c0010",
+        "width": 4,
+        "value": "0x4"
+      },
+      {
+        "kind": "cpuTicksPerUs",
+        "pc": "0x40001a4c",
+        "ticksPerUs": 40,
+        "callinc": 2
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40377031",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioWrite",
+        "pc": "0x40377039",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40377050",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioWrite",
+        "pc": "0x40377061",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x40377066",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x400"
+      },
+      {
+        "kind": "systemMmioWrite",
+        "pc": "0x40377074",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x0"
+      },
+      {
+        "kind": "rtcMmioRead",
+        "pc": "0x403770bd",
+        "address": "0x600081fc",
+        "width": 4,
+        "value": "0x2101271"
+      },
+      {
+        "kind": "rtcMmioWrite",
+        "pc": "0x403770cb",
+        "address": "0x600081fc",
+        "width": 4,
+        "value": "0x210f271"
+      },
+      {
+        "kind": "rtcMmioRead",
+        "pc": "0x4037d91f",
+        "address": "0x60008000",
+        "width": 4,
+        "value": "0x1c008000"
+      },
+      {
+        "kind": "rtcMmioWrite",
+        "pc": "0x4037d928",
+        "address": "0x60008000",
+        "width": 4,
+        "value": "0x1c008540"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x4037d71f",
+        "address": "0x600c0060",
+        "width": 4,
+        "value": "0x0"
+      },
+      {
+        "kind": "rtcMmioRead",
+        "pc": "0x4037d780",
+        "address": "0x60008000",
+        "width": 4,
+        "value": "0x1c008540"
+      },
+      {
+        "kind": "rtcMmioWrite",
+        "pc": "0x4037d789",
+        "address": "0x60008000",
+        "width": 4,
+        "value": "0x1c008000"
+      },
+      {
+        "kind": "rtcMmioRead",
+        "pc": "0x40376f15",
+        "address": "0x600080c0",
+        "width": 4,
+        "value": "0x280028"
+      },
+      {
+        "kind": "systemMmioRead",
+        "pc": "0x4037d7e8",
+        "address": "0x600c0010",
+        "width": 4,
+        "value": "0x4"
+      },
+      {
+        "kind": "systemMmioWrite",
+        "pc": "0x4037d7f3",
+        "address": "0x600c0010",
+        "width": 4,
+        "value": "0x4"
+      },
+      {
+        "kind": "regi2cMmioRead",
+        "pc": "0x4037d7f8",
+        "address": "0x6000e040",
+        "width": 4,
+        "value": "0x1000004"
+      },
+      {
+        "kind": "regi2cMmioWrite",
+        "pc": "0x4037d802",
+        "address": "0x6000e040",
+        "width": 4,
+        "value": "0x1000000"
+      },
+      {
+        "kind": "regi2cMmioRead",
+        "pc": "0x4037d807",
+        "address": "0x6000e040",
+        "width": 4,
+        "value": "0x1000000"
+      },
+      {
+        "kind": "regi2cMmioWrite",
+        "pc": "0x4037d811",
+        "address": "0x6000e040",
+        "width": 4,
+        "value": "0x1000008"
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "bbpllRomWrite",
+        "pc": "0x40005d60",
+        "block": "0x66",
+        "hostId": 1,
+        "register": 4,
+        "data": "0x6b",
+        "callinc": 2,
+        "currentIntlevel": 3,
+        "priorIntlevelRestoreCount": 1,
+        "priorBbpllWriteCount": 0
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c03",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "bbpllRomWrite",
+        "pc": "0x40005d60",
+        "block": "0x66",
+        "hostId": 1,
+        "register": 2,
+        "data": "0x50",
+        "callinc": 2,
+        "currentIntlevel": 3,
+        "priorIntlevelRestoreCount": 4,
+        "priorBbpllWriteCount": 1
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c03",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "bbpllRomWrite",
+        "pc": "0x40005d60",
+        "block": "0x66",
+        "hostId": 1,
+        "register": 3,
+        "data": "0x8",
+        "callinc": 2,
+        "currentIntlevel": 3,
+        "priorIntlevelRestoreCount": 7,
+        "priorBbpllWriteCount": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c03",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "intlevelRestore",
+        "pc": "0x40001c38",
+        "restorePs": "0x40c00",
+        "previousPs": "0x40c03",
+        "callinc": 2
+      },
+      {
+        "kind": "bbpllRomMaskWrite",
+        "pc": "0x40005d6c",
+        "block": "0x66",
+        "hostId": 1,
+        "register": 5,
+        "msb": 2,
+        "lsb": 0,
+        "data": "0x0",
+        "callinc": 2,
+        "currentIntlevel": 3,
+        "priorIntlevelRestoreCount": 10,
+        "priorBbpllWriteCount": 3,
+        "priorMaskedWriteCount": 0
+      }
+    ]
+  },
+  "unsupportedRefusal": {
+    "reason": "unsupported",
+    "steps": 0,
+    "pc": "0x40375c34",
+    "encoding": "0x008136",
+    "length": 3
+  }
+}

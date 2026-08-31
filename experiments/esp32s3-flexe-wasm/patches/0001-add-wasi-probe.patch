@@ -1,0 +1,2241 @@
+diff --git a/src/memory.h b/src/memory.h
+index df40210..b4a61a8 100644
+--- a/src/memory.h
++++ b/src/memory.h
+@@ -13,6 +13,10 @@
+ /* MMIO callback types */
+ typedef uint32_t (*mmio_read_fn)(void *ctx, uint32_t addr);
+ typedef void     (*mmio_write_fn)(void *ctx, uint32_t addr, uint32_t val);
++typedef int      (*mem_access_hook_fn)(void *ctx, uint32_t addr, uint32_t value,
++                                       uint32_t width, int is_write, int mapped);
++typedef int      (*mem_permission_hook_fn)(void *ctx, uint32_t addr,
++                                           uint32_t width, int is_write);
+
+ /* Constants for struct definition */
+ #define MEM_PERIPH_PAGES    128         /* 512KB / 4KB */
+@@ -36,6 +40,10 @@ struct xtensa_mem {
+     uint8_t *psram;
+     mmio_handler_t mmio[MEM_PERIPH_PAGES];
+     uint8_t *page_table[MEM_PAGE_TABLE_SIZE];
++    mem_access_hook_fn access_hook;
++    void *access_hook_ctx;
++    mem_permission_hook_fn permission_hook;
++    void *permission_hook_ctx;
+ };
+
+ typedef struct xtensa_mem xtensa_mem_t;
+@@ -88,48 +96,93 @@ static inline uint8_t *mem_get_ptr_w(xtensa_mem_t *mem, uint32_t addr) {
+ }
+
+ static inline uint8_t mem_read8(xtensa_mem_t *mem, uint32_t addr) {
++    if (mem->permission_hook &&
++        mem->permission_hook(mem->permission_hook_ctx, addr, 1, 0)) return 0;
+     uint8_t *page = mem->page_table[addr >> 12];
+-    if (__builtin_expect(page != NULL, 1))
+-        return page[addr & 0xFFF];
++    if (__builtin_expect(page != NULL, 1)) {
++        uint8_t val = page[addr & 0xFFF];
++        if (mem->access_hook) (void)mem->access_hook(mem->access_hook_ctx, addr, val, 1, 0, 1);
++        return val;
++    }
++    if (mem->access_hook && mem->access_hook(mem->access_hook_ctx, addr, 0, 1, 0, 0)) return 0;
+     return mem_read8_slow(mem, addr);
+ }
+
+ static inline uint16_t mem_read16(xtensa_mem_t *mem, uint32_t addr) {
++    if (mem->permission_hook &&
++        mem->permission_hook(mem->permission_hook_ctx, addr, 2, 0)) return 0;
+     uint8_t *page = mem->page_table[addr >> 12];
+-    if (__builtin_expect(page != NULL, 1)) {
++    uint32_t offset = addr & 0xFFF;
++    uint8_t *next_page = offset <= 0xFFEu ? page :
++                         (addr != UINT32_MAX ? mem->page_table[(addr >> 12) + 1u] : NULL);
++    int mapped = page != NULL && next_page != NULL;
++    if (__builtin_expect(mapped, 1)) {
+         uint16_t val;
+-        memcpy(&val, page + (addr & 0xFFF), 2);
++        if (offset <= 0xFFEu) memcpy(&val, page + offset, 2);
++        else val = (uint16_t)page[offset] | ((uint16_t)next_page[0] << 8);
++        if (mem->access_hook) (void)mem->access_hook(mem->access_hook_ctx, addr, val, 2, 0, 1);
+         return val;
+     }
++    if (mem->access_hook && mem->access_hook(mem->access_hook_ctx, addr, 0, 2, 0, 0)) return 0;
+     return mem_read16_slow(mem, addr);
+ }
+
+ static inline uint32_t mem_read32(xtensa_mem_t *mem, uint32_t addr) {
++    if (mem->permission_hook &&
++        mem->permission_hook(mem->permission_hook_ctx, addr, 4, 0)) return 0;
+     uint8_t *page = mem->page_table[addr >> 12];
+-    if (__builtin_expect(page != NULL, 1)) {
+-        uint32_t val;
+-        memcpy(&val, page + (addr & 0xFFF), 4);
++    uint32_t offset = addr & 0xFFF;
++    int range_valid = addr <= UINT32_MAX - 3u;
++    uint8_t *next_page = offset <= 0xFFCu ? page :
++                         (range_valid ? mem->page_table[(addr >> 12) + 1u] : NULL);
++    int mapped = page != NULL && next_page != NULL;
++    if (__builtin_expect(mapped, 1)) {
++        uint32_t val = 0;
++        if (offset <= 0xFFCu) memcpy(&val, page + offset, 4);
++        else {
++            for (uint32_t index = 0; index < 4; index++) {
++                uint32_t byte_offset = offset + index;
++                uint8_t byte = byte_offset < 0x1000u ? page[byte_offset] : next_page[byte_offset - 0x1000u];
++                val |= (uint32_t)byte << (index * 8u);
++            }
++        }
++        if (mem->access_hook) (void)mem->access_hook(mem->access_hook_ctx, addr, val, 4, 0, 1);
+         return val;
+     }
++    if (mem->access_hook && mem->access_hook(mem->access_hook_ctx, addr, 0, 4, 0, 0)) return 0;
+     return mem_read32_slow(mem, addr);
+ }
+
+ static inline void mem_write8(xtensa_mem_t *mem, uint32_t addr, uint8_t val) {
++    if (mem->permission_hook &&
++        mem->permission_hook(mem->permission_hook_ctx, addr, 1, 1)) return;
+     uint8_t *page = mem->page_table[addr >> 12];
++    if (mem->access_hook && mem->access_hook(mem->access_hook_ctx, addr, val, 1, 1, page != NULL)) return;
+     if (__builtin_expect(page != NULL, 1)) {
+         page[addr & 0xFFF] = val;
+-        return;
++    } else {
++        mem_write8_slow(mem, addr, val);
+     }
+-    mem_write8_slow(mem, addr, val);
+ }
+
+ static inline void mem_write16(xtensa_mem_t *mem, uint32_t addr, uint16_t val) {
++    if (mem->permission_hook &&
++        mem->permission_hook(mem->permission_hook_ctx, addr, 2, 1)) return;
+     uint8_t *page = mem->page_table[addr >> 12];
+-    if (__builtin_expect(page != NULL, 1)) {
+-        memcpy(page + (addr & 0xFFF), &val, 2);
+-        return;
++    uint32_t offset = addr & 0xFFF;
++    uint8_t *next_page = offset <= 0xFFEu ? page :
++                         (addr != UINT32_MAX ? mem->page_table[(addr >> 12) + 1u] : NULL);
++    int mapped = page != NULL && next_page != NULL;
++    if (mem->access_hook && mem->access_hook(mem->access_hook_ctx, addr, val, 2, 1, mapped)) return;
++    if (__builtin_expect(mapped, 1)) {
++        if (offset <= 0xFFEu) memcpy(page + offset, &val, 2);
++        else {
++            page[offset] = (uint8_t)val;
++            next_page[0] = (uint8_t)(val >> 8);
++        }
++    } else {
++        mem_write16_slow(mem, addr, val);
+     }
+-    mem_write16_slow(mem, addr, val);
+ }
+
+ extern uint32_t g_dbg_pc;
+@@ -160,12 +213,27 @@ static inline void mem_write32(xtensa_mem_t *mem, uint32_t addr, uint32_t val) {
+         fprintf(stderr, "[PW] pc=0x%08X store 0x%08X <- 0x%08X core%d\n",
+                 g_dbg_pc, addr, val, g_dbg_core);
+     }
++    if (mem->permission_hook &&
++        mem->permission_hook(mem->permission_hook_ctx, addr, 4, 1)) return;
+     uint8_t *page = mem->page_table[addr >> 12];
+-    if (__builtin_expect(page != NULL, 1)) {
+-        memcpy(page + (addr & 0xFFF), &val, 4);
+-        return;
++    uint32_t offset = addr & 0xFFF;
++    int range_valid = addr <= UINT32_MAX - 3u;
++    uint8_t *next_page = offset <= 0xFFCu ? page :
++                         (range_valid ? mem->page_table[(addr >> 12) + 1u] : NULL);
++    int mapped = page != NULL && next_page != NULL;
++    if (mem->access_hook && mem->access_hook(mem->access_hook_ctx, addr, val, 4, 1, mapped)) return;
++    if (__builtin_expect(mapped, 1)) {
++        if (offset <= 0xFFCu) memcpy(page + offset, &val, 4);
++        else {
++            for (uint32_t index = 0; index < 4; index++) {
++                uint32_t byte_offset = offset + index;
++                uint8_t *target = byte_offset < 0x1000u ? page + byte_offset : next_page + byte_offset - 0x1000u;
++                *target = (uint8_t)(val >> (index * 8u));
++            }
++        }
++    } else {
++        mem_write32_slow(mem, addr, val);
+     }
+-    mem_write32_slow(mem, addr, val);
+ }
+
+ #endif /* MEMORY_H */
+diff --git a/src/wasm_probe.c b/src/wasm_probe.c
+new file mode 100644
+index 0000000..55a269c
+--- /dev/null
++++ b/src/wasm_probe.c
+@@ -0,0 +1,1984 @@
++/*
++ * Throwaway probe entry point for Puck's flexe WebAssembly experiment.
++ * This file is applied to a temporary copy of the pinned upstream sources.
++ */
++#include "xtensa.h"
++#include "memory.h"
++#include <stdint.h>
++#include <string.h>
++
++#ifdef FLEXE_PROBE_NATIVE
++#include <stdio.h>
++#define FLEXE_EXPORT(name)
++#else
++#define FLEXE_EXPORT(name) __attribute__((export_name(name)))
++#endif
++
++#define FIXTURE_PC 0x40070000u
++#define INPUT_CAPACITY 4096u
++#define DATA_CAPACITY 4096u
++#define PAGE_BYTES 4096u
++#define ELF_PAGE_CAPACITY 768u
++#define ELF_TRACE_CAPACITY 1024u
++#define ELF_MEMORY_TRACE_CAPACITY 2048u
++#define ELF_UNSUPPORTED_CAPACITY 2048u
++#define ELF_ROM_EVENT_CAPACITY 64u
++#define ELF_ROM_EVENT_WORDS 6u
++#define ELF_ROM_MEMSET_MAX_BYTES 65536u
++#define ESP32S3_ROM_RESET_REASON 0x4000057cu
++#define ESP32S3_ROM_MEMSET 0x400011e8u
++#define ESP32S3_ROM_CACHE_DISABLE_I 0x4000186cu
++#define ESP32S3_ROM_CACHE_ENABLE_I 0x40001878u
++#define ESP32S3_ROM_CACHE_DISABLE_D 0x40001884u
++#define ESP32S3_ROM_CACHE_ENABLE_D 0x40001890u
++#define ESP32S3_ROM_SUSPEND_DCACHE 0x400018b4u
++#define ESP32S3_ROM_RESUME_DCACHE 0x400018c0u
++#define ESP32S3_ROM_SET_IDROM_MMU_SIZE 0x40001914u
++#define ESP32S3_ROM_CONFIG_ICACHE_MODE 0x40001a1cu
++#define ESP32S3_ROM_CONFIG_DCACHE_MODE 0x40001a28u
++#define ESP32S3_CACHE_MMIO_PAGE 0x600c4000u
++#define ESP32S3_DCACHE_CONFIG 0x600c4000u
++#define ESP32S3_DCACHE_CTRL1 0x600c4004u
++#define ESP32S3_DCACHE_AUTOLOAD 0x600c404cu
++#define ESP32S3_ICACHE_CTRL1 0x600c4064u
++#define ESP32S3_ICACHE_AUTOLOAD 0x600c40a0u
++#define ESP32S3_CACHE_STATE 0x600c4130u
++#define ESP32S3_SYSTEM_MMIO_PAGE 0x600c0000u
++#define ESP32S3_SYSTEM_CPU_PER_CONF 0x600c0010u
++#define ESP32S3_SYSTEM_SYSCLK_CONF 0x600c0060u
++#define ESP32S3_DIRECT_BOOT_CPU_PER_CONF 0x00000004u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_CONF 0x00000400u
++#define ESP32S3_DIRECT_BOOT_CPU_PER_READ_PC 0x40376f92u
++#define ESP32S3_DIRECT_BOOT_CPU_PER_SECOND_READ_PC 0x40376fbbu
++#define ESP32S3_DIRECT_BOOT_CPU_PER_PLL_RESTORE_READ_PC 0x4037d7e8u
++#define ESP32S3_DIRECT_BOOT_CPU_PER_PLL_RESTORE_WRITE_PC 0x4037d7f3u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_READ_PC 0x40376f61u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_POST_TICKS_READ_PC 0x40377031u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_POST_TICKS_WRITE_PC 0x40377039u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_ADJUST_READ_PC 0x40377050u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_ADJUST_WRITE_PC 0x40377061u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_POST_ADJUST_READ_PC 0x40377066u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_XTAL_WRITE_PC 0x40377074u
++#define ESP32S3_DIRECT_BOOT_SYSCLK_PLL_RESTORE_READ_PC 0x4037d71fu
++#define ESP32S3_RTC_CNTL_MMIO_PAGE 0x60008000u
++#define ESP32S3_RTC_OPTIONS0_REG 0x60008000u
++#define ESP32S3_RTC_XTAL_FREQ_REG 0x600080c0u
++#define ESP32S3_RTC_DATE_REG 0x600081fcu
++#define ESP32S3_DIRECT_BOOT_RTC_XTAL_FREQ 0x00280028u
++#define ESP32S3_DIRECT_BOOT_RTC_XTAL_READ_PC 0x40376f15u
++#define ESP32S3_DIRECT_BOOT_RTC_DATE 0x02101271u
++#define ESP32S3_DIRECT_BOOT_RTC_DATE_READ_PC 0x403770bdu
++#define ESP32S3_DIRECT_BOOT_RTC_DATE_XTAL 0x0210f271u
++#define ESP32S3_DIRECT_BOOT_RTC_DATE_WRITE_PC 0x403770cbu
++#define ESP32S3_DIRECT_BOOT_RTC_OPTIONS0 0x1c008000u
++#define ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_PD 0x1c008540u
++#define ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_READ_PC 0x4037d91fu
++#define ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_WRITE_PC 0x4037d928u
++#define ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_RESTORE_READ_PC 0x4037d780u
++#define ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_RESTORE_WRITE_PC 0x4037d789u
++#define ESP32S3_I2C_MST_MMIO_PAGE 0x6000e000u
++#define ESP32S3_I2C_MST_ANA_CONF0_REG 0x6000e040u
++#define ESP32S3_DIRECT_BOOT_I2C_MST_ANA_CONF0 0x01000004u
++#define ESP32S3_DIRECT_BOOT_I2C_MST_START_CLEAR_READ_PC 0x4037d7f8u
++#define ESP32S3_DIRECT_BOOT_I2C_MST_START_CLEAR_WRITE_PC 0x4037d802u
++#define ESP32S3_DIRECT_BOOT_I2C_MST_START_SET_READ_PC 0x4037d807u
++#define ESP32S3_DIRECT_BOOT_I2C_MST_START_SET_WRITE_PC 0x4037d811u
++#define ESP32S3_ROM_SET_INTLEVEL 0x40001c38u
++#define ESP32S3_DIRECT_BOOT_INTLEVEL_RESTORE_PS 0x00040c00u
++#define ESP32S3_DIRECT_BOOT_INTLEVEL_PRESERVE_PS 0x00040c03u
++#define ESP32S3_DIRECT_BOOT_INTLEVEL_PREVIOUS_PS 0x00040c03u
++#define ESP32S3_ROM_I2C_WRITE_REG 0x40005d60u
++#define ESP32S3_ROM_I2C_WRITE_REG_MASK 0x40005d6cu
++#define ESP32S3_I2C_BBPLL 0x66u
++#define ESP32S3_I2C_BBPLL_HOST_ID 1u
++#define ESP32S3_BBPLL_MODE_HF 4u
++#define ESP32S3_BBPLL_MODE_HF_480M 0x6bu
++#define ESP32S3_BBPLL_OC_REF_DIV 2u
++#define ESP32S3_BBPLL_OC_REF_DIV_480M 0x50u
++#define ESP32S3_BBPLL_OC_DIV_7_0 3u
++#define ESP32S3_BBPLL_OC_DIV_7_0_480M 8u
++#define ESP32S3_BBPLL_OC_DR1 5u
++#define ESP32S3_BBPLL_OC_DR1_MSB 2u
++#define ESP32S3_BBPLL_OC_DR1_LSB 0u
++#define ESP32S3_BBPLL_OC_DR1_480M 0u
++#define ESP32S3_ROM_SET_CPU_TICKS_PER_US 0x40001a4cu
++#define ESP32S3_DIRECT_BOOT_CPU_TICKS_PER_US 40u
++#define ESP32S3_CACHE_IDLE 0x001001u
++#define ESP32S3_CACHE_AUTOLOAD_BASE 8u
++#define ESP32S3_CACHE_EVENT_VOID UINT32_MAX
++#define ELF_ROM_EVENT_RESET_REASON 1u
++#define ELF_ROM_EVENT_MEMSET 2u
++#define ELF_ROM_EVENT_CACHE 3u
++#define ELF_ROM_EVENT_CACHE_MODE 4u
++#define ELF_ROM_EVENT_CACHE_SUSPEND 5u
++#define ELF_ROM_EVENT_CACHE_RESUME 6u
++#define ELF_ROM_EVENT_CACHE_MMU_SIZES 7u
++#define ELF_ROM_EVENT_SYSTEM_MMIO_READ 8u
++#define ELF_ROM_EVENT_RTC_MMIO_READ 9u
++#define ELF_ROM_EVENT_CPU_TICKS_PER_US 10u
++#define ELF_ROM_EVENT_SYSTEM_MMIO_WRITE 11u
++#define ELF_ROM_EVENT_RTC_MMIO_WRITE 12u
++#define ELF_ROM_EVENT_REGI2C_MMIO_READ 13u
++#define ELF_ROM_EVENT_REGI2C_MMIO_WRITE 14u
++#define ELF_ROM_EVENT_INTLEVEL_RESTORE 15u
++#define ELF_ROM_EVENT_BBPLL_ROM_WRITE 16u
++#define ELF_ROM_EVENT_BBPLL_ROM_MASK_WRITE 17u
++#define NO_UNSUPPORTED_OFFSET UINT32_MAX
++#define INITIAL_STACK 0x3fcaffc0u
++#define INITIAL_SOURCE 0x3fca1000u
++#define INITIAL_DESTINATION 0x3fca2000u
++#define WINDOW_CALLINC 2u
++#define RESULT_ABI_VERSION 1u
++#define TRACE_ABI_VERSION 1u
++#define TRACE_CAPACITY 128u
++#define ELF_MEMORY_FAULT_ABI_VERSION 1u
++
++enum probe_stop_reason {
++    PROBE_STOP_RETURNED = 1,
++    PROBE_STOP_MAX_STEPS = 2,
++    PROBE_STOP_UNSUPPORTED = 3,
++    PROBE_STOP_STEP_ERROR = 4,
++    PROBE_STOP_INVALID_ARGUMENT = 5,
++    PROBE_STOP_ALLOCATION_FAILED = 6,
++    PROBE_STOP_CPU_STOPPED = 7,
++    PROBE_STOP_TRACE_OVERFLOW = 8,
++    PROBE_STOP_UNMAPPED_ACCESS = 9,
++    PROBE_STOP_UNLOADED_PAGE = 10,
++    PROBE_STOP_NON_EXECUTABLE_PAGE = 11,
++    PROBE_STOP_ROM_REFUSED = 12,
++    PROBE_STOP_READ_PERMISSION = 13,
++    PROBE_STOP_WRITE_PERMISSION = 14,
++};
++
++enum probe_trace_kind {
++    PROBE_TRACE_INSTRUCTION = 1,
++    PROBE_TRACE_READ = 2,
++    PROBE_TRACE_WRITE = 3,
++};
++
++struct probe_stop_record {
++    uint32_t abi_version;
++    uint32_t struct_bytes;
++    uint32_t reason;
++    uint32_t steps;
++    uint32_t start_pc;
++    uint32_t pc;
++    uint32_t return_pc;
++    uint32_t unsupported_pc;
++    uint32_t unsupported_encoding;
++    uint32_t unsupported_length;
++    uint32_t stack_pointer;
++    uint32_t registers[16];
++};
++
++struct unsupported_marker {
++    uint32_t pc;
++    uint32_t encoding;
++    uint32_t observed_pc;
++    uint32_t observed_encoding;
++    uint32_t observed_length;
++    int enabled;
++    int hit;
++};
++
++struct probe_trace_header {
++    uint32_t abi_version;
++    uint32_t header_bytes;
++    uint32_t record_bytes;
++    uint32_t count;
++    uint32_t capacity;
++    uint32_t overflow;
++};
++
++struct probe_trace_record {
++    uint32_t kind;
++    uint32_t pc;
++    uint32_t address;
++    uint32_t value;
++    uint32_t width;
++    uint32_t instruction;
++};
++
++struct probe_trace_buffer {
++    struct probe_trace_header header;
++    struct probe_trace_record records[TRACE_CAPACITY];
++};
++
++struct elf_probe_trace_buffer {
++    struct probe_trace_header header;
++    struct probe_trace_record records[ELF_MEMORY_TRACE_CAPACITY];
++};
++
++struct probe_write_undo {
++    uint8_t *pointer;
++    uint32_t previous;
++    uint32_t width;
++};
++
++struct probe_step_transaction {
++    uint32_t trace_start;
++    uint32_t undo_count;
++    int memory_overflow;
++    int access_refused;
++    struct probe_write_undo undo[TRACE_CAPACITY];
++};
++
++struct unsupported_entry {
++    uint32_t pc;
++    uint32_t encoding;
++};
++
++struct elf_memory_fault_record {
++    uint32_t abi_version;
++    uint32_t struct_bytes;
++    uint32_t pc;
++    uint32_t address;
++    uint32_t width;
++    uint32_t is_write;
++    uint32_t denied_address;
++    uint32_t denied_page;
++    uint32_t denied_flags;
++    int hit;
++};
++
++static xtensa_cpu_t cpu;
++static xtensa_mem_t *mem;
++static uint8_t input[INPUT_CAPACITY];
++static uint8_t data_input[DATA_CAPACITY];
++static uint8_t data_output[DATA_CAPACITY];
++static uint8_t code_page[PAGE_BYTES];
++static uint8_t source_page[PAGE_BYTES];
++static uint8_t destination_page[PAGE_BYTES];
++static uint8_t elf_page_input[PAGE_BYTES];
++static uint8_t elf_pages[ELF_PAGE_CAPACITY][PAGE_BYTES];
++static uint32_t elf_page_addresses[ELF_PAGE_CAPACITY];
++static uint32_t elf_page_flags[ELF_PAGE_CAPACITY];
++static uint32_t elf_page_count;
++static uint32_t elf_trace[ELF_TRACE_CAPACITY];
++static uint32_t elf_trace_count;
++static struct elf_probe_trace_buffer elf_memory_trace_buffer;
++static int elf_memory_trace_active;
++static struct unsupported_entry elf_unsupported[ELF_UNSUPPORTED_CAPACITY];
++static uint32_t elf_unsupported_count;
++static struct unsupported_marker elf_unsupported_hit;
++static uint32_t elf_rom_events[ELF_ROM_EVENT_CAPACITY][ELF_ROM_EVENT_WORDS];
++static uint32_t elf_rom_event_count;
++static uint32_t elf_rom_reset_reasons[2];
++static int elf_rom_reset_reason_enabled;
++static int elf_rom_memset_enabled;
++static int elf_rom_cache_enabled;
++static int elf_rom_cpu_ticks_enabled;
++static uint32_t elf_rom_cache_sequence;
++static uint32_t elf_rom_instruction_cache_mode[4];
++static uint32_t elf_rom_data_cache_mode[4];
++static int elf_rom_data_cache_suspended;
++static uint32_t elf_rom_data_cache_suspend_return;
++static uint32_t elf_rom_cache_mmu_sizes[3];
++static uint8_t elf_rom_cache_mmio[PAGE_BYTES];
++static uint32_t elf_rom_cache_state[19];
++static uint8_t elf_rom_system_mmio[PAGE_BYTES];
++static uint32_t elf_rom_system_mmio_state[10];
++static uint8_t elf_rom_rtc_mmio[PAGE_BYTES];
++static uint32_t elf_rom_rtc_mmio_state[13];
++static uint8_t elf_rom_regi2c_mmio[PAGE_BYTES];
++static uint32_t elf_rom_regi2c_mmio_state[5];
++static int elf_rom_refused;
++static struct elf_memory_fault_record elf_memory_fault;
++static struct probe_stop_record result;
++static struct probe_trace_buffer trace_buffer;
++static struct probe_step_transaction step_transaction;
++static xtensa_cpu_t cpu_checkpoint;
++
++static uint32_t probe_mmio_read(void *context, uint32_t unused_address) {
++    (void)unused_address;
++    uint8_t *side_effect = context;
++    side_effect[0]++;
++    return 0xa5a5a5a5u;
++}
++
++static void trace_reset(void) {
++    memset(&trace_buffer, 0, sizeof(trace_buffer));
++    trace_buffer.header.abi_version = TRACE_ABI_VERSION;
++    trace_buffer.header.header_bytes = (uint32_t)sizeof(trace_buffer.header);
++    trace_buffer.header.record_bytes = (uint32_t)sizeof(trace_buffer.records[0]);
++    trace_buffer.header.capacity = TRACE_CAPACITY;
++}
++
++static int trace_append(uint32_t kind, uint32_t pc, uint32_t address,
++                        uint32_t value, uint32_t width, uint32_t instruction) {
++    if (trace_buffer.header.count >= TRACE_CAPACITY) {
++        trace_buffer.header.overflow = 1;
++        return -1;
++    }
++    struct probe_trace_record *record =
++        &trace_buffer.records[trace_buffer.header.count++];
++    record->kind = kind;
++    record->pc = pc;
++    record->address = address;
++    record->value = value;
++    record->width = width;
++    record->instruction = instruction;
++    return 0;
++}
++
++static void elf_memory_trace_reset(void) {
++    memset(&elf_memory_trace_buffer, 0, sizeof(elf_memory_trace_buffer));
++    elf_memory_trace_buffer.header.abi_version = TRACE_ABI_VERSION;
++    elf_memory_trace_buffer.header.header_bytes =
++        (uint32_t)sizeof(elf_memory_trace_buffer.header);
++    elf_memory_trace_buffer.header.record_bytes =
++        (uint32_t)sizeof(elf_memory_trace_buffer.records[0]);
++    elf_memory_trace_buffer.header.capacity = ELF_MEMORY_TRACE_CAPACITY;
++}
++
++static int elf_memory_trace_append(uint32_t kind, uint32_t pc,
++                                   uint32_t address, uint32_t value,
++                                   uint32_t width, uint32_t instruction) {
++    if (elf_memory_trace_buffer.header.count >= ELF_MEMORY_TRACE_CAPACITY) {
++        elf_memory_trace_buffer.header.overflow = 1;
++        return -1;
++    }
++    struct probe_trace_record *record =
++        &elf_memory_trace_buffer.records[elf_memory_trace_buffer.header.count++];
++    record->kind = kind;
++    record->pc = pc;
++    record->address = address;
++    record->value = value;
++    record->width = width;
++    record->instruction = instruction;
++    return 0;
++}
++
++static void finish_record(uint32_t reason, uint32_t steps, uint32_t start_pc,
++                          uint32_t return_pc, const struct unsupported_marker *marker) {
++    result.abi_version = RESULT_ABI_VERSION;
++    result.struct_bytes = (uint32_t)sizeof(result);
++    result.reason = reason;
++    result.steps = steps;
++    result.start_pc = start_pc;
++    result.pc = cpu.pc;
++    result.return_pc = return_pc;
++    result.unsupported_pc = marker ? marker->observed_pc : 0;
++    result.unsupported_encoding = marker ? marker->observed_encoding : 0;
++    result.unsupported_length = marker ? marker->observed_length : 0;
++    result.stack_pointer = ar_read(&cpu, 1);
++    for (int i = 0; i < 16; i++) result.registers[i] = ar_read(&cpu, i);
++}
++
++static int trace_instruction(xtensa_cpu_t *unused_cpu, uint32_t pc, uint32_t insn,
++                             int length, void *context) {
++    (void)unused_cpu;
++    struct unsupported_marker *marker = context;
++    if (marker->enabled && pc == marker->pc && insn == marker->encoding) {
++        marker->hit = 1;
++        marker->observed_pc = pc;
++        marker->observed_encoding = insn;
++        marker->observed_length = (uint32_t)length;
++        return 1;
++    }
++    return trace_append(PROBE_TRACE_INSTRUCTION, pc, 0, 0,
++                        (uint32_t)length, insn) != 0;
++}
++
++static int trace_memory_access(void *context, uint32_t address,
++                               uint32_t value, uint32_t width, int is_write,
++                               int mapped) {
++    struct probe_step_transaction *transaction = context;
++    if (!mapped) {
++        transaction->access_refused = 1;
++        return 1;
++    }
++    if (trace_append(is_write ? PROBE_TRACE_WRITE : PROBE_TRACE_READ,
++                     g_dbg_pc, address, value, width, 0) != 0) {
++        transaction->memory_overflow = 1;
++        return 1;
++    }
++    if (is_write) {
++        uint32_t remaining = width;
++        uint32_t current = address;
++        while (remaining > 0) {
++            uint8_t *page = mem->page_table[current >> 12];
++            if (!page) break;
++            if (transaction->undo_count >= TRACE_CAPACITY) {
++                trace_buffer.header.overflow = 1;
++                transaction->memory_overflow = 1;
++                return 1;
++            }
++            uint32_t chunk = PAGE_BYTES - (current & (PAGE_BYTES - 1u));
++            if (chunk > remaining) chunk = remaining;
++            struct probe_write_undo *undo = &transaction->undo[transaction->undo_count++];
++            undo->pointer = page + (current & (PAGE_BYTES - 1u));
++            undo->width = chunk;
++            undo->previous = 0;
++            memcpy(&undo->previous, undo->pointer, chunk);
++            current += chunk;
++            remaining -= chunk;
++        }
++    }
++    return 0;
++}
++
++static void rollback_step(void) {
++    while (step_transaction.undo_count > 0) {
++        struct probe_write_undo *undo = &step_transaction.undo[--step_transaction.undo_count];
++        memcpy(undo->pointer, &undo->previous, undo->width);
++    }
++    cpu = cpu_checkpoint;
++    trace_buffer.header.count = step_transaction.trace_start;
++}
++
++static int stop_elf_unsupported(xtensa_cpu_t *unused_cpu, uint32_t pc, uint32_t insn,
++                                int length, void *unused_context) {
++    (void)unused_cpu;
++    (void)unused_context;
++    uint32_t low = 0;
++    uint32_t high = elf_unsupported_count;
++    while (low < high) {
++        uint32_t middle = low + (high - low) / 2u;
++        if (elf_unsupported[middle].pc < pc) low = middle + 1u;
++        else high = middle;
++    }
++    if (low < elf_unsupported_count && elf_unsupported[low].pc == pc) {
++        elf_unsupported_hit.hit = 1;
++        elf_unsupported_hit.observed_pc = pc;
++        elf_unsupported_hit.observed_encoding = insn;
++        elf_unsupported_hit.observed_length = (uint32_t)length;
++        elf_unsupported_hit.encoding = elf_unsupported[low].encoding;
++        return 1;
++    }
++    if (!elf_memory_trace_active) return 0;
++    return elf_memory_trace_append(PROBE_TRACE_INSTRUCTION, pc, 0, 0,
++                                   (uint32_t)length, insn) != 0;
++}
++
++static int trace_elf_memory_access(void *unused_context, uint32_t address,
++                                   uint32_t value, uint32_t width, int is_write,
++                                   int mapped) {
++    (void)unused_context;
++    if (!elf_memory_trace_active) return 0;
++    if (!mapped) return 0;
++    if (elf_memory_trace_append(
++            is_write ? PROBE_TRACE_WRITE : PROBE_TRACE_READ,
++            g_dbg_pc, address, value, width, 0) != 0) {
++        elf_memory_trace_buffer.header.overflow = 1;
++        return 1;
++    }
++    return 0;
++}
++
++static int elf_page_index(uint32_t address) {
++    uint32_t page = address & ~(PAGE_BYTES - 1u);
++    uint32_t low = 0;
++    uint32_t high = elf_page_count;
++    while (low < high) {
++        uint32_t middle = low + (high - low) / 2u;
++        if (elf_page_addresses[middle] < page) low = middle + 1u;
++        else high = middle;
++    }
++    return low < elf_page_count && elf_page_addresses[low] == page ? (int)low : -1;
++}
++
++static int elf_rom_record(uint32_t kind, uint32_t pc, uint32_t arg0,
++                          uint32_t arg1, uint32_t arg2);
++
++static uint32_t elf_system_mmio_read_count(uint32_t address) {
++    uint32_t count = 0;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_SYSTEM_MMIO_READ &&
++            elf_rom_events[i][2] == address) count++;
++    }
++    return count;
++}
++
++static uint32_t elf_rtc_mmio_read_count(void) {
++    uint32_t count = 0;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_RTC_MMIO_READ) count++;
++    }
++    return count;
++}
++
++static uint32_t elf_rtc_mmio_write_count(void) {
++    uint32_t count = 0;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_RTC_MMIO_WRITE) count++;
++    }
++    return count;
++}
++
++static uint32_t elf_cpu_ticks_event_count(void) {
++    uint32_t count = 0;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_CPU_TICKS_PER_US) count++;
++    }
++    return count;
++}
++
++static uint32_t elf_system_mmio_write_count(uint32_t address) {
++    uint32_t count = 0;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_SYSTEM_MMIO_WRITE &&
++            elf_rom_events[i][2] == address) count++;
++    }
++    return count;
++}
++
++static uint32_t elf_regi2c_mmio_event_count(uint32_t kind) {
++    uint32_t count = 0;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == kind) count++;
++    }
++    return count;
++}
++
++static int elf_bbpll_rom_event_matches(uint32_t *event, uint32_t write_index) {
++    uint32_t block_and_order = event[2];
++    uint32_t packed_args = event[3];
++    uint32_t call_state = event[4];
++    uint32_t expected_restores = write_index == 0u ? 1u : (write_index == 1u ? 4u : 7u);
++    uint32_t expected_reg = write_index == 0u ? ESP32S3_BBPLL_MODE_HF :
++                            (write_index == 1u ? ESP32S3_BBPLL_OC_REF_DIV : ESP32S3_BBPLL_OC_DIV_7_0);
++    uint32_t expected_data = write_index == 0u ? ESP32S3_BBPLL_MODE_HF_480M :
++                             (write_index == 1u ? ESP32S3_BBPLL_OC_REF_DIV_480M : ESP32S3_BBPLL_OC_DIV_7_0_480M);
++    return event[0] == ELF_ROM_EVENT_BBPLL_ROM_WRITE &&
++           event[1] == ESP32S3_ROM_I2C_WRITE_REG &&
++           (block_and_order & 0xffu) == ESP32S3_I2C_BBPLL &&
++           ((block_and_order >> 8) & 0xffu) == expected_restores &&
++           ((block_and_order >> 16) & 0xffu) == write_index &&
++           ((packed_args >> 16) & 0xffu) == ESP32S3_I2C_BBPLL_HOST_ID &&
++           ((packed_args >> 8) & 0xffu) == expected_reg &&
++           (packed_args & 0xffu) == expected_data &&
++           (call_state >> 8) == 2u && (call_state & 0xfu) == 3u;
++}
++
++static int elf_bbpll_rom_event_accepted(void) {
++    uint32_t count = 0u;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] != ELF_ROM_EVENT_BBPLL_ROM_WRITE) continue;
++        if (count >= 3u || !elf_bbpll_rom_event_matches(elf_rom_events[i], count)) return 0;
++        count++;
++    }
++    return count > 0u;
++}
++
++static int elf_bbpll_rom_mask_event_accepted(void) {
++    uint32_t count = 0u;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] != ELF_ROM_EVENT_BBPLL_ROM_MASK_WRITE) continue;
++        uint32_t block_and_order = elf_rom_events[i][2];
++        uint32_t packed_shape = elf_rom_events[i][3];
++        uint32_t data_and_call_state = elf_rom_events[i][4];
++        if (count >= 1u || elf_rom_events[i][1] != ESP32S3_ROM_I2C_WRITE_REG_MASK ||
++            (block_and_order & 0xffu) != ESP32S3_I2C_BBPLL ||
++            ((block_and_order >> 8) & 0xffu) != 10u ||
++            ((block_and_order >> 16) & 0xffu) != count ||
++            ((block_and_order >> 24) & 0xffu) != 3u ||
++            ((packed_shape >> 24) & 0xffu) != ESP32S3_I2C_BBPLL_HOST_ID ||
++            ((packed_shape >> 16) & 0xffu) != ESP32S3_BBPLL_OC_DR1 ||
++            ((packed_shape >> 8) & 0xffu) != ESP32S3_BBPLL_OC_DR1_MSB ||
++            (packed_shape & 0xffu) != ESP32S3_BBPLL_OC_DR1_LSB ||
++            (data_and_call_state & 0xffu) != ESP32S3_BBPLL_OC_DR1_480M ||
++            ((data_and_call_state >> 8) & 0xffu) != 2u ||
++            ((data_and_call_state >> 16) & 0xfu) != 3u) return 0;
++        count++;
++    }
++    return count == 1u;
++}
++
++static int elf_regi2c_mmio_permission(uint32_t address, uint32_t width, int is_write) {
++    if ((address & ~(PAGE_BYTES - 1u)) != ESP32S3_I2C_MST_MMIO_PAGE) return 0;
++    uint32_t reads = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_REGI2C_MMIO_READ);
++    uint32_t writes = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_REGI2C_MMIO_WRITE);
++    if (!elf_rom_cache_enabled || elf_rom_cache_mmu_sizes[0] != 1u ||
++        address != ESP32S3_I2C_MST_ANA_CONF0_REG || width != 4u ||
++        elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 6u ||
++        elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 5u ||
++        elf_system_mmio_write_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 3u ||
++        elf_system_mmio_write_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 1u ||
++        elf_rtc_mmio_read_count() != 5u || elf_rtc_mmio_write_count() != 3u ||
++        elf_cpu_ticks_event_count() != 1u) return -1;
++    if (is_write) {
++        uint32_t value = ar_read(&cpu, 8);
++        uint32_t expected_pc = writes == 0u
++                                   ? ESP32S3_DIRECT_BOOT_I2C_MST_START_CLEAR_WRITE_PC
++                                   : ESP32S3_DIRECT_BOOT_I2C_MST_START_SET_WRITE_PC;
++        uint32_t expected_value = writes == 0u ? 0x01000000u : 0x01000008u;
++        if (writes >= 2u || reads != writes + 1u || g_dbg_pc != expected_pc ||
++            value != expected_value) return -1;
++        return elf_rom_record(ELF_ROM_EVENT_REGI2C_MMIO_WRITE, g_dbg_pc, address,
++                              width, value) ? 1 : -1;
++    }
++    uint32_t expected_pc = reads == 0u
++                               ? ESP32S3_DIRECT_BOOT_I2C_MST_START_CLEAR_READ_PC
++                               : ESP32S3_DIRECT_BOOT_I2C_MST_START_SET_READ_PC;
++    if (reads >= 2u || reads != writes || g_dbg_pc != expected_pc) return -1;
++    uint32_t value = reads == 0u ? ESP32S3_DIRECT_BOOT_I2C_MST_ANA_CONF0 : 0x01000000u;
++    return elf_rom_record(ELF_ROM_EVENT_REGI2C_MMIO_READ, g_dbg_pc, address,
++                          width, value) ? 1 : -1;
++}
++
++static int elf_system_mmio_permission(uint32_t address, uint32_t width, int is_write) {
++    if ((address & ~(PAGE_BYTES - 1u)) != ESP32S3_SYSTEM_MMIO_PAGE) return 0;
++    if (!elf_rom_cache_enabled || elf_rom_cache_mmu_sizes[0] != 1u || width != 4u) {
++        return -1;
++    }
++    if (is_write) {
++        if (address == ESP32S3_SYSTEM_CPU_PER_CONF) {
++            uint32_t value = ar_read(&cpu, 8);
++            if (g_dbg_pc != ESP32S3_DIRECT_BOOT_CPU_PER_PLL_RESTORE_WRITE_PC ||
++                value != ESP32S3_DIRECT_BOOT_CPU_PER_CONF ||
++                elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 6u ||
++                elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 5u ||
++                elf_system_mmio_write_count(address) != 0u ||
++                elf_rtc_mmio_read_count() != 5u || elf_rtc_mmio_write_count() != 3u ||
++                elf_cpu_ticks_event_count() != 1u) return -1;
++            return elf_rom_record(ELF_ROM_EVENT_SYSTEM_MMIO_WRITE, g_dbg_pc, address,
++                                  width, value) ? 1 : -1;
++        }
++        uint32_t writes = elf_system_mmio_write_count(address);
++        uint32_t value = ar_read(&cpu, writes == 1u ? 3 : 9);
++        uint32_t expected_value = writes == 2u ? 0u : ESP32S3_DIRECT_BOOT_SYSCLK_CONF;
++        int expected_writer =
++            (writes == 0u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_POST_TICKS_WRITE_PC &&
++             elf_system_mmio_read_count(address) == 3u) ||
++            (writes == 1u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_ADJUST_WRITE_PC &&
++             elf_system_mmio_read_count(address) == 4u) ||
++            (writes == 2u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_XTAL_WRITE_PC &&
++             elf_system_mmio_read_count(address) == 5u);
++        if (address != ESP32S3_SYSTEM_SYSCLK_CONF || !expected_writer ||
++            value != expected_value ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 4u ||
++            elf_rtc_mmio_read_count() != 1u || elf_cpu_ticks_event_count() != 1u ||
++            writes >= 3u) return -1;
++        return elf_rom_record(ELF_ROM_EVENT_SYSTEM_MMIO_WRITE, g_dbg_pc, address,
++                              width, value) ? 1 : -1;
++    }
++    uint32_t value;
++    if (address == ESP32S3_SYSTEM_SYSCLK_CONF) {
++        uint32_t sysclk_reads = elf_system_mmio_read_count(address);
++        int expected_reader =
++            (sysclk_reads == 0u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_READ_PC &&
++             elf_rtc_mmio_read_count() == 0u && elf_cpu_ticks_event_count() == 0u) ||
++            (sysclk_reads == 1u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_READ_PC &&
++             elf_rtc_mmio_read_count() == 1u && elf_cpu_ticks_event_count() == 0u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 2u) ||
++            (sysclk_reads == 2u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_POST_TICKS_READ_PC &&
++             elf_rtc_mmio_read_count() == 1u && elf_cpu_ticks_event_count() == 1u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 4u) ||
++            (sysclk_reads == 3u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_ADJUST_READ_PC &&
++             elf_rtc_mmio_read_count() == 1u && elf_cpu_ticks_event_count() == 1u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 4u &&
++             elf_system_mmio_write_count(address) == 1u) ||
++            (sysclk_reads == 4u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_POST_ADJUST_READ_PC &&
++             elf_rtc_mmio_read_count() == 1u && elf_cpu_ticks_event_count() == 1u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 4u &&
++             elf_system_mmio_write_count(address) == 2u) ||
++            (sysclk_reads == 5u && g_dbg_pc == ESP32S3_DIRECT_BOOT_SYSCLK_PLL_RESTORE_READ_PC &&
++             elf_rtc_mmio_read_count() == 3u && elf_rtc_mmio_write_count() == 2u &&
++             elf_cpu_ticks_event_count() == 1u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 4u &&
++             elf_system_mmio_write_count(address) == 3u);
++        if (!expected_reader) return -1;
++        value = sysclk_reads == 5u ? 0u : ESP32S3_DIRECT_BOOT_SYSCLK_CONF;
++    } else if (address == ESP32S3_SYSTEM_CPU_PER_CONF) {
++        uint32_t cpu_per_reads = elf_system_mmio_read_count(address);
++        if (cpu_per_reads == 4u) {
++            if (g_dbg_pc != ESP32S3_DIRECT_BOOT_CPU_PER_PLL_RESTORE_READ_PC ||
++                elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 6u ||
++                elf_system_mmio_write_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 3u ||
++                elf_system_mmio_write_count(address) != 0u ||
++                elf_rtc_mmio_read_count() != 5u || elf_rtc_mmio_write_count() != 3u ||
++                elf_cpu_ticks_event_count() != 1u) return -1;
++            value = ESP32S3_DIRECT_BOOT_CPU_PER_CONF;
++            return elf_rom_record(ELF_ROM_EVENT_SYSTEM_MMIO_READ, g_dbg_pc, address,
++                                  width, value) ? 1 : -1;
++        }
++        int expected_reader = (cpu_per_reads == 0u &&
++                               g_dbg_pc == ESP32S3_DIRECT_BOOT_CPU_PER_READ_PC) ||
++                              (cpu_per_reads == 1u &&
++                               g_dbg_pc == ESP32S3_DIRECT_BOOT_CPU_PER_SECOND_READ_PC) ||
++                              (cpu_per_reads == 2u &&
++                               g_dbg_pc == ESP32S3_DIRECT_BOOT_CPU_PER_READ_PC) ||
++                              (cpu_per_reads == 3u &&
++                               g_dbg_pc == ESP32S3_DIRECT_BOOT_CPU_PER_SECOND_READ_PC);
++        uint32_t expected_sysclk_reads = cpu_per_reads < 2u ? 1u : 2u;
++        uint32_t expected_rtc_reads = cpu_per_reads < 2u ? 0u : 1u;
++        if (!expected_reader ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != expected_sysclk_reads ||
++            elf_rtc_mmio_read_count() != expected_rtc_reads)
++            return -1;
++        value = ESP32S3_DIRECT_BOOT_CPU_PER_CONF;
++    } else {
++        return -1;
++    }
++    return elf_rom_record(ELF_ROM_EVENT_SYSTEM_MMIO_READ, g_dbg_pc, address,
++                          width, value) ? 1 : -1;
++}
++
++static int elf_rtc_mmio_permission(uint32_t address, uint32_t width, int is_write) {
++    if ((address & ~(PAGE_BYTES - 1u)) != ESP32S3_RTC_CNTL_MMIO_PAGE) return 0;
++    if (!elf_rom_cache_enabled || elf_rom_cache_mmu_sizes[0] != 1u ||
++        width != 4u) return -1;
++    if (is_write) {
++        uint32_t value = ar_read(&cpu, 8);
++        int expected_write =
++            (address == ESP32S3_RTC_DATE_REG &&
++             g_dbg_pc == ESP32S3_DIRECT_BOOT_RTC_DATE_WRITE_PC &&
++             value == ESP32S3_DIRECT_BOOT_RTC_DATE_XTAL &&
++             elf_rtc_mmio_read_count() == 2u && elf_rtc_mmio_write_count() == 0u) ||
++            (address == ESP32S3_RTC_OPTIONS0_REG &&
++             g_dbg_pc == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_WRITE_PC &&
++             value == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_PD &&
++             elf_rtc_mmio_read_count() == 3u && elf_rtc_mmio_write_count() == 1u) ||
++            (address == ESP32S3_RTC_OPTIONS0_REG &&
++             g_dbg_pc == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_RESTORE_WRITE_PC &&
++             value == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0 &&
++             elf_rtc_mmio_read_count() == 4u && elf_rtc_mmio_write_count() == 2u);
++        uint32_t expected_system_reads =
++            g_dbg_pc == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_RESTORE_WRITE_PC ? 6u : 5u;
++        if (!expected_write ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != expected_system_reads ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 4u ||
++            elf_system_mmio_write_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 3u ||
++            elf_cpu_ticks_event_count() != 1u) return -1;
++        return elf_rom_record(ELF_ROM_EVENT_RTC_MMIO_WRITE, g_dbg_pc, address,
++                              width, value) ? 1 : -1;
++    }
++    uint32_t value;
++    if (address == ESP32S3_RTC_XTAL_FREQ_REG) {
++        uint32_t rtc_reads = elf_rtc_mmio_read_count();
++        int expected_reader =
++            (elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) == 1u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 2u &&
++             rtc_reads == 0u && elf_rtc_mmio_write_count() == 0u) ||
++            (elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) == 6u &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) == 4u &&
++             rtc_reads == 4u && elf_rtc_mmio_write_count() == 3u);
++        if (g_dbg_pc != ESP32S3_DIRECT_BOOT_RTC_XTAL_READ_PC || !expected_reader) return -1;
++        value = ESP32S3_DIRECT_BOOT_RTC_XTAL_FREQ;
++    } else if (address == ESP32S3_RTC_DATE_REG) {
++        if (g_dbg_pc != ESP32S3_DIRECT_BOOT_RTC_DATE_READ_PC ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 5u ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 4u ||
++            elf_system_mmio_write_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 3u ||
++            elf_cpu_ticks_event_count() != 1u || elf_rtc_mmio_read_count() != 1u) return -1;
++        value = ESP32S3_DIRECT_BOOT_RTC_DATE;
++    } else if (address == ESP32S3_RTC_OPTIONS0_REG) {
++        uint32_t rtc_reads = elf_rtc_mmio_read_count();
++        int expected_reader =
++            (g_dbg_pc == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_READ_PC &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) == 5u &&
++             rtc_reads == 2u && elf_rtc_mmio_write_count() == 1u) ||
++            (g_dbg_pc == ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_RESTORE_READ_PC &&
++             elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) == 6u &&
++             rtc_reads == 3u && elf_rtc_mmio_write_count() == 2u);
++        if (!expected_reader ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 4u ||
++            elf_system_mmio_write_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 3u ||
++            elf_cpu_ticks_event_count() != 1u) return -1;
++        value = rtc_reads == 3u ? ESP32S3_DIRECT_BOOT_RTC_OPTIONS0_PLL_PD
++                                : ESP32S3_DIRECT_BOOT_RTC_OPTIONS0;
++    } else {
++        return -1;
++    }
++    return elf_rom_record(ELF_ROM_EVENT_RTC_MMIO_READ, g_dbg_pc, address,
++                          width, value) ? 1 : -1;
++}
++
++static int elf_cache_mmio_permission(uint32_t address, uint32_t width, int is_write) {
++    if ((address & ~(PAGE_BYTES - 1u)) != ESP32S3_CACHE_MMIO_PAGE) return 0;
++    if (!elf_rom_cache_enabled || width != 4u) return -1;
++    switch (address) {
++    case ESP32S3_DCACHE_CTRL1:
++    case ESP32S3_DCACHE_AUTOLOAD:
++    case ESP32S3_ICACHE_CTRL1:
++    case ESP32S3_ICACHE_AUTOLOAD:
++        return 1;
++    case ESP32S3_CACHE_STATE:
++        return is_write ? -1 : 1;
++    default:
++        return -1;
++    }
++}
++
++static int elf_memory_permission(void *unused_context, uint32_t address,
++                                 uint32_t width, int is_write) {
++    (void)unused_context;
++    uint32_t required = is_write ? 2u : 4u;
++    uint32_t denied_address = address;
++    int denied_page = -1;
++    uint32_t denied_flags = 0;
++    if ((width != 1u && width != 2u && width != 4u) ||
++        address > UINT32_MAX - (width - 1u)) {
++        goto denied;
++    }
++    uint32_t remaining = width;
++    uint32_t current = address;
++    while (remaining > 0) {
++        int regi2c_mmio = elf_regi2c_mmio_permission(current, remaining, is_write);
++        if (regi2c_mmio > 0) return 0;
++        if (regi2c_mmio < 0) goto denied;
++        int rtc_mmio = elf_rtc_mmio_permission(current, remaining, is_write);
++        if (rtc_mmio > 0) return 0;
++        if (rtc_mmio < 0) goto denied;
++        int system_mmio = elf_system_mmio_permission(current, remaining, is_write);
++        if (system_mmio > 0) return 0;
++        if (system_mmio < 0) goto denied;
++        int cache_mmio = elf_cache_mmio_permission(current, remaining, is_write);
++        if (cache_mmio > 0) return 0;
++        if (cache_mmio < 0) goto denied;
++        int page = elf_page_index(current);
++        uint32_t flags = page >= 0 ? elf_page_flags[page] : 0u;
++        if (page < 0 || mem->page_table[current >> 12] == NULL ||
++            (flags & required) == 0) {
++            denied_address = current;
++            denied_page = page;
++            denied_flags = flags;
++            goto denied;
++        }
++        uint32_t chunk = PAGE_BYTES - (current & (PAGE_BYTES - 1u));
++        if (chunk > remaining) chunk = remaining;
++        current += chunk;
++        remaining -= chunk;
++    }
++    return 0;
++
++denied:
++    memset(&elf_memory_fault, 0, sizeof(elf_memory_fault));
++    elf_memory_fault.abi_version = ELF_MEMORY_FAULT_ABI_VERSION;
++    elf_memory_fault.struct_bytes = (uint32_t)sizeof(elf_memory_fault);
++    elf_memory_fault.pc = g_dbg_pc;
++    elf_memory_fault.address = address;
++    elf_memory_fault.width = width;
++    elf_memory_fault.is_write = (uint32_t)is_write;
++    elf_memory_fault.denied_address = denied_address;
++    elf_memory_fault.denied_page = denied_address & ~(PAGE_BYTES - 1u);
++    elf_memory_fault.denied_flags = denied_flags;
++    elf_memory_fault.hit = 1;
++    return 1;
++}
++
++static uint32_t elf_rom_arg(xtensa_cpu_t *target_cpu, int argument) {
++    int callinc = XT_PS_CALLINC(target_cpu->ps);
++    int reg = callinc * 4 + 2 + argument;
++    if (reg < 16) return ar_read(target_cpu, reg);
++    return mem_read32(target_cpu->mem, ar_read(target_cpu, 1) + (uint32_t)(reg - 16) * 4u);
++}
++
++static void elf_rom_return(xtensa_cpu_t *target_cpu, uint32_t value) {
++    int callinc = XT_PS_CALLINC(target_cpu->ps);
++    if (callinc > 0) {
++        ar_write(target_cpu, callinc * 4 + 2, value);
++        target_cpu->pc = 0x40000000u | (ar_read(target_cpu, callinc * 4) & 0x3fffffffu);
++        XT_PS_SET_CALLINC(target_cpu->ps, 0);
++    } else {
++        ar_write(target_cpu, 2, value);
++        target_cpu->pc = 0x40000000u | (ar_read(target_cpu, 0) & 0x3fffffffu);
++    }
++}
++
++static int elf_rom_record(uint32_t kind, uint32_t pc, uint32_t arg0,
++                          uint32_t arg1, uint32_t arg2) {
++    if (elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY) return 0;
++    uint32_t *event = elf_rom_events[elf_rom_event_count++];
++    event[0] = kind;
++    event[1] = pc;
++    event[2] = arg0;
++    event[3] = arg1;
++    event[4] = arg2;
++    event[5] = elf_trace_count;
++    return 1;
++}
++
++static uint32_t elf_cache_read(uint32_t address) {
++    uint32_t value = 0;
++    memcpy(&value, elf_rom_cache_mmio + (address - ESP32S3_CACHE_MMIO_PAGE), 4);
++    return value;
++}
++
++static void elf_cache_write(uint32_t address, uint32_t value) {
++    memcpy(elf_rom_cache_mmio + (address - ESP32S3_CACHE_MMIO_PAGE), &value, 4);
++}
++
++static void elf_cache_reset(void) {
++    memset(elf_rom_cache_mmio, 0, sizeof(elf_rom_cache_mmio));
++    elf_cache_write(ESP32S3_DCACHE_CONFIG, 1u);
++    elf_cache_write(ESP32S3_DCACHE_CTRL1, 0);
++    elf_cache_write(ESP32S3_DCACHE_AUTOLOAD, ESP32S3_CACHE_AUTOLOAD_BASE);
++    elf_cache_write(ESP32S3_ICACHE_CTRL1, 0);
++    elf_cache_write(ESP32S3_ICACHE_AUTOLOAD, ESP32S3_CACHE_AUTOLOAD_BASE);
++    elf_cache_write(ESP32S3_CACHE_STATE, ESP32S3_CACHE_IDLE);
++    elf_rom_cache_sequence = 0;
++    memset(elf_rom_instruction_cache_mode, 0, sizeof(elf_rom_instruction_cache_mode));
++    memset(elf_rom_data_cache_mode, 0, sizeof(elf_rom_data_cache_mode));
++    elf_rom_data_cache_suspended = 0;
++    elf_rom_data_cache_suspend_return = ESP32S3_CACHE_EVENT_VOID;
++    memset(elf_rom_cache_mmu_sizes, 0, sizeof(elf_rom_cache_mmu_sizes));
++    /* TinyDraw bootloader: 80 MHz via 480 MHz PLL, WAITI clock gating enabled. */
++    memset(elf_rom_system_mmio, 0, sizeof(elf_rom_system_mmio));
++    uint32_t cpu_per_conf = ESP32S3_DIRECT_BOOT_CPU_PER_CONF;
++    memcpy(elf_rom_system_mmio +
++               (ESP32S3_SYSTEM_CPU_PER_CONF - ESP32S3_SYSTEM_MMIO_PAGE),
++           &cpu_per_conf, 4);
++    uint32_t sysclk_conf = ESP32S3_DIRECT_BOOT_SYSCLK_CONF;
++    memcpy(elf_rom_system_mmio +
++               (ESP32S3_SYSTEM_SYSCLK_CONF - ESP32S3_SYSTEM_MMIO_PAGE),
++           &sysclk_conf, 4);
++    /* TinyDraw bootloader stores the 40 MHz XTAL in duplicated 16-bit halves. */
++    memset(elf_rom_rtc_mmio, 0, sizeof(elf_rom_rtc_mmio));
++    uint32_t rtc_options0 = ESP32S3_DIRECT_BOOT_RTC_OPTIONS0;
++    memcpy(elf_rom_rtc_mmio +
++               (ESP32S3_RTC_OPTIONS0_REG - ESP32S3_RTC_CNTL_MMIO_PAGE),
++           &rtc_options0, 4);
++    uint32_t xtal_freq = ESP32S3_DIRECT_BOOT_RTC_XTAL_FREQ;
++    memcpy(elf_rom_rtc_mmio +
++               (ESP32S3_RTC_XTAL_FREQ_REG - ESP32S3_RTC_CNTL_MMIO_PAGE),
++           &xtal_freq, 4);
++    uint32_t rtc_date = ESP32S3_DIRECT_BOOT_RTC_DATE;
++    memcpy(elf_rom_rtc_mmio + (ESP32S3_RTC_DATE_REG - ESP32S3_RTC_CNTL_MMIO_PAGE),
++           &rtc_date, 4);
++    memset(elf_rom_regi2c_mmio, 0, sizeof(elf_rom_regi2c_mmio));
++    uint32_t ana_conf0 = ESP32S3_DIRECT_BOOT_I2C_MST_ANA_CONF0;
++    memcpy(elf_rom_regi2c_mmio +
++               (ESP32S3_I2C_MST_ANA_CONF0_REG - ESP32S3_I2C_MST_MMIO_PAGE),
++           &ana_conf0, 4);
++    mem->page_table[ESP32S3_CACHE_MMIO_PAGE >> 12] = elf_rom_cache_mmio;
++    mem->page_table[ESP32S3_SYSTEM_MMIO_PAGE >> 12] = elf_rom_system_mmio;
++    mem->page_table[ESP32S3_RTC_CNTL_MMIO_PAGE >> 12] = elf_rom_rtc_mmio;
++    mem->page_table[ESP32S3_I2C_MST_MMIO_PAGE >> 12] = elf_rom_regi2c_mmio;
++}
++
++static int elf_cache_is_callback(uint32_t pc) {
++    return pc == ESP32S3_ROM_CACHE_DISABLE_I || pc == ESP32S3_ROM_CACHE_ENABLE_I ||
++           pc == ESP32S3_ROM_CACHE_DISABLE_D || pc == ESP32S3_ROM_CACHE_ENABLE_D ||
++           pc == ESP32S3_ROM_SUSPEND_DCACHE || pc == ESP32S3_ROM_RESUME_DCACHE ||
++           pc == ESP32S3_ROM_SET_IDROM_MMU_SIZE || pc == ESP32S3_ROM_CONFIG_ICACHE_MODE ||
++           pc == ESP32S3_ROM_CONFIG_DCACHE_MODE;
++}
++
++static int elf_rom_instruction_cache_mode_dispatch(xtensa_cpu_t *target_cpu, uint32_t pc) {
++    if (pc != ESP32S3_ROM_CONFIG_ICACHE_MODE ||
++        elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY ||
++        XT_PS_CALLINC(target_cpu->ps) != WINDOW_CALLINC ||
++        elf_rom_cache_sequence != 6u || elf_rom_instruction_cache_mode[0] != 0u ||
++        elf_cache_read(ESP32S3_ICACHE_CTRL1) != 0u ||
++        elf_cache_read(ESP32S3_DCACHE_CTRL1) != 0u ||
++        elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_CACHE_STATE) != ESP32S3_CACHE_IDLE) {
++        return 0;
++    }
++    uint32_t size_bytes = elf_rom_arg(target_cpu, 0);
++    uint32_t ways = elf_rom_arg(target_cpu, 1);
++    uint32_t line_bytes = elf_rom_arg(target_cpu, 2);
++    if (size_bytes != 0x4000u || ways != 8u || line_bytes != 32u ||
++        !elf_rom_record(ELF_ROM_EVENT_CACHE_MODE, pc, size_bytes, ways, line_bytes)) {
++        return 0;
++    }
++    elf_rom_instruction_cache_mode[0] = 1u;
++    elf_rom_instruction_cache_mode[1] = size_bytes;
++    elf_rom_instruction_cache_mode[2] = ways;
++    elf_rom_instruction_cache_mode[3] = line_bytes;
++    elf_rom_return(target_cpu, 0);
++    return 1;
++}
++
++static int elf_rom_data_cache_suspend_dispatch(xtensa_cpu_t *target_cpu, uint32_t pc) {
++    if (pc != ESP32S3_ROM_SUSPEND_DCACHE ||
++        elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY ||
++        XT_PS_CALLINC(target_cpu->ps) != WINDOW_CALLINC ||
++        elf_rom_cache_sequence != 6u || elf_rom_instruction_cache_mode[0] != 1u ||
++        elf_rom_data_cache_suspended ||
++        elf_cache_read(ESP32S3_DCACHE_CONFIG) != 1u ||
++        elf_cache_read(ESP32S3_DCACHE_CTRL1) != 0u ||
++        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_CACHE_STATE) != ESP32S3_CACHE_IDLE) {
++        return 0;
++    }
++    uint32_t return_value = elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & 4u;
++    elf_cache_write(ESP32S3_DCACHE_CTRL1,
++                    elf_cache_read(ESP32S3_DCACHE_CTRL1) | 3u);
++    elf_cache_write(ESP32S3_DCACHE_CONFIG,
++                    elf_cache_read(ESP32S3_DCACHE_CONFIG) & ~1u);
++    if (return_value != 0u) {
++        elf_cache_write(ESP32S3_DCACHE_AUTOLOAD,
++                        (elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & ~4u) | 0x200u);
++        elf_cache_write(ESP32S3_DCACHE_AUTOLOAD,
++                        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & ~0x200u);
++    }
++    if (!elf_rom_record(ELF_ROM_EVENT_CACHE_SUSPEND, pc, 2u, return_value,
++                        ESP32S3_CACHE_EVENT_VOID)) {
++        return 0;
++    }
++    elf_rom_data_cache_suspended = 1;
++    elf_rom_data_cache_suspend_return = return_value;
++    elf_rom_return(target_cpu, return_value);
++    return 1;
++}
++
++static int elf_rom_data_cache_mode_dispatch(xtensa_cpu_t *target_cpu, uint32_t pc) {
++    if (pc != ESP32S3_ROM_CONFIG_DCACHE_MODE ||
++        elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY ||
++        XT_PS_CALLINC(target_cpu->ps) != WINDOW_CALLINC ||
++        elf_rom_cache_sequence != 6u || elf_rom_instruction_cache_mode[0] != 1u ||
++        !elf_rom_data_cache_suspended || elf_rom_data_cache_mode[0] != 0u ||
++        elf_cache_read(ESP32S3_DCACHE_CONFIG) != 0u ||
++        elf_cache_read(ESP32S3_DCACHE_CTRL1) != 3u ||
++        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_CACHE_STATE) != ESP32S3_CACHE_IDLE) {
++        return 0;
++    }
++    uint32_t size_bytes = elf_rom_arg(target_cpu, 0);
++    uint32_t ways = elf_rom_arg(target_cpu, 1);
++    uint32_t line_bytes = elf_rom_arg(target_cpu, 2);
++    if (size_bytes != 0x8000u || ways != 8u || line_bytes != 64u ||
++        !elf_rom_record(ELF_ROM_EVENT_CACHE_MODE, pc, size_bytes, ways, line_bytes)) {
++        return 0;
++    }
++    elf_cache_write(ESP32S3_DCACHE_CONFIG,
++                    (elf_cache_read(ESP32S3_DCACHE_CONFIG) & ~(4u | 24u)) | 16u);
++    elf_rom_data_cache_mode[0] = 1u;
++    elf_rom_data_cache_mode[1] = size_bytes;
++    elf_rom_data_cache_mode[2] = ways;
++    elf_rom_data_cache_mode[3] = line_bytes;
++    elf_rom_return(target_cpu, 0);
++    return 1;
++}
++
++static int elf_rom_data_cache_resume_dispatch(xtensa_cpu_t *target_cpu, uint32_t pc) {
++    if (pc != ESP32S3_ROM_RESUME_DCACHE ||
++        elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY ||
++        XT_PS_CALLINC(target_cpu->ps) != WINDOW_CALLINC ||
++        elf_rom_cache_sequence != 6u || elf_rom_instruction_cache_mode[0] != 1u ||
++        elf_rom_data_cache_mode[0] != 1u || !elf_rom_data_cache_suspended ||
++        elf_rom_data_cache_suspend_return == ESP32S3_CACHE_EVENT_VOID ||
++        elf_cache_read(ESP32S3_DCACHE_CONFIG) != 16u ||
++        elf_cache_read(ESP32S3_DCACHE_CTRL1) != 3u ||
++        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_ICACHE_CTRL1) != 0u ||
++        elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_CACHE_STATE) != ESP32S3_CACHE_IDLE) {
++        return 0;
++    }
++    uint32_t argument = elf_rom_arg(target_cpu, 0);
++    if (argument != elf_rom_data_cache_suspend_return ||
++        !elf_rom_record(ELF_ROM_EVENT_CACHE_RESUME, pc, 2u, argument,
++                        ESP32S3_CACHE_EVENT_VOID)) {
++        return 0;
++    }
++    elf_cache_write(ESP32S3_DCACHE_CONFIG,
++                    elf_cache_read(ESP32S3_DCACHE_CONFIG) | 1u);
++    elf_cache_write(ESP32S3_DCACHE_CTRL1,
++                    elf_cache_read(ESP32S3_DCACHE_CTRL1) & ~4u);
++    elf_cache_write(ESP32S3_DCACHE_AUTOLOAD,
++                    (elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & ~4u) | argument);
++    elf_rom_data_cache_suspended = 0;
++    elf_rom_return(target_cpu, 0);
++    return 1;
++}
++
++static int elf_rom_cache_mmu_sizes_dispatch(xtensa_cpu_t *target_cpu, uint32_t pc) {
++    if (pc != ESP32S3_ROM_SET_IDROM_MMU_SIZE ||
++        elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY ||
++        XT_PS_CALLINC(target_cpu->ps) != WINDOW_CALLINC ||
++        elf_rom_cache_sequence != 6u || elf_rom_instruction_cache_mode[0] != 1u ||
++        elf_rom_data_cache_mode[0] != 1u || elf_rom_data_cache_suspended ||
++        elf_rom_data_cache_suspend_return != 0u || elf_rom_cache_mmu_sizes[0] != 0u ||
++        elf_cache_read(ESP32S3_DCACHE_CONFIG) != 17u ||
++        elf_cache_read(ESP32S3_DCACHE_CTRL1) != 3u ||
++        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_ICACHE_CTRL1) != 0u ||
++        elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_CACHE_STATE) != ESP32S3_CACHE_IDLE) {
++        return 0;
++    }
++    uint32_t instruction_bytes = elf_rom_arg(target_cpu, 0);
++    uint32_t data_bytes = elf_rom_arg(target_cpu, 1);
++    if (instruction_bytes != 0x1cu || data_bytes != 0x3e4u ||
++        !elf_rom_record(ELF_ROM_EVENT_CACHE_MMU_SIZES, pc, instruction_bytes,
++                        data_bytes, ESP32S3_CACHE_EVENT_VOID)) {
++        return 0;
++    }
++    elf_rom_cache_mmu_sizes[0] = 1u;
++    elf_rom_cache_mmu_sizes[1] = instruction_bytes;
++    elf_rom_cache_mmu_sizes[2] = data_bytes;
++    elf_rom_return(target_cpu, 0);
++    return 1;
++}
++
++static int elf_rom_cache_dispatch(xtensa_cpu_t *target_cpu, uint32_t pc) {
++    if (pc == ESP32S3_ROM_CONFIG_ICACHE_MODE) {
++        return elf_rom_instruction_cache_mode_dispatch(target_cpu, pc);
++    }
++    if (pc == ESP32S3_ROM_SUSPEND_DCACHE) {
++        return elf_rom_data_cache_suspend_dispatch(target_cpu, pc);
++    }
++    if (pc == ESP32S3_ROM_CONFIG_DCACHE_MODE) {
++        return elf_rom_data_cache_mode_dispatch(target_cpu, pc);
++    }
++    if (pc == ESP32S3_ROM_RESUME_DCACHE) {
++        return elf_rom_data_cache_resume_dispatch(target_cpu, pc);
++    }
++    if (pc == ESP32S3_ROM_SET_IDROM_MMU_SIZE) {
++        return elf_rom_cache_mmu_sizes_dispatch(target_cpu, pc);
++    }
++    static const uint32_t expected_pc[6] = {
++        ESP32S3_ROM_CACHE_DISABLE_I, ESP32S3_ROM_CACHE_DISABLE_D,
++        ESP32S3_ROM_CACHE_ENABLE_I, ESP32S3_ROM_CACHE_ENABLE_D,
++        ESP32S3_ROM_CACHE_ENABLE_I, ESP32S3_ROM_CACHE_ENABLE_D,
++    };
++    static const uint32_t expected_i_ctrl1[6] = { 0, 1, 1, 0, 0, 0 };
++    static const uint32_t expected_d_ctrl1[6] = { 0, 0, 2, 2, 0, 0 };
++    if (elf_rom_event_count >= ELF_ROM_EVENT_CAPACITY ||
++        XT_PS_CALLINC(target_cpu->ps) != WINDOW_CALLINC ||
++        elf_rom_cache_sequence >= 6u || pc != expected_pc[elf_rom_cache_sequence] ||
++        elf_cache_read(ESP32S3_ICACHE_CTRL1) != expected_i_ctrl1[elf_rom_cache_sequence] ||
++        elf_cache_read(ESP32S3_DCACHE_CTRL1) != expected_d_ctrl1[elf_rom_cache_sequence] ||
++        elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) != ESP32S3_CACHE_AUTOLOAD_BASE ||
++        elf_cache_read(ESP32S3_CACHE_STATE) != ESP32S3_CACHE_IDLE) {
++        return 0;
++    }
++
++    uint32_t argument = ESP32S3_CACHE_EVENT_VOID;
++    uint32_t return_value = ESP32S3_CACHE_EVENT_VOID;
++    if (pc == ESP32S3_ROM_CACHE_DISABLE_I) {
++        return_value = elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) & 4u;
++        elf_cache_write(ESP32S3_ICACHE_AUTOLOAD,
++                        elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) & ~4u);
++        elf_cache_write(ESP32S3_ICACHE_CTRL1,
++                        elf_cache_read(ESP32S3_ICACHE_CTRL1) | 1u);
++    } else if (pc == ESP32S3_ROM_CACHE_DISABLE_D) {
++        return_value = elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & 4u;
++        elf_cache_write(ESP32S3_DCACHE_AUTOLOAD,
++                        elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & ~4u);
++        elf_cache_write(ESP32S3_DCACHE_CTRL1,
++                        elf_cache_read(ESP32S3_DCACHE_CTRL1) | 2u);
++    } else {
++        argument = elf_rom_arg(target_cpu, 0);
++        if (argument != 0) return 0;
++        if (pc == ESP32S3_ROM_CACHE_ENABLE_I) {
++            elf_cache_write(ESP32S3_ICACHE_AUTOLOAD,
++                            (elf_cache_read(ESP32S3_ICACHE_AUTOLOAD) & ~4u) | argument);
++            elf_cache_write(ESP32S3_ICACHE_CTRL1,
++                            elf_cache_read(ESP32S3_ICACHE_CTRL1) & ~1u);
++        } else {
++            elf_cache_write(ESP32S3_DCACHE_AUTOLOAD,
++                            (elf_cache_read(ESP32S3_DCACHE_AUTOLOAD) & ~4u) | argument);
++            elf_cache_write(ESP32S3_DCACHE_CTRL1,
++                            elf_cache_read(ESP32S3_DCACHE_CTRL1) & ~2u);
++        }
++    }
++    if (!elf_rom_record(ELF_ROM_EVENT_CACHE, pc, elf_rom_cache_sequence,
++                        argument, return_value)) return 0;
++    elf_rom_cache_sequence++;
++    elf_rom_return(target_cpu, return_value == ESP32S3_CACHE_EVENT_VOID ? 0 : return_value);
++    return 1;
++}
++
++static int elf_rom_pc_hook(xtensa_cpu_t *target_cpu, uint32_t pc, void *unused_context) {
++    (void)unused_context;
++    if (elf_rom_cache_enabled && elf_cache_is_callback(pc)) {
++        if (!elf_rom_cache_dispatch(target_cpu, pc)) elf_rom_refused = 1;
++        return 1;
++    }
++    if (pc == ESP32S3_ROM_RESET_REASON && elf_rom_reset_reason_enabled) {
++        uint32_t core = elf_rom_arg(target_cpu, 0);
++        if (core > 1u || !elf_rom_record(ELF_ROM_EVENT_RESET_REASON, pc, core,
++                                        elf_rom_reset_reasons[core <= 1u ? core : 0u], 0)) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        elf_rom_return(target_cpu, elf_rom_reset_reasons[core]);
++        return 1;
++    }
++    if (pc == ESP32S3_ROM_MEMSET && elf_rom_memset_enabled) {
++        uint32_t destination = elf_rom_arg(target_cpu, 0);
++        uint32_t value = elf_rom_arg(target_cpu, 1) & 0xffu;
++        uint32_t length = elf_rom_arg(target_cpu, 2);
++        if (length > ELF_ROM_MEMSET_MAX_BYTES || destination + length < destination) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        for (uint32_t offset = 0; offset < length;) {
++            uint32_t address = destination + offset;
++            int page = elf_page_index(address);
++            if (page < 0 || (elf_page_flags[page] & 2u) == 0) {
++                elf_rom_refused = 1;
++                return 1;
++            }
++            uint32_t chunk = PAGE_BYTES - (address & (PAGE_BYTES - 1u));
++            if (chunk > length - offset) chunk = length - offset;
++            offset += chunk;
++        }
++        if (!elf_rom_record(ELF_ROM_EVENT_MEMSET, pc, destination, value, length)) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        for (uint32_t offset = 0; offset < length;) {
++            uint32_t address = destination + offset;
++            uint32_t chunk = PAGE_BYTES - (address & (PAGE_BYTES - 1u));
++            if (chunk > length - offset) chunk = length - offset;
++            memset(mem->page_table[address >> 12] + (address & (PAGE_BYTES - 1u)),
++                   (int)value, chunk);
++            offset += chunk;
++        }
++        elf_rom_return(target_cpu, destination);
++        return 1;
++    }
++    if (pc == ESP32S3_ROM_SET_CPU_TICKS_PER_US && elf_rom_cpu_ticks_enabled) {
++        uint32_t callinc = (uint32_t)XT_PS_CALLINC(target_cpu->ps);
++        uint32_t ticks_per_us = elf_rom_arg(target_cpu, 0);
++        if (callinc != 2u || ticks_per_us != ESP32S3_DIRECT_BOOT_CPU_TICKS_PER_US ||
++            elf_cpu_ticks_event_count() != 0u || !elf_rom_cache_enabled || elf_rom_cache_mmu_sizes[0] != 1u ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_SYSCLK_CONF) != 2u ||
++            elf_system_mmio_read_count(ESP32S3_SYSTEM_CPU_PER_CONF) != 4u ||
++            elf_rtc_mmio_read_count() != 1u ||
++            !elf_rom_record(ELF_ROM_EVENT_CPU_TICKS_PER_US, pc, ticks_per_us, callinc, 0u)) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        elf_rom_return(target_cpu, 0u);
++        return 1;
++    }
++    if (pc == ESP32S3_ROM_SET_INTLEVEL && elf_rom_cache_enabled) {
++        uint32_t callinc = (uint32_t)XT_PS_CALLINC(target_cpu->ps);
++        uint32_t restore_ps = elf_rom_arg(target_cpu, 0);
++        uint32_t previous_ps = target_cpu->ps & ~(3u << 16);
++        uint32_t restore_count = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_INTLEVEL_RESTORE);
++        uint32_t bbpll_writes = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_BBPLL_ROM_WRITE);
++        uint32_t expected_bbpll_writes = restore_count == 0u ? 0u : (restore_count < 4u ? 1u : (restore_count < 7u ? 2u : 3u));
++        uint32_t expected_restore_ps = restore_count == 1u || restore_count == 4u || restore_count == 7u
++                                           ? ESP32S3_DIRECT_BOOT_INTLEVEL_PRESERVE_PS
++                                           : ESP32S3_DIRECT_BOOT_INTLEVEL_RESTORE_PS;
++        if (callinc != 2u || restore_count >= 10u || restore_ps != expected_restore_ps ||
++            previous_ps != ESP32S3_DIRECT_BOOT_INTLEVEL_PREVIOUS_PS ||
++            XT_PS_INTLEVEL(target_cpu->ps) != 3u ||
++            elf_regi2c_mmio_event_count(ELF_ROM_EVENT_REGI2C_MMIO_READ) != 2u ||
++            elf_regi2c_mmio_event_count(ELF_ROM_EVENT_REGI2C_MMIO_WRITE) != 2u ||
++            bbpll_writes != expected_bbpll_writes ||
++            (bbpll_writes > 0u && !elf_bbpll_rom_event_accepted()) ||
++            !elf_rom_record(ELF_ROM_EVENT_INTLEVEL_RESTORE, pc, restore_ps,
++                            previous_ps, callinc)) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        XT_PS_SET_INTLEVEL(target_cpu->ps, restore_ps);
++        elf_rom_return(target_cpu, previous_ps);
++        return 1;
++    }
++    if (pc == ESP32S3_ROM_I2C_WRITE_REG && elf_rom_cache_enabled) {
++        uint32_t callinc = (uint32_t)XT_PS_CALLINC(target_cpu->ps);
++        uint32_t block = elf_rom_arg(target_cpu, 0);
++        uint32_t host_id = elf_rom_arg(target_cpu, 1);
++        uint32_t reg = elf_rom_arg(target_cpu, 2);
++        uint32_t data = elf_rom_arg(target_cpu, 3);
++        uint32_t packed = (host_id << 16) | (reg << 8) | data;
++        uint32_t intlevel_restores = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_INTLEVEL_RESTORE);
++        uint32_t bbpll_writes = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_BBPLL_ROM_WRITE);
++        uint32_t expected_reg = bbpll_writes == 0u ? ESP32S3_BBPLL_MODE_HF :
++                                (bbpll_writes == 1u ? ESP32S3_BBPLL_OC_REF_DIV : ESP32S3_BBPLL_OC_DIV_7_0);
++        uint32_t expected_data = bbpll_writes == 0u ? ESP32S3_BBPLL_MODE_HF_480M :
++                                 (bbpll_writes == 1u ? ESP32S3_BBPLL_OC_REF_DIV_480M : ESP32S3_BBPLL_OC_DIV_7_0_480M);
++        uint32_t expected_restores = bbpll_writes == 0u ? 1u : (bbpll_writes == 1u ? 4u : 7u);
++        if (callinc != 2u || block != ESP32S3_I2C_BBPLL ||
++            host_id != ESP32S3_I2C_BBPLL_HOST_ID || bbpll_writes >= 3u || reg != expected_reg ||
++            data != expected_data || XT_PS_INTLEVEL(target_cpu->ps) != 3u ||
++            intlevel_restores != expected_restores ||
++            (bbpll_writes > 0u && !elf_bbpll_rom_event_accepted())) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        int recorded = elf_rom_record(ELF_ROM_EVENT_BBPLL_ROM_WRITE, pc,
++                                      block | (intlevel_restores << 8) | (bbpll_writes << 16), packed,
++                                      (callinc << 8) | XT_PS_INTLEVEL(target_cpu->ps));
++        elf_rom_refused = 1;
++        if (!recorded) return 1;
++        elf_rom_return(target_cpu, 0u);
++        return 1;
++    }
++    if (pc == ESP32S3_ROM_I2C_WRITE_REG_MASK && elf_rom_cache_enabled) {
++        uint32_t callinc = (uint32_t)XT_PS_CALLINC(target_cpu->ps);
++        uint32_t block = elf_rom_arg(target_cpu, 0);
++        uint32_t host_id = elf_rom_arg(target_cpu, 1);
++        uint32_t reg = elf_rom_arg(target_cpu, 2);
++        uint32_t msb = elf_rom_arg(target_cpu, 3);
++        uint32_t lsb = elf_rom_arg(target_cpu, 4);
++        uint32_t data = elf_rom_arg(target_cpu, 5);
++        uint32_t intlevel_restores = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_INTLEVEL_RESTORE);
++        uint32_t bbpll_writes = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_BBPLL_ROM_WRITE);
++        uint32_t masked_writes = elf_regi2c_mmio_event_count(ELF_ROM_EVENT_BBPLL_ROM_MASK_WRITE);
++        if (callinc != 2u || block != ESP32S3_I2C_BBPLL || host_id != ESP32S3_I2C_BBPLL_HOST_ID ||
++            reg != ESP32S3_BBPLL_OC_DR1 || msb != ESP32S3_BBPLL_OC_DR1_MSB ||
++            lsb != ESP32S3_BBPLL_OC_DR1_LSB || data != ESP32S3_BBPLL_OC_DR1_480M ||
++            XT_PS_INTLEVEL(target_cpu->ps) != 3u || intlevel_restores != 10u ||
++            bbpll_writes != 3u || masked_writes != 0u || !elf_bbpll_rom_event_accepted()) {
++            elf_rom_refused = 1;
++            return 1;
++        }
++        uint32_t block_and_order = block | (intlevel_restores << 8) |
++                                   (masked_writes << 16) | (bbpll_writes << 24);
++        uint32_t packed_shape = (host_id << 24) | (reg << 16) | (msb << 8) | lsb;
++        uint32_t data_and_call_state = data | (callinc << 8) | (XT_PS_INTLEVEL(target_cpu->ps) << 16);
++        int recorded = elf_rom_record(ELF_ROM_EVENT_BBPLL_ROM_MASK_WRITE, pc,
++                                      block_and_order, packed_shape, data_and_call_state);
++        elf_rom_refused = 1;
++        if (!recorded) return 1;
++        elf_rom_return(target_cpu, 0u);
++        return 1;
++    }
++    return 0;
++}
++
++FLEXE_EXPORT("flexe_wasm_input")
++uint32_t flexe_wasm_input(void) {
++    return (uint32_t)(uintptr_t)input;
++}
++
++FLEXE_EXPORT("flexe_wasm_input_capacity")
++uint32_t flexe_wasm_input_capacity(void) {
++    return INPUT_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_data_input")
++uint32_t flexe_wasm_data_input(void) {
++    return (uint32_t)(uintptr_t)data_input;
++}
++
++FLEXE_EXPORT("flexe_wasm_data_output")
++uint32_t flexe_wasm_data_output(void) {
++    return (uint32_t)(uintptr_t)data_output;
++}
++
++FLEXE_EXPORT("flexe_wasm_data_capacity")
++uint32_t flexe_wasm_data_capacity(void) {
++    return DATA_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_trace")
++uint32_t flexe_wasm_trace(void) {
++    return (uint32_t)(uintptr_t)&trace_buffer;
++}
++
++FLEXE_EXPORT("flexe_wasm_trace_bytes")
++uint32_t flexe_wasm_trace_bytes(void) {
++    return (uint32_t)sizeof(trace_buffer.header) +
++           trace_buffer.header.count * (uint32_t)sizeof(trace_buffer.records[0]);
++}
++
++FLEXE_EXPORT("flexe_wasm_trace_capacity")
++uint32_t flexe_wasm_trace_capacity(void) {
++    return TRACE_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_page_input")
++uint32_t flexe_wasm_elf_page_input(void) {
++    return (uint32_t)(uintptr_t)elf_page_input;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_page_capacity")
++uint32_t flexe_wasm_elf_page_capacity(void) {
++    return ELF_PAGE_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_copy_page")
++uint32_t flexe_wasm_elf_copy_page(uint32_t address) {
++    if ((address & (PAGE_BYTES - 1u)) != 0) return 0;
++    int page = elf_page_index(address);
++    if (page < 0) return 0;
++    memcpy(elf_page_input, elf_pages[page], PAGE_BYTES);
++    return 1;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_memory_fault")
++uint32_t flexe_wasm_elf_memory_fault(void) {
++    return (uint32_t)(uintptr_t)&elf_memory_fault;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_trace")
++uint32_t flexe_wasm_elf_trace(void) {
++    return (uint32_t)(uintptr_t)elf_trace;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_trace_count")
++uint32_t flexe_wasm_elf_trace_count(void) {
++    return elf_trace_count;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_trace_capacity")
++uint32_t flexe_wasm_elf_trace_capacity(void) {
++    return ELF_TRACE_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_memory_trace")
++uint32_t flexe_wasm_elf_memory_trace(void) {
++    return (uint32_t)(uintptr_t)&elf_memory_trace_buffer;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_memory_trace_bytes")
++uint32_t flexe_wasm_elf_memory_trace_bytes(void) {
++    return (uint32_t)sizeof(elf_memory_trace_buffer.header) +
++           elf_memory_trace_buffer.header.count *
++               (uint32_t)sizeof(elf_memory_trace_buffer.records[0]);
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_memory_trace_capacity")
++uint32_t flexe_wasm_elf_memory_trace_capacity(void) {
++    return ELF_MEMORY_TRACE_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_unsupported_input")
++uint32_t flexe_wasm_elf_unsupported_input(void) {
++    return (uint32_t)(uintptr_t)elf_unsupported;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_unsupported_capacity")
++uint32_t flexe_wasm_elf_unsupported_capacity(void) {
++    return ELF_UNSUPPORTED_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_rom_events")
++uint32_t flexe_wasm_elf_rom_events(void) {
++    return (uint32_t)(uintptr_t)elf_rom_events;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_rom_event_count")
++uint32_t flexe_wasm_elf_rom_event_count(void) {
++    return elf_rom_event_count;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_rom_event_capacity")
++uint32_t flexe_wasm_elf_rom_event_capacity(void) {
++    return ELF_ROM_EVENT_CAPACITY;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_cache_state")
++uint32_t flexe_wasm_elf_cache_state(void) {
++    elf_rom_cache_state[0] = elf_rom_cache_sequence;
++    elf_rom_cache_state[1] = elf_cache_read(ESP32S3_DCACHE_CTRL1);
++    elf_rom_cache_state[2] = elf_cache_read(ESP32S3_DCACHE_AUTOLOAD);
++    elf_rom_cache_state[3] = elf_cache_read(ESP32S3_ICACHE_CTRL1);
++    elf_rom_cache_state[4] = elf_cache_read(ESP32S3_ICACHE_AUTOLOAD);
++    elf_rom_cache_state[5] = elf_cache_read(ESP32S3_CACHE_STATE);
++    elf_rom_cache_state[6] = elf_rom_instruction_cache_mode[0];
++    elf_rom_cache_state[7] = elf_rom_instruction_cache_mode[1];
++    elf_rom_cache_state[8] = elf_rom_instruction_cache_mode[2];
++    elf_rom_cache_state[9] = elf_rom_instruction_cache_mode[3];
++    elf_rom_cache_state[10] = (uint32_t)elf_rom_data_cache_suspended;
++    elf_rom_cache_state[11] = elf_rom_data_cache_mode[0];
++    elf_rom_cache_state[12] = elf_rom_data_cache_mode[1];
++    elf_rom_cache_state[13] = elf_rom_data_cache_mode[2];
++    elf_rom_cache_state[14] = elf_rom_data_cache_mode[3];
++    elf_rom_cache_state[15] = elf_rom_data_cache_suspend_return;
++    elf_rom_cache_state[16] = elf_rom_cache_mmu_sizes[0];
++    elf_rom_cache_state[17] = elf_rom_cache_mmu_sizes[1];
++    elf_rom_cache_state[18] = elf_rom_cache_mmu_sizes[2];
++    return (uint32_t)(uintptr_t)elf_rom_cache_state;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_system_mmio_state")
++uint32_t flexe_wasm_elf_system_mmio_state(void) {
++    elf_rom_system_mmio_state[0] = ESP32S3_DIRECT_BOOT_SYSCLK_CONF;
++    elf_rom_system_mmio_state[1] = 0u;
++    elf_rom_system_mmio_state[2] = 0u;
++    elf_rom_system_mmio_state[3] = ESP32S3_DIRECT_BOOT_CPU_PER_CONF;
++    elf_rom_system_mmio_state[4] = 0u;
++    elf_rom_system_mmio_state[5] = 0u;
++    elf_rom_system_mmio_state[6] = 0u;
++    elf_rom_system_mmio_state[7] = 0u;
++    elf_rom_system_mmio_state[8] = 0u;
++    elf_rom_system_mmio_state[9] = 0u;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_SYSTEM_MMIO_READ) {
++            uint32_t *count = elf_rom_events[i][2] == ESP32S3_SYSTEM_SYSCLK_CONF
++                                  ? &elf_rom_system_mmio_state[1]
++                                  : &elf_rom_system_mmio_state[4];
++            count[0]++;
++            count[1] = elf_rom_events[i][1];
++        } else if (elf_rom_events[i][0] == ELF_ROM_EVENT_SYSTEM_MMIO_WRITE) {
++            if (elf_rom_events[i][2] == ESP32S3_SYSTEM_SYSCLK_CONF) {
++                elf_rom_system_mmio_state[0] = elf_rom_events[i][4];
++                elf_rom_system_mmio_state[6]++;
++                elf_rom_system_mmio_state[7] = elf_rom_events[i][1];
++            } else {
++                elf_rom_system_mmio_state[3] = elf_rom_events[i][4];
++                elf_rom_system_mmio_state[8]++;
++                elf_rom_system_mmio_state[9] = elf_rom_events[i][1];
++            }
++        }
++    }
++    return (uint32_t)(uintptr_t)elf_rom_system_mmio_state;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_rtc_mmio_state")
++uint32_t flexe_wasm_elf_rtc_mmio_state(void) {
++    elf_rom_rtc_mmio_state[0] = ESP32S3_DIRECT_BOOT_RTC_XTAL_FREQ;
++    elf_rom_rtc_mmio_state[1] = 0u;
++    elf_rom_rtc_mmio_state[2] = 0u;
++    elf_rom_rtc_mmio_state[3] = ESP32S3_DIRECT_BOOT_RTC_DATE;
++    elf_rom_rtc_mmio_state[4] = 0u;
++    elf_rom_rtc_mmio_state[5] = 0u;
++    elf_rom_rtc_mmio_state[6] = 0u;
++    elf_rom_rtc_mmio_state[7] = 0u;
++    elf_rom_rtc_mmio_state[8] = ESP32S3_DIRECT_BOOT_RTC_OPTIONS0;
++    elf_rom_rtc_mmio_state[9] = 0u;
++    elf_rom_rtc_mmio_state[10] = 0u;
++    elf_rom_rtc_mmio_state[11] = 0u;
++    elf_rom_rtc_mmio_state[12] = 0u;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_RTC_MMIO_READ) {
++            uint32_t *count = elf_rom_events[i][2] == ESP32S3_RTC_XTAL_FREQ_REG
++                                  ? &elf_rom_rtc_mmio_state[1]
++                                  : elf_rom_events[i][2] == ESP32S3_RTC_DATE_REG
++                                      ? &elf_rom_rtc_mmio_state[4]
++                                      : &elf_rom_rtc_mmio_state[9];
++            count[0]++;
++            count[1] = elf_rom_events[i][1];
++        } else if (elf_rom_events[i][0] == ELF_ROM_EVENT_RTC_MMIO_WRITE) {
++            uint32_t *write = elf_rom_events[i][2] == ESP32S3_RTC_DATE_REG
++                                  ? &elf_rom_rtc_mmio_state[3]
++                                  : &elf_rom_rtc_mmio_state[8];
++            write[0] = elf_rom_events[i][4];
++            write[3]++;
++            write[4] = elf_rom_events[i][1];
++        }
++    }
++    return (uint32_t)(uintptr_t)elf_rom_rtc_mmio_state;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_regi2c_mmio_state")
++uint32_t flexe_wasm_elf_regi2c_mmio_state(void) {
++    elf_rom_regi2c_mmio_state[0] = ESP32S3_DIRECT_BOOT_I2C_MST_ANA_CONF0;
++    elf_rom_regi2c_mmio_state[1] = 0u;
++    elf_rom_regi2c_mmio_state[2] = 0u;
++    elf_rom_regi2c_mmio_state[3] = 0u;
++    elf_rom_regi2c_mmio_state[4] = 0u;
++    for (uint32_t i = 0; i < elf_rom_event_count; i++) {
++        if (elf_rom_events[i][0] == ELF_ROM_EVENT_REGI2C_MMIO_READ) {
++            elf_rom_regi2c_mmio_state[1]++;
++            elf_rom_regi2c_mmio_state[2] = elf_rom_events[i][1];
++        } else if (elf_rom_events[i][0] == ELF_ROM_EVENT_REGI2C_MMIO_WRITE) {
++            elf_rom_regi2c_mmio_state[0] = elf_rom_events[i][4];
++            elf_rom_regi2c_mmio_state[3]++;
++            elf_rom_regi2c_mmio_state[4] = elf_rom_events[i][1];
++        }
++    }
++    return (uint32_t)(uintptr_t)elf_rom_regi2c_mmio_state;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_configure_rom")
++uint32_t flexe_wasm_elf_configure_rom(uint32_t reset_reason_core0,
++                                       uint32_t reset_reason_core1,
++                                       uint32_t enable_memset,
++                                       uint32_t enable_cache_bootstrap,
++                                       uint32_t enable_cpu_ticks_per_us) {
++    if (!mem || enable_memset > 1u || enable_cache_bootstrap > 1u ||
++        enable_cpu_ticks_per_us > 1u || (enable_cpu_ticks_per_us && !enable_cache_bootstrap)) return 0;
++    elf_rom_reset_reasons[0] = reset_reason_core0;
++    elf_rom_reset_reasons[1] = reset_reason_core1;
++    elf_rom_reset_reason_enabled = 1;
++    elf_rom_memset_enabled = (int)enable_memset;
++    elf_rom_cache_enabled = (int)enable_cache_bootstrap;
++    elf_rom_cpu_ticks_enabled = (int)enable_cpu_ticks_per_us;
++    return 1;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_begin")
++uint32_t flexe_wasm_elf_begin(void) {
++    if (!mem) mem = mem_create();
++    if (!mem) return 0;
++    mem_reset(mem);
++    memset(mem->page_table, 0, sizeof(mem->page_table));
++    elf_page_count = 0;
++    elf_trace_count = 0;
++    elf_memory_trace_reset();
++    elf_memory_trace_active = 0;
++    elf_unsupported_count = 0;
++    elf_rom_event_count = 0;
++    elf_rom_reset_reason_enabled = 0;
++    elf_rom_memset_enabled = 0;
++    elf_rom_cache_enabled = 0;
++    elf_rom_cpu_ticks_enabled = 0;
++    elf_rom_cache_sequence = 0;
++    memset(elf_rom_instruction_cache_mode, 0, sizeof(elf_rom_instruction_cache_mode));
++    memset(elf_rom_data_cache_mode, 0, sizeof(elf_rom_data_cache_mode));
++    elf_rom_data_cache_suspended = 0;
++    elf_rom_data_cache_suspend_return = ESP32S3_CACHE_EVENT_VOID;
++    memset(elf_rom_cache_mmu_sizes, 0, sizeof(elf_rom_cache_mmu_sizes));
++    elf_rom_refused = 0;
++    memset(&elf_memory_fault, 0, sizeof(elf_memory_fault));
++    mem->permission_hook = NULL;
++    mem->permission_hook_ctx = NULL;
++    memset(&elf_unsupported_hit, 0, sizeof(elf_unsupported_hit));
++    return 1;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_load_page")
++uint32_t flexe_wasm_elf_load_page(uint32_t address, uint32_t flags) {
++    if (!mem) return 0;
++    if ((address & (PAGE_BYTES - 1u)) != 0 || (flags & ~7u) != 0) return 2;
++    if (elf_page_count >= ELF_PAGE_CAPACITY) return 3;
++    if (elf_page_count > 0 && address <= elf_page_addresses[elf_page_count - 1u]) return 4;
++    memcpy(elf_pages[elf_page_count], elf_page_input, PAGE_BYTES);
++    elf_page_addresses[elf_page_count] = address;
++    elf_page_flags[elf_page_count] = flags;
++    mem->page_table[address >> 12] = elf_pages[elf_page_count];
++    elf_page_count++;
++    return 1;
++}
++
++static int elf_bound_instruction_encoding(uint32_t pc, uint32_t *encoding) {
++    int page = elf_page_index(pc);
++    if (page < 0 || mem->page_table[pc >> 12] == NULL ||
++        (elf_page_flags[page] & 1u) == 0) return 0;
++    uint8_t first = mem->page_table[pc >> 12][pc & (PAGE_BYTES - 1u)];
++    uint32_t length = (first & 8u) != 0 ? 2u : 3u;
++    if (pc > UINT32_MAX - (length - 1u)) return 0;
++    uint32_t value = 0;
++    for (uint32_t offset = 0; offset < length; offset++) {
++        uint32_t address = pc + offset;
++        int current_page = elf_page_index(address);
++        if (current_page < 0 || mem->page_table[address >> 12] == NULL ||
++            (elf_page_flags[current_page] & 1u) == 0) return 0;
++        value |= (uint32_t)mem->page_table[address >> 12]
++                     [address & (PAGE_BYTES - 1u)] << (offset * 8u);
++    }
++    *encoding = value;
++    return 1;
++}
++
++FLEXE_EXPORT("flexe_wasm_elf_set_unsupported")
++uint32_t flexe_wasm_elf_set_unsupported(uint32_t count) {
++    if (!mem) return 0;
++    if (count > ELF_UNSUPPORTED_CAPACITY) return 2;
++    for (uint32_t i = 0; i < count; i++) {
++        if (elf_unsupported[i].encoding > 0xffffffu) return 3;
++        if (i > 0 && elf_unsupported[i - 1u].pc >= elf_unsupported[i].pc) return 4;
++        uint32_t loaded_encoding = 0;
++        if (!elf_bound_instruction_encoding(elf_unsupported[i].pc, &loaded_encoding) ||
++            elf_unsupported[i].encoding != loaded_encoding) return 5;
++    }
++    elf_unsupported_count = count;
++    return 1;
++}
++
++static uint32_t run_internal(uint32_t pc, uint32_t code_length, uint32_t max_steps,
++                             uint32_t unsupported_offset, uint32_t unsupported_encoding,
++                             uint32_t data_length) {
++    memset(&result, 0, sizeof(result));
++    memset(&cpu, 0, sizeof(cpu));
++    memset(data_output, 0, sizeof(data_output));
++    trace_reset();
++    result.abi_version = RESULT_ABI_VERSION;
++    result.struct_bytes = (uint32_t)sizeof(result);
++    result.start_pc = pc;
++    result.pc = pc;
++    if (code_length == 0 || code_length > INPUT_CAPACITY || max_steps == 0 ||
++        data_length > DATA_CAPACITY || (data_length & 1u) != 0 ||
++        (pc & (PAGE_BYTES - 1u)) + code_length > PAGE_BYTES ||
++        (unsupported_offset != NO_UNSUPPORTED_OFFSET && unsupported_offset >= code_length)) {
++        result.reason = PROBE_STOP_INVALID_ARGUMENT;
++        return (uint32_t)(uintptr_t)&result;
++    }
++
++    if (!mem) mem = mem_create();
++    if (!mem) {
++        result.reason = PROBE_STOP_ALLOCATION_FAILED;
++        return (uint32_t)(uintptr_t)&result;
++    }
++    mem->access_hook = NULL;
++    mem->access_hook_ctx = NULL;
++    mem->permission_hook = NULL;
++    mem->permission_hook_ctx = NULL;
++    mem_reset(mem);
++    if (mem_register_mmio_range(mem, 0x3ff40000u, PAGE_BYTES,
++                                probe_mmio_read, NULL, destination_page) != 0) {
++        result.reason = PROBE_STOP_ALLOCATION_FAILED;
++        return (uint32_t)(uintptr_t)&result;
++    }
++    memset(code_page, 0, sizeof(code_page));
++    memcpy(code_page + (pc & (PAGE_BYTES - 1u)), input, code_length);
++    mem->page_table[pc >> 12] = code_page;
++    if (data_length > 0) {
++        memset(source_page, 0, sizeof(source_page));
++        memset(destination_page, 0, sizeof(destination_page));
++        memcpy(source_page, data_input, data_length);
++        mem->page_table[INITIAL_SOURCE >> 12] = source_page;
++        mem->page_table[INITIAL_DESTINATION >> 12] = destination_page;
++    }
++
++    xtensa_cpu_init(&cpu);
++    cpu.mem = mem;
++    cpu.pc = pc;
++    cpu.running = true;
++    cpu.ps = (1u << 18) | (WINDOW_CALLINC << 16);
++    cpu.windowbase = 0;
++    cpu.windowstart = 1;
++    cpu.window_callsize[0] = WINDOW_CALLINC;
++    cpu.external_exec_begin = pc & ~(PAGE_BYTES - 1u);
++    cpu.external_exec_end = cpu.external_exec_begin + PAGE_BYTES;
++
++    uint32_t return_pc = (pc & ~(PAGE_BYTES - 1u)) + PAGE_BYTES;
++    ar_write(&cpu, 1, INITIAL_STACK);
++    ar_write(&cpu, 8, (WINDOW_CALLINC << 30) | (return_pc & 0x3fffffffu));
++    ar_write(&cpu, 10, INITIAL_SOURCE);
++    ar_write(&cpu, 11, INITIAL_DESTINATION);
++    ar_write(&cpu, 12, data_length > 0 ? data_length / 2u : 1u);
++
++    struct unsupported_marker marker = {
++        .pc = pc + unsupported_offset,
++        .encoding = unsupported_encoding,
++        .enabled = unsupported_offset != NO_UNSUPPORTED_OFFSET,
++    };
++    cpu.instruction_hook = trace_instruction;
++    cpu.instruction_hook_ctx = &marker;
++    mem->access_hook = trace_memory_access;
++    mem->access_hook_ctx = &step_transaction;
++
++    uint32_t steps = 0;
++    uint32_t reason = PROBE_STOP_MAX_STEPS;
++    while (1) {
++        if (cpu.pc == return_pc) {
++            reason = PROBE_STOP_RETURNED;
++            break;
++        }
++        if (steps >= max_steps) break;
++        memset(&step_transaction, 0, sizeof(step_transaction));
++        step_transaction.trace_start = trace_buffer.header.count;
++        cpu_checkpoint = cpu;
++        int step_result = xtensa_step(&cpu);
++        if (marker.hit) {
++            rollback_step();
++            reason = PROBE_STOP_UNSUPPORTED;
++            break;
++        }
++        if (step_transaction.access_refused) {
++            rollback_step();
++            reason = PROBE_STOP_UNMAPPED_ACCESS;
++            break;
++        }
++        if (step_transaction.memory_overflow) {
++            rollback_step();
++            reason = PROBE_STOP_TRACE_OVERFLOW;
++            break;
++        }
++        if (trace_buffer.header.overflow) {
++            rollback_step();
++            reason = PROBE_STOP_TRACE_OVERFLOW;
++            break;
++        }
++        if (step_result != 0) {
++            rollback_step();
++            reason = PROBE_STOP_STEP_ERROR;
++            break;
++        }
++        steps++;
++        if (!cpu.running) {
++            reason = PROBE_STOP_CPU_STOPPED;
++            break;
++        }
++    }
++
++    mem->access_hook = NULL;
++    mem->access_hook_ctx = NULL;
++    if (data_length > 0) memcpy(data_output, destination_page, data_length);
++    finish_record(reason, steps, pc, return_pc, marker.hit ? &marker : NULL);
++    return (uint32_t)(uintptr_t)&result;
++}
++
++FLEXE_EXPORT("flexe_wasm_run")
++uint32_t flexe_wasm_run(uint32_t pc, uint32_t code_length, uint32_t max_steps,
++                        uint32_t unsupported_offset, uint32_t unsupported_encoding) {
++    return run_internal(pc, code_length, max_steps, unsupported_offset,
++                        unsupported_encoding, 0);
++}
++
++FLEXE_EXPORT("flexe_wasm_run_data")
++uint32_t flexe_wasm_run_data(uint32_t pc, uint32_t code_length, uint32_t max_steps,
++                             uint32_t unsupported_offset, uint32_t unsupported_encoding,
++                             uint32_t data_length) {
++    return run_internal(pc, code_length, max_steps, unsupported_offset,
++                        unsupported_encoding, data_length);
++}
++
++FLEXE_EXPORT("flexe_wasm_run_elf")
++uint32_t flexe_wasm_run_elf(uint32_t entry, uint32_t max_steps,
++                            uint32_t initial_stack) {
++    memset(&result, 0, sizeof(result));
++    memset(&cpu, 0, sizeof(cpu));
++    memset(&elf_unsupported_hit, 0, sizeof(elf_unsupported_hit));
++    elf_trace_count = 0;
++    elf_rom_event_count = 0;
++    elf_rom_refused = 0;
++    memset(&elf_memory_fault, 0, sizeof(elf_memory_fault));
++    if (elf_rom_cache_enabled) elf_cache_reset();
++    result.abi_version = RESULT_ABI_VERSION;
++    result.struct_bytes = (uint32_t)sizeof(result);
++    result.start_pc = entry;
++    result.pc = entry;
++    if (!mem || elf_page_count == 0 || max_steps == 0 || max_steps > ELF_TRACE_CAPACITY) {
++        result.reason = PROBE_STOP_INVALID_ARGUMENT;
++        return (uint32_t)(uintptr_t)&result;
++    }
++
++    int entry_page = elf_page_index(entry);
++    if (entry_page < 0) {
++        result.reason = PROBE_STOP_UNLOADED_PAGE;
++        return (uint32_t)(uintptr_t)&result;
++    }
++    if ((elf_page_flags[entry_page] & 1u) == 0) {
++        result.reason = PROBE_STOP_NON_EXECUTABLE_PAGE;
++        return (uint32_t)(uintptr_t)&result;
++    }
++
++    xtensa_cpu_init(&cpu);
++    cpu.mem = mem;
++    cpu.pc = entry;
++    cpu.running = true;
++    cpu.ps = (1u << 18) | (WINDOW_CALLINC << 16);
++    cpu.windowbase = 0;
++    cpu.windowstart = 1;
++    cpu.window_callsize[0] = WINDOW_CALLINC;
++    ar_write(&cpu, 1, initial_stack);
++    mem->permission_hook = elf_memory_permission;
++    mem->permission_hook_ctx = NULL;
++    if (elf_rom_reset_reason_enabled || elf_rom_memset_enabled || elf_rom_cache_enabled ||
++        elf_rom_cpu_ticks_enabled) {
++        cpu.pc_hook = elf_rom_pc_hook;
++        cpu.pc_hook_ctx = NULL;
++    }
++    cpu.instruction_hook = stop_elf_unsupported;
++    cpu.instruction_hook_ctx = NULL;
++
++    uint32_t steps = 0;
++    uint32_t reason = PROBE_STOP_MAX_STEPS;
++    while (steps < max_steps) {
++        int configured_rom =
++            (cpu.pc == ESP32S3_ROM_RESET_REASON && elf_rom_reset_reason_enabled) ||
++            (cpu.pc == ESP32S3_ROM_MEMSET && elf_rom_memset_enabled) ||
++            (elf_rom_cache_enabled && elf_cache_is_callback(cpu.pc)) ||
++            (cpu.pc == ESP32S3_ROM_SET_CPU_TICKS_PER_US && elf_rom_cpu_ticks_enabled) ||
++            (cpu.pc == ESP32S3_ROM_SET_INTLEVEL && elf_rom_cache_enabled) ||
++            (cpu.pc == ESP32S3_ROM_I2C_WRITE_REG && elf_rom_cache_enabled) ||
++            (cpu.pc == ESP32S3_ROM_I2C_WRITE_REG_MASK && elf_rom_cache_enabled);
++        if (!configured_rom) {
++            int page = elf_page_index(cpu.pc);
++            if (page < 0 || mem->page_table[cpu.pc >> 12] == NULL) {
++                reason = PROBE_STOP_UNLOADED_PAGE;
++                break;
++            }
++            if ((elf_page_flags[page] & 1u) == 0) {
++                reason = PROBE_STOP_NON_EXECUTABLE_PAGE;
++                break;
++            }
++            uint8_t first = mem->page_table[cpu.pc >> 12][cpu.pc & (PAGE_BYTES - 1u)];
++            uint32_t instruction_length = (first & 8u) != 0 ? 2u : 3u;
++            if (cpu.pc > UINT32_MAX - (instruction_length - 1u)) {
++                reason = PROBE_STOP_UNLOADED_PAGE;
++                break;
++            }
++            if ((cpu.pc & (PAGE_BYTES - 1u)) + instruction_length > PAGE_BYTES) {
++                int trailing_page = elf_page_index(cpu.pc + instruction_length - 1u);
++                if (trailing_page < 0) {
++                    reason = PROBE_STOP_UNLOADED_PAGE;
++                    break;
++                }
++                if ((elf_page_flags[trailing_page] & 1u) == 0) {
++                    reason = PROBE_STOP_NON_EXECUTABLE_PAGE;
++                    break;
++                }
++            }
++        }
++
++        uint32_t executed_pc = cpu.pc;
++        uint32_t trace_checkpoint = elf_trace_count;
++        uint32_t memory_trace_checkpoint = elf_memory_trace_buffer.header.count;
++        uint32_t rom_event_checkpoint = elf_rom_event_count;
++        cpu_checkpoint = cpu;
++        elf_memory_trace_active = !configured_rom;
++        mem->access_hook = trace_elf_memory_access;
++        mem->access_hook_ctx = NULL;
++        int step_result = xtensa_step(&cpu);
++        elf_memory_trace_active = 0;
++        mem->access_hook = NULL;
++        mem->access_hook_ctx = NULL;
++        if (configured_rom && elf_rom_event_count == rom_event_checkpoint + 1u &&
++            ((executed_pc == ESP32S3_ROM_I2C_WRITE_REG &&
++              elf_rom_events[elf_rom_event_count - 1u][0] == ELF_ROM_EVENT_BBPLL_ROM_WRITE &&
++              elf_bbpll_rom_event_accepted()) ||
++             (executed_pc == ESP32S3_ROM_I2C_WRITE_REG_MASK &&
++              elf_rom_events[elf_rom_event_count - 1u][0] == ELF_ROM_EVENT_BBPLL_ROM_MASK_WRITE &&
++              elf_bbpll_rom_mask_event_accepted()))) {
++            elf_rom_refused = 0;
++        }
++        if (elf_memory_fault.hit) {
++            cpu = cpu_checkpoint;
++            elf_memory_trace_buffer.header.count = memory_trace_checkpoint;
++            reason = elf_memory_fault.is_write ? PROBE_STOP_WRITE_PERMISSION :
++                                                 PROBE_STOP_READ_PERMISSION;
++            break;
++        }
++        if (elf_rom_refused) {
++            elf_memory_trace_buffer.header.count = memory_trace_checkpoint;
++            reason = PROBE_STOP_ROM_REFUSED;
++            break;
++        }
++        if (elf_unsupported_hit.hit) {
++            elf_memory_trace_buffer.header.count = memory_trace_checkpoint;
++            reason = PROBE_STOP_UNSUPPORTED;
++            break;
++        }
++        if (elf_memory_trace_buffer.header.overflow) {
++            cpu = cpu_checkpoint;
++            elf_memory_trace_buffer.header.count = memory_trace_checkpoint;
++            reason = PROBE_STOP_TRACE_OVERFLOW;
++            break;
++        }
++        if (step_result != 0) {
++            cpu = cpu_checkpoint;
++            elf_trace_count = trace_checkpoint;
++            elf_memory_trace_buffer.header.count = memory_trace_checkpoint;
++            elf_rom_event_count = rom_event_checkpoint;
++            reason = PROBE_STOP_STEP_ERROR;
++            break;
++        }
++        if (configured_rom) continue;
++        elf_trace[elf_trace_count++] = executed_pc;
++        steps++;
++        if (!cpu.running) {
++            reason = PROBE_STOP_CPU_STOPPED;
++            break;
++        }
++    }
++
++    mem->permission_hook = NULL;
++    mem->permission_hook_ctx = NULL;
++    mem->access_hook = NULL;
++    mem->access_hook_ctx = NULL;
++
++    finish_record(reason, steps, entry, 0,
++                  elf_unsupported_hit.hit ? &elf_unsupported_hit : NULL);
++    return (uint32_t)(uintptr_t)&result;
++}
++
++FLEXE_EXPORT("flexe_wasm_probe")
++uint32_t flexe_wasm_probe(void) {
++    static const uint8_t fixture[] = {
++        0x32, 0xa0, 0x28,
++        0x32, 0xc3, 0x02,
++    };
++    memcpy(input, fixture, sizeof(fixture));
++    (void)flexe_wasm_run(FIXTURE_PC, (uint32_t)sizeof(fixture), 2,
++                         NO_UNSUPPORTED_OFFSET, 0);
++    if (result.reason != PROBE_STOP_MAX_STEPS || result.pc != FIXTURE_PC + sizeof(fixture))
++        return 0xdead0001u;
++    return result.registers[3];
++}
++
++#ifdef FLEXE_PROBE_NATIVE
++int main(void) {
++    uint32_t probe_result = flexe_wasm_probe();
++    printf("%u\n", probe_result);
++    return probe_result == 42u ? 0 : 1;
++}
++#endif
+diff --git a/src/xtensa.c b/src/xtensa.c
+index 24c9792..67dca18 100644
+--- a/src/xtensa.c
++++ b/src/xtensa.c
+@@ -138,14 +138,23 @@ static inline __attribute__((always_inline))
+ int xtensa_fetch_inline(const xtensa_cpu_t *cpu, uint32_t addr, uint32_t *insn_out) {
+     uint8_t *page = cpu->mem->page_table[addr >> 12];
+     if (__builtin_expect(!page, 0)) return 0;
+-    const uint8_t *ptr = page + (addr & 0xFFF);
+-    if (ptr[0] & 0x8) {
+-        *insn_out = ptr[0] | ((uint32_t)ptr[1] << 8);
+-        return 2;
+-    } else {
+-        *insn_out = ptr[0] | ((uint32_t)ptr[1] << 8) | ((uint32_t)ptr[2] << 16);
+-        return 3;
++    uint32_t offset = addr & 0xFFF;
++    uint8_t first = page[offset];
++    uint32_t length = (first & 0x8) ? 2u : 3u;
++    if (__builtin_expect(offset + length <= 0x1000u, 1)) {
++        const uint8_t *ptr = page + offset;
++        *insn_out = ptr[0] | ((uint32_t)ptr[1] << 8) |
++                    (length == 3u ? (uint32_t)ptr[2] << 16 : 0u);
++        return (int)length;
+     }
++    if (addr > UINT32_MAX - (length - 1u)) return 0;
++    uint8_t *next_page = cpu->mem->page_table[(addr >> 12) + 1u];
++    if (!next_page) return 0;
++    uint8_t second = offset == 0xFFFu ? next_page[0] : page[offset + 1u];
++    uint8_t third = offset == 0xFFFu ? next_page[1] : next_page[0];
++    *insn_out = first | ((uint32_t)second << 8) |
++                (length == 3u ? (uint32_t)third << 16 : 0u);
++    return (int)length;
+ }
+
+ /* External version for disasm/trace callers (not performance-critical) */
+@@ -2208,7 +2217,12 @@ int xtensa_step_impl(xtensa_cpu_t *cpu, uint64_t *restrict local_cc) {
+
+     /* Invalid PC trap. Slow-path body lives in a noinline helper so
+      * the hot-path branch is just a single range compare. */
+-    if (__builtin_expect(cpu->pc < 0x40000000u || cpu->pc >= 0x40500000u, 0)) {
++    bool external_exec = (cpu->external_exec_begin < cpu->external_exec_end &&
++                          cpu->pc >= cpu->external_exec_begin &&
++                          cpu->pc < cpu->external_exec_end) ||
++                         cpu->mem->page_table[cpu->pc >> 12] != NULL;
++    if (__builtin_expect((cpu->pc < 0x40000000u || cpu->pc >= 0x40500000u) &&
++                         !external_exec, 0)) {
+         cpu->cycle_count = *local_cc;
+         xtensa_invalid_pc_trap(cpu);
+         return -1;
+@@ -2296,6 +2310,10 @@ int xtensa_step_impl(xtensa_cpu_t *cpu, uint64_t *restrict local_cc) {
+ have_insn:
+ #endif
+
++    if (cpu->instruction_hook &&
++        cpu->instruction_hook(cpu, cpu->pc, insn, ilen, cpu->instruction_hook_ctx))
++        return -2;
++
+     cpu->_pc_written = false;
+     cpu->pc += (uint32_t)ilen;
+
+diff --git a/src/xtensa.h b/src/xtensa.h
+index 7f70ab1..09e3182 100644
+--- a/src/xtensa.h
++++ b/src/xtensa.h
+@@ -12,6 +12,10 @@ typedef struct xtensa_cpu xtensa_cpu_t;
+ /* PC hook: return non-zero to skip normal fetch/execute for this cycle */
+ typedef int (*xtensa_pc_hook_fn)(xtensa_cpu_t *cpu, uint32_t pc, void *ctx);
+
++/* Instruction hook: return non-zero to stop before executing the instruction. */
++typedef int (*xtensa_instruction_hook_fn)(xtensa_cpu_t *cpu, uint32_t pc,
++                                          uint32_t insn, int length, void *ctx);
++
+ /* Pre-decoded instruction table: entire firmware decoded at load time.
+  * Direct-indexed by (pc - PREDECODE_BASE), no tags, no cache misses.
+  * Packed: bits 0-23 = instruction word, bits 24-25 = ilen (2 or 3).
+@@ -248,6 +252,10 @@ struct xtensa_cpu {
+     xtensa_pc_hook_fn pc_hook;          /* PC hook (for ROM stubs etc.) */
+     void             *pc_hook_ctx;
+     const uint64_t   *pc_hook_bitmap;   /* Fast-path bitmap: skip hook if bit not set */
++    xtensa_instruction_hook_fn instruction_hook;
++    void                       *instruction_hook_ctx;
++    uint32_t                    external_exec_begin;
++    uint32_t                    external_exec_end;
+     uint32_t         *predecode;        /* Pre-decoded instruction table (heap, 20MB) */
+     /* AOT static-recompiled function table.
+      * `aot` is opaque to xtensa.c; xtensa_step_impl just calls
