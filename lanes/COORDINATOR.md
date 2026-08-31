@@ -12,17 +12,20 @@ the rest are background you pull when a review question needs them.
 ## Dispatch
 
 Startable immediately, in parallel, one agent each, one clone each:
-lanes A, B, G, H. Lane 0 and lane E are LOCAL ONLY (physical board);
-schedule them with the maintainer, never a cloud agent. Lane B's design
-spike is complete and dispositioned as decision 0014; spawn its
-implementation agent with a BLANK SLATE (a fresh agent, not the spike
-agent resumed), and its prompt must state that 0014's cut list is
-binding and the spike drafts on `lane-b/design-spike` are historical
-artifacts. Lane C's dual-core policy ADR may be drafted in parallel now
-that 0014 exists, but lane C implementation waits for lane B's adapter
-and measured core. Lane D ideally waits for upstream contact to resolve
-(the maintainer has reached out to the esp32sim author); scaffolding may
-start if the maintainer approves.
+CORE (phase 1) and SHIP (its CI workstream; boundary review joins as
+CORE's seam lands). BOARD's device modeling is dispatchable once its
+gating captures exist; BOARD's captures, probes, and lock-step sessions
+are LOCAL ONLY (physical board), maintainer-scheduled, never a cloud
+agent. SPEED waits for upstream contact to resolve (the maintainer has
+reached out to the esp32sim author); scaffolding may start only if the
+maintainer approves.
+
+CORE starts with a BLANK-SLATE agent (a fresh agent, not the spike
+agent resumed); its prompt must state that decision 0014's cut list is
+binding and the spike drafts on the fork's `lane-b/design-spike` branch
+are historical artifacts. CORE phase 2's interleave decision record may
+be drafted in parallel, but phase 2 implementation waits for phase 1's
+exit.
 
 Kickoff template per agent:
 
@@ -40,8 +43,8 @@ Kickoff template per agent:
   activity. A lane grinding without approaching its exit gets paused and
   re-briefed (the ROM-whitelist lane is the cautionary tale; see
   decision 0009).
-- Do not add agents to lane D or lane E; they are serial by nature
-  (single artifact; single board).
+- Do not parallelize SPEED (single artifact) or BOARD's hardware work
+  (single board); they are serial by nature.
 - Review every lane PR for: receipts on every number, decision-0008 tier
   labels on refusals, no imports of esp32sim internals outside the
   adapter, fail-closed behavior, scope respected, no em dashes.
@@ -78,7 +81,7 @@ You run while the maintainer sleeps. The rule is: park, do not guess.
 
 ## Escalate to the maintainer, do not decide yourself
 
-- Anything requiring the physical board (schedule through lane E).
+- Anything requiring the physical board (schedule through lane BOARD).
 - The upstream relationship: which work goes to joakimeriksson/esp32sim
   as PRs versus stays fork-carried, and anything the author's reply
   changes.
@@ -97,8 +100,8 @@ You run while the maintainer sleeps. The rule is: park, do not guess.
   `codex/esp32s3-timing-model`; donor code only, nothing new lands
   there).
 - The board is one-owner-at-a-time; a second board may arrive and serves
-  lane E first.
-- ESP-IDF 6.1 rebaseline (lane 0) should precede new evidence
+  lane BOARD first.
+- Toolchain currency (lane BOARD) should precede new evidence
   generation; do not let lanes adopt new receipts that mix toolchains.
 - There are no time estimates. The only progress metric is distance to
   each lane's exit criteria; a lane accumulating activity without

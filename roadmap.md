@@ -65,33 +65,31 @@ workloads, distribution agreement on RTC and long-window PSRAM paths.
 Per-lane implementation briefs, including each lane's home repository,
 branch convention, reading list, constraints, and exit criteria, live in
 [`lanes/`](lanes/README.md). The complete handoff to an implementing
-agent is a checkout of this repository, one lane letter, and that lane's
-brief.
+agent is a checkout of this repository, one lane name, and that lane's
+brief. On 2026-08-31 the maintainer collapsed the original ten lanes
+(0, A through H) into four; the briefs carry the mapping, and older
+documents' lane-letter references resolve through it.
 
 | Lane | Scope | Cloud-viable | Blocked by |
 | --- | --- | --- | --- |
-| 0 | ESP-IDF 6.1 rebaseline of this project's receipts and fixtures (checklist below) | No, needs the board | Nothing; unchanged by 0011 |
-| A | Adoption and exact-board fidelity: pin esp32sim and fork; the `--board none` boot baseline is already recorded (`experiments/esp32sim-adoption/`). Implement the AMOLED-1.8 `BoardModel` for the maintainer's board revision exactly: CO5300-class QSPI panel device with GRAM, TE timing, and scan-out position (the GP-SPI2 master itself is already modeled upstream) (validated against the firmware's stated `te_edge=rising clock_mhz=40` contract, the measured 40 MHz receipts, and tinydraw's tearing classifiers), CST816S-family touch, QMI8658, PCF85063A, TCA9554 (upstream has it); adopt chip identity (efuses, strap, MAC, revision 2) from the physical board via upstream's JTAG flow. Radio, battery analog, and temperature stay out of scope. | Mostly; identity adoption and visual checks local | Nothing |
-| B | Measured mode and the fork-owned Rust adapter per decision 0014: versioned `backend-api` crate and contract tests, measured interpreter scheduler (deferred completion-phase access, pending instructions, device deadlines, budgets, slice invariance), observation at the CPU backend level (a `Bus` wrapper alone is insufficient, review F-031), timing-profile schema 2 importer and tier-carrying ledger per decision 0008, per-block cost sums, cache and line-fill models, window-exception and loop-alignment costs; one-shot differential gate against the existing TypeScript timing machine (receipt, then retire it), with a cross-mode conformance program gating any JIT participation | Fully | Nothing (spike accepted, implementation phase) |
-| C | Contention and co-simulation: measured-mode dual-core quanta, MSPI arbitration, interrupt-delivery timing; correlate against the contended receipt cohorts | Authoring yes; correlation runs local | Lane B core |
-| D | wasm JIT backend, upstream-shaped: reach browser real time; re-measure against the browser-speed probes as guards accrue | Correctness yes; M1 perf gates local | Lane A working browser baseline |
-| E | Silicon oracle operations: run upstream's JTAG lock-step harness against this project's board; extend it with CCOUNT-delta comparison for measured mode; remaining probe families (arbitration discrimination, PSRAM long-window distributions, cache store and writeback) | Authoring and analysis only | Lane B for CCOUNT comparisons |
-| F | Integration and ship: fork-owned thin web UI shell over the versioned Wasm interface, reusing selected puck UI and browser pieces with provenance, correlation suite passing at the 0008 bounds, docs, publishing; the external review's release-gate battery (SBOM, attestations, secret scanning, CSP, branch-policy audit, capability matrix) is this lane's checklist | Mostly | Lanes C, D |
-| G | CI as the executable specification, on the fork: pinned actions, Rust fmt/test/clippy matrix, fail-closed decoder conformance with committed mandatory corpora and visible case counts (review F-047/F-048/F-052/F-053/F-054); largely built, awaiting the maintainer's rustfmt disposition, see STATUS.md | Fully | Nothing |
-| H | Boundary review, folded per decision 0013: review lane B's primary validated-output seam (decision 0014 places validation and quotas inside the adapter), hostile-input tests at that boundary, then harden the product's public web surface when lane F builds it (review F-011 through F-014, F-074) | Fully | Lane B's seam, then lane F |
+| CORE | Measured execution per decisions 0014 and 0008: the versioned `backend-api` crate and contract tests, measured interpreter scheduler, timing-profile schema 2 importer and tiered ledger, measured cost payload, one-shot TypeScript differential gate; then phase 2, dual-core contention (interleave quanta as a decision record, MSPI arbitration, litmus firmware, contended-cohort correlation) | Fully | Nothing (phase 2 by phase 1) |
+| BOARD | The exact Waveshare board and its silicon evidence: capture-first device models (CO5300-class panel, touch, sensors, TCA9554 wiring), chip-identity adoption, the JTAG lock-step oracle, probe families, and the toolchain-currency remainder (first-line diagnosis, weak identities) | Modeling yes, captures no | Captures gate panel and touch modeling |
+| SPEED | wasm JIT backend, upstream-shaped: browser real time with `--no-jit` bit-identity, measured against the browser-speed receipts, decision 0010's profiling checkpoint | Correctness yes, M1 gates local | Upstream contact |
+| SHIP | CI (built, awaiting the rustfmt disposition), boundary review of CORE's validator seam with hostile-input tests, then the thin web shell, correlation suite at 0008 bounds, and the release battery | Fully | Shell and release by CORE and SPEED | Nothing; unchanged by 0011 |
 
-Lanes G and H were added from the accepted external-review findings, see
+SHIP's CI and boundary workstreams grew from the accepted
+external-review findings, see
 [`RESPONSE.md`](reviews/2026-08-31-external/RESPONSE.md). The critical
-path is B then C for accuracy, and D for browser real time; the two
-paths are independent of each other. **Demo milestone: lane A alone
-boots the real board image with the panel drawing in the browser at
-interpreter speed.** Progress is measured against exit criteria, not
-time estimates.
+path is CORE phase 1 then phase 2 for accuracy, and SPEED for browser
+real time; the two paths are independent of each other. **Demo
+milestone: lane BOARD alone boots the real board image with the panel
+drawing in the browser at interpreter speed.** Progress is measured
+against exit criteria, not time estimates.
 
-The lane B design spike is complete: its draft was reviewed, trimmed,
-and accepted as decision 0014, which is now the normative contract
-(interpreter-only, single core, networking off, fail closed). Lane B is
-in the implementation phase against that record.
+The measured-mode design spike is complete: its draft was reviewed,
+trimmed, and accepted as decision 0014, which is now the normative
+contract (interpreter-only, single core, networking off, fail closed).
+CORE is in the implementation phase against that record.
 
 ## What retired, what carries over
 
@@ -107,7 +105,7 @@ the hardware-versus-cloud boundaries below.
 ## Toolchain currency
 
 The project tracks the latest stable ESP-IDF. The board and fixtures build
-with v6.1 as of the 2026-08-31 lane-zero flag day. An IDF
+with v6.1 as of the 2026-08-31 flag day (lane BOARD). An IDF
 bump is a provenance event, not a chore: every hardware receipt pins the
 IDF version, sdkconfig hash, and compiler, and a new compiler changes
 codegen and can shift measured costs.
@@ -145,20 +143,17 @@ verification loops, not development:
 
 | Lane | Cloud-agent viable | What still needs the board |
 | --- | --- | --- |
-| 0 | No | The rebaseline session itself |
-| A | Mostly | Final panel and touch checks against the real device |
-| B | Fully | Nothing; costs come from committed receipts |
-| C | Authoring | Contended-cohort correlation runs |
-| D | Correctness | M1 performance gates (cloud numbers are directional) |
-| E | Authoring and analysis | The JTAG lock-step and probe sessions |
-| F | Mostly | Final differential-harness runs |
+| CORE | Fully; costs come from committed receipts | Phase 2's contended-cohort correlation runs |
+| BOARD | Modeling and analysis | Captures, probes, lock-step, the toolchain remainder |
+| SPEED | Correctness | M1 performance gates (cloud numbers are directional) |
+| SHIP | Fully | Final differential-harness runs before release |
 
 The receipts pipeline remains the interface: cloud lanes consume
 committed, hash-pinned evidence from git and emit hardware request specs;
 the single board-owner lane services the queue. The fixture-distribution
 enabler from revision 1 still applies (fixture ELFs as release artifacts
 or committed extracts) and now also covers the esp32sim fork's test
-firmware. A second board serves the lane E queue first.
+firmware. A second board serves lane BOARD first.
 
 ## Standing rules
 

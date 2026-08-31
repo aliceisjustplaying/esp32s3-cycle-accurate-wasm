@@ -1,9 +1,13 @@
 # Lane briefs
 
-One file per roadmap lane. The complete handoff to an implementing agent
+Four lanes, one file each. The complete handoff to an implementing agent
 is: a checkout of this repository (branch `main`),
-one lane letter, and the instruction to read that lane's brief and
+one lane name, and the instruction to read that lane's brief and
 everything it links before writing code.
+
+Older documents (decisions, reviews, receipts) reference the original
+ten lanes by letter; they map to the four current lanes as: 0, A, E to
+BOARD; B, C to CORE; D to SPEED; F, G, H to SHIP.
 
 Read order for every lane: the repository `AGENTS.md`, then
 [`../STATUS.md`](../STATUS.md), then your brief and the decisions it
@@ -51,12 +55,7 @@ pulled on demand.
 
 | Lane | Brief | Home |
 | --- | --- | --- |
-| 0 | [0.md](0.md) | tinydraw + this repo (LOCAL ONLY, needs the board) |
-| A | [A.md](A.md) | esp32sim fork |
-| B | [B.md](B.md) | esp32sim fork |
-| C | [C.md](C.md) | esp32sim fork |
-| D | [D.md](D.md) | esp32sim fork (upstream-shaped) |
-| E | [E.md](E.md) | tinydraw + esp32sim fork (board-owner lane) |
-| F | [F.md](F.md) | esp32sim fork (web shell) |
-| G | [G.md](G.md) | esp32sim fork |
-| H | [H.md](H.md) | esp32sim fork, after lane B's seam |
+| CORE | [CORE.md](CORE.md) | esp32sim fork; measured execution, phases 1 and 2 |
+| BOARD | [BOARD.md](BOARD.md) | esp32sim fork + tinydraw; the physical board, its devices and evidence (captures are LOCAL) |
+| SPEED | [SPEED.md](SPEED.md) | esp32sim fork, upstream-shaped; waits on upstream contact |
+| SHIP | [SHIP.md](SHIP.md) | esp32sim fork; CI now, boundary review with CORE, shell and release last |

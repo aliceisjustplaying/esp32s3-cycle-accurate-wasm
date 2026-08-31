@@ -13,7 +13,29 @@ Incubation history lives in the puck archive (see
 
 ## Lane state
 
-- **Lane 0 (toolchain)**: the ESP-IDF 6.1 flag day is complete. All
+On 2026-08-31 the maintainer collapsed the original ten lanes into
+four: CORE (was B, C), BOARD (was 0, A, E), SPEED (was D), SHIP (was F,
+G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
+
+- **CORE**: the measured-mode design spike is dispositioned as decision
+  0014; implementation has not started and goes to a blank-slate agent
+  per [`lanes/COORDINATOR.md`](lanes/COORDINATOR.md). Schema-1
+  `timing.json` stays rejected for measured totals (it loses the affine
+  MMIO intercept, the committed evidence is `3n - 8`); timing-profile
+  schema 2 belongs to CORE. Phase 2 (dual-core contention) waits for
+  phase 1's exit; its interleave decision record may be drafted early.
+- **SPEED**: waiting on upstream contact before work starts.
+- **SHIP**: CI is built, verified, and pushed to the fork
+  (`lane-g/ci-spec` at `6ba6a6d`, upstream-shaped `lane-g/upstream-ci`
+  at `3b58cc6`): pinned actions, fail-closed decoder corpora with
+  visible case counts and hashes (10 Xtensa, 9 RISC-V, zero
+  mismatches), boundary defects proven to fail. Blocker awaiting
+  maintainer disposition: pre-existing fork-wide rustfmt debt (893
+  hunks across 39 files at base `aa851249`). Boundary review starts
+  when CORE's validator seam lands; shell and release wait for CORE and
+  SPEED.
+- **BOARD**, absorbing the completed toolchain flag day and the silicon
+  service: the ESP-IDF 6.1 flag day is complete. All
   fixtures rebuilt and pinned on v6.1 with xtensa-esp-elf 15.2.0 (hashes
   below). Four timing boots recovered 802 passing receipts across 210
   identities; 204 meet the strict two-independent-receipt criterion.
@@ -28,48 +50,24 @@ Incubation history lives in the puck archive (see
   importer until the pooling-probe diagnosis and adoption disposition
   land. Six identities remain below strict recovery (two with zero
   receipts, four with one) after repeated USB capture truncation.
-- **Lane A (board devices)**: capture request
-  [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md) is
-  specified and executable; its chip-identity portion is captured and
-  accepted. Open: the logic-analyzer capture (about 40 MHz QSPI, TE,
-  I2C, touch interrupt) is required before panel or touch modeling
-  begins; the touch controller stays unnamed until it identifies itself
-  (decision 0014). A synchronous GP-SPI board-response hook exists as an
-  unmerged upstream-shaped candidate at esp32sim commit `246c699`.
-- **Lane B (measured mode)**: the design spike is dispositioned as
-  decision 0014; implementation has not started and is assigned to a
-  blank-slate agent per
-  [`lanes/COORDINATOR.md`](lanes/COORDINATOR.md). The schema-1
-  `timing.json` remains rejected for measured totals (it loses the
-  affine MMIO intercept, the committed evidence is `3n - 8`);
-  timing-profile schema 2 is lane B's.
-- **Lane C (contention)**: not started. The dual-core policy ADR may be
-  drafted now; implementation waits for lane B's adapter and measured
-  core.
-- **Lane D (wasm JIT)**: waiting on upstream contact before work starts.
-- **Lane E (silicon oracle)**: validated the A-01 identity bundle and
-  completed two independent 8,000-step JTAG lock-step sessions against
-  upstream esp32sim: no PC divergence, zero timing resynchronizations,
-  one persistent register difference at step 15. Receipt:
-  [`E-01-jtag-lockstep`](lanes/receipts/E-01-jtag-lockstep.md). No flash
-  writes; the board was restored and released. Open: long-window PSRAM
-  cells await strict two-boot assembly; arbitration and cache
-  store/writeback captures are blocked on reviewed probe code; CCOUNT
-  comparison is blocked on lane B's measured mode.
-- **Lane F (integration and ship)**: blocked by lanes C and D.
-- **Lane G (CI)**: the CI specification is built and verified on local
-  esp32sim branches `lane-g/ci-spec` (commits `196727d`, `6ba6a6d`) and
-  upstream-shaped `lane-g/upstream-ci` (`4762edc`, `3b58cc6`): pinned
-  actions, mandatory fail-closed decoder corpora with visible case
-  counts and hashes (10 Xtensa, 9 RISC-V, zero mismatches), and boundary
-  defects proven to fail. Nothing is pushed yet. Blocker awaiting
-  maintainer disposition: pre-existing whole-tree rustfmt debt at fork
-  base `aa851249` (893 diff hunks across 39 files), which lane G does
-  not rewrite unilaterally.
-- **Lane H (boundary hardening)**: scope folded per the program-office
-  extraction: review lane B's validated-output seam as it lands (decision
-  0014 assigns the primary validator there), then harden the product's
-  public web surface when lane F builds it.
+  Continuing BOARD: chip identity is captured and accepted (request
+  record [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md), a
+  retired format kept as a receipt); the touch controller stays unnamed
+  until the capture identifies it (decision 0014). A synchronous GP-SPI
+  board-response hook is pushed as an upstream-shaped candidate at
+  `lane-a/gp-spi-device-hook` (`246c699`). Two independent 8,000-step
+  JTAG lock-step sessions against upstream esp32sim passed: no PC
+  divergence, zero timing resynchronizations, one persistent register
+  difference at step 15
+  ([receipt](lanes/receipts/E-01-jtag-lockstep.md)); no flash writes,
+  board restored and released. Open BOARD work, in rough order: the
+  first-line cache pooling diagnosis and adoption disposition; the six
+  identities below strict two-receipt recovery; the logic-analyzer bus
+  capture (about 40 MHz QSPI, TE, I2C, touch interrupt) that gates all
+  panel and touch modeling; strict two-boot assembly of the long-window
+  PSRAM cells; arbitration and cache store/writeback probes (blocked on
+  reviewed probe code); CCOUNT lock-step comparison (blocked on CORE's
+  measured mode).
 
 ## Persistent fixtures (ESP-IDF v6.1, TinyDraw `3db39856`)
 
@@ -85,9 +83,9 @@ Fixture ELFs are machine-local to the maintainer (tinydraw
 
 ## Waiting on
 
-- The esp32sim author's reply to the maintainer's contact (gates lane D
+- The esp32sim author's reply to the maintainer's contact (gates SPEED
   and the upstream-versus-fork split for measured mode).
-- Maintainer disposition on the fork-wide rustfmt rewrite (gates lane
-  G's final exit criterion).
-- A maintainer board session with the external logic analyzer for
-  A-01's bus capture (gates lane A's panel and touch modeling).
+- Maintainer disposition on the fork-wide rustfmt rewrite (gates SHIP's
+  CI exit criterion).
+- A maintainer board session with the external logic analyzer for the
+  bus capture (gates BOARD's panel and touch modeling).
