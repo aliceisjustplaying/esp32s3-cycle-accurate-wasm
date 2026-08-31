@@ -11,14 +11,15 @@ the rest are background you pull when a review question needs them.
 
 ## Dispatch
 
-Startable immediately, in parallel, one agent each, one clone each:
-CORE (phase 1) and SHIP (its CI workstream; boundary review joins as
-CORE's seam lands). BOARD's device modeling is dispatchable once its
-gating captures exist; BOARD's captures, probes, and lock-step sessions
-are LOCAL ONLY (physical board), maintainer-scheduled, never a cloud
-agent. SPEED waits for upstream contact to resolve (the maintainer has
-reached out to the esp32sim author); scaffolding may start only if the
-maintainer approves.
+Current operating mode (maintainer, 2026-08-31): no cloud agents; all
+agents run locally on the maintainer's machine, and the physical board
+is attached by USB overnight. BOARD is dispatchable NOW in local
+hardware mode, demo-first, under the hardware rules in its brief; it
+owns the board while running. Startable in parallel with it, one agent
+each, one clone each: CORE (phase 1), and SHIP's CI workstream once the
+maintainer's rustfmt disposition lands (otherwise it parks on that
+question). SPEED waits for upstream contact to resolve; scaffolding may
+start only if the maintainer approves.
 
 CORE starts with a BLANK-SLATE agent (a fresh agent, not the spike
 agent resumed); its prompt must state that decision 0014's cut list is

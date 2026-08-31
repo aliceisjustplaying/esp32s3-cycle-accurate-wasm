@@ -63,8 +63,10 @@ G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
   board restored and released. Open BOARD work, in rough order: the
   first-line cache pooling diagnosis and adoption disposition; the six
   identities below strict two-receipt recovery; the logic-analyzer bus
-  capture (about 40 MHz QSPI, TE, I2C, touch interrupt) that gates all
-  panel and touch modeling; strict two-boot assembly of the long-window
+  capture (about 40 MHz QSPI, TE, I2C, touch interrupt), which gates
+  timing-accuracy claims about the panel (demo modeling proceeds
+  firmware-contract-first per the BOARD brief, with the board attached
+  locally); strict two-boot assembly of the long-window
   PSRAM cells; arbitration and cache store/writeback probes (blocked on
   reviewed probe code); CCOUNT lock-step comparison (blocked on CORE's
   measured mode).
@@ -88,4 +90,5 @@ Fixture ELFs are machine-local to the maintainer (tinydraw
 - Maintainer disposition on the fork-wide rustfmt rewrite (gates SHIP's
   CI exit criterion).
 - A maintainer board session with the external logic analyzer for the
-  bus capture (gates BOARD's panel and touch modeling).
+  bus capture (gates BOARD's timing-accuracy claims about the panel;
+  demo modeling proceeds without it).

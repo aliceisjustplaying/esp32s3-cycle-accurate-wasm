@@ -33,12 +33,13 @@ as an upstream-shaped candidate at `lane-a/gp-spi-device-hook`
 A `BoardModel` for the Waveshare ESP32-S3-Touch-AMOLED-1.8 at the
 maintainer's revision, exactly: CO5300-class QSPI panel device (GRAM, TE
 timing, scan-out position), the board's touch controller as an I2C
-device (it stays unnamed in every schema until the capture identifies
-it), QMI8658, PCF85063A, and TCA9554 wiring (the device model exists
-upstream). The GP-SPI2 master is already modeled upstream; do not
-rebuild it. Capture-first: obtain the real panel and touch transactions
-before modeling. The logic-analyzer capture (about 40 MHz QSPI, TE,
-I2C, touch interrupt) is the outstanding gate.
+device (it stays unnamed in every schema until the on-device ID probe
+identifies it), QMI8658, PCF85063A, and TCA9554 wiring (the device
+model exists upstream). The GP-SPI2 master is already modeled upstream;
+do not rebuild it. Modeling proceeds firmware-contract-first per the
+demo-first section above; the logic-analyzer capture (about 40 MHz
+QSPI, TE, I2C, touch interrupt) gates timing-accuracy claims, not demo
+modeling.
 
 Known contracts to satisfy: the firmware's own
 `te_edge=rising clock_mhz=40` line, the measured 40 MHz receipts, and
