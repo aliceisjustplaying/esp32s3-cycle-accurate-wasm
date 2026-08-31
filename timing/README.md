@@ -5,7 +5,7 @@ Puck's default portable-C emulator. Every current aggregate timing result is
 uncalibrated, the profile says `cycleAccurate: false`, and host trace time is
 not simulated chip time.
 
-[`../timing.json`](../timing.json) is the device profile and machine-readable
+[`../timing.json`](timing.json) is the device profile and machine-readable
 claim boundary. It records configured CPU, PSRAM, and flash clocks, the measured
 panel bus clock, measured cache-line fill ladders, steady-state instruction
 issue, independent SRAM access costs, hot cache-hit costs, exact `beqz` path
@@ -29,7 +29,7 @@ whole-machine result.
 | Runtime replay CLI | [`runtime-report.ts`](runtime-report.ts) | Replays a strict JSON artifact of runtime instruction/read/write callbacks over exact caller-declared SRAM regions. It adopts only the profile's measured issue and independent SRAM costs, and emits the timing machine's scoped claim. |
 | Hardware receipt adoption | [`calibration.ts`](calibration.ts) | Strictly parses clean ESP32-S3 hardware receipts, exact 32-bit CCOUNT wraparound samples, metadata, and matching multi-boot cohorts. It emits deterministic candidate statistics only. |
 | Evidence report CLI | [`calibration-report.ts`](calibration-report.ts) | Reads receipt JSON files or flat directories, retains receipt and boot-log hashes, and writes byte-stable candidate JSON with exact integers and rationals as decimal strings. Adoption stays `unreviewed`; cache and ISA calibration are not claimed. |
-| Xtensa WebAssembly experiment | [`../../../experiments/esp32s3-flexe-wasm/`](../../../experiments/esp32s3-flexe-wasm/) | Executes a real TinyDraw RGB565 kernel through Puck's loader with a bounded instruction and data-access trace, then replays it through this timing machine. |
+| Xtensa WebAssembly experiment | [`../../../experiments/esp32s3-flexe-wasm/`](../experiments/esp32s3-flexe-wasm/) | Executes a real TinyDraw RGB565 kernel through Puck's loader with a bounded instruction and data-access trace, then replays it through this timing machine. |
 
 The neutral adapter's optional `cpuCost` is an additive local-core duration
 after that instruction's fetch and data group. Its caller must exclude memory
@@ -224,8 +224,8 @@ PC `0x40001c38`, saved PS `0x00040c00`, previous PS `0x00040c03`, and CALLINC2.
 
 These blockers keep every whole-machine result uncalibrated and
 `cycleAccurate: false`. Decisions
-[`0006`](../../../docs/decisions/0006-opt-in-esp32s3-timing-lab.md) and
-[`0007`](../../../docs/decisions/0007-opt-in-esp32s3-full-system-cycle-model.md)
+[`0006`](../decisions/0006-opt-in-esp32s3-timing-lab.md) and
+[`0007`](../decisions/0007-opt-in-esp32s3-full-system-cycle-model.md)
 define the shadow-ledger and full-system claim boundaries.
 
 Run all timing tests from the repository root:

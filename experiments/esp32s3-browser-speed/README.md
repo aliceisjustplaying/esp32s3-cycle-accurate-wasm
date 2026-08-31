@@ -97,7 +97,7 @@ peripheral models and real-ROM execution.
 ## Existing-receipt spread analysis, same date
 
 From the checked-in hardware receipts under
-`../../packs/esp32-s3-touch-amoled-18/timing/evidence/receipts-bf169bc/`
+`../../timing/evidence/receipts-bf169bc/`
 (100 samples per cell, boots 1 and 2):
 
 | Cell | Cycles (min = med = max unless noted) | Distinct values |

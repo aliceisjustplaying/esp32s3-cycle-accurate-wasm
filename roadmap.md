@@ -19,7 +19,7 @@ foundation. Companion to decisions
 (cost tiers), [0009](decisions/0009-execute-the-real-rom.md) (real ROM),
 [0010](decisions/0010-jit-first-engine-real-time-requirement.md)
 (engine requirements, now satisfied through 0011), and to
-[`STATUS.md`](../STATUS.md).
+[`STATUS.md`](STATUS.md).
 
 ## Definition of done (unchanged)
 
@@ -131,7 +131,7 @@ the IDF-owned interrupt and boot deltas, and confirmed the architectural
 headline values. The strict receipt criterion remains incomplete for six
 explicit RTC/reset groups after four boots because of systematic USB capture
 truncation. The immutable ledger and artifacts are in
-[`idf61-rebaseline-3db3985`](../timing/evidence/idf61-rebaseline-3db3985/README.md).
+[`idf61-rebaseline-3db3985`](timing/evidence/idf61-rebaseline-3db3985/README.md).
 
 esp32sim itself is version-agnostic about application firmware (it boots
 unmodified images), so lane zero concerns this project's receipts and

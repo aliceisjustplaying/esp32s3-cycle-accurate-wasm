@@ -1,7 +1,7 @@
 # flexe WebAssembly feasibility probe
 
 Current integration status, fixture locations, and active work lanes are kept
-in [STATUS.md](./STATUS.md).
+in [STATUS.md](../../STATUS.md).
 
 This is throwaway experiment code. It answers one question: can the pinned
 flexe interpreter execute real Xtensa instructions after being compiled to

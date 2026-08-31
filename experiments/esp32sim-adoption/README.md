@@ -1,7 +1,7 @@
 # esp32sim adoption: first boot receipt
 
 Date: 2026-08-31. The lane A baseline measurement for decision
-[0011](../../docs/decisions/0011-adopt-esp32sim-execution-foundation.md):
+[0011](../../decisions/0011-adopt-esp32sim-execution-foundation.md):
 what happens when TinyDraw's real, unmodified ESP32-S3 firmware runs on
 esp32sim today, before any of this project's contributions.
 

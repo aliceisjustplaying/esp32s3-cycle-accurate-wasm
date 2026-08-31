@@ -10,7 +10,7 @@ requirement for the full-system path: the emulated board must be usable
 interactively in the browser, not only analytically at reduced speed.
 
 The browser-speed probes
-([`experiments/esp32s3-browser-speed/`](../../experiments/esp32s3-browser-speed/README.md))
+([`experiments/esp32s3-browser-speed/`](../experiments/esp32s3-browser-speed/README.md))
 measured, on an Apple M1 Pro with Chrome 151:
 
 - pinned flexe interpreter, real TinyDraw kernel: 109 MIPS in V8 wasm;

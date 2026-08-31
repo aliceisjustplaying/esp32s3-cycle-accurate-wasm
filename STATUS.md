@@ -24,7 +24,7 @@ measurement experiment:
   is Rust-to-wasm with runtime block translation; flexe becomes the
   reference interpreter; the TypeScript timing machine becomes the
   reference model.
-- [`../esp32s3-browser-speed/`](../esp32s3-browser-speed/README.md):
+- [`../esp32s3-browser-speed/`](experiments/esp32s3-browser-speed/README.md):
   measured V8 interpreter throughput (109 MIPS), JIT ceiling (about 4,600
   emulated MIPS), block compile cost (negligible), boot size (0.58 s to
   first app output, order 10^7 to 10^8 cycles), and cross-boot receipt
@@ -42,7 +42,7 @@ ELF-verified encodings, raw logs, and hashes:
 unreviewed candidates in decision 0008 tier terms.
 
 The phase plan, agent-hour estimates, dependency graph, and restart lane
-allocation live in [`docs/roadmap.md`](../../docs/roadmap.md).
+allocation live in [`docs/roadmap.md`](roadmap.md).
 
 2026-08-31, later the same day: decision
 [`0011`](decisions/0011-adopt-esp32sim-execution-foundation.md)
@@ -92,7 +92,7 @@ strict two-independent-receipt criterion is complete for 204 identities and
 incomplete for six. Two have zero receipts and four have one receipt because
 of repeated USB capture truncation. The exact identities, raw captures,
 deterministic receipt archives, hashes, and toolchain delta are in
-[`idf61-rebaseline-3db3985`](../../timing/evidence/idf61-rebaseline-3db3985/README.md).
+[`idf61-rebaseline-3db3985`](timing/evidence/idf61-rebaseline-3db3985/README.md).
 
 ## Lane B handoff
 
@@ -158,7 +158,7 @@ existing product-wide rewrite. Nothing was pushed and no hardware was used.
 ## Lane A handoff
 
 The exact-board capture request
-[`A-01`](../../docs/lanes/requests/A-01-v2-controller-and-identity.md) is
+[`A-01`](lanes/requests/A-01-v2-controller-and-identity.md) is
 specified and executable. Its identity capture is accepted for the current
 lane 0 device window. A logic-analyzer capture that resolves the approximately
 40 MHz QSPI bus, TE, I2C, and touch interrupt remains required before panel or
@@ -168,13 +168,13 @@ is an unmerged, upstream-shaped esp32sim candidate at commit `246c699`.
 ## Lane E handoff
 
 The frontloaded silicon-oracle batch is specified in
-[`E-01`](../../docs/lanes/requests/E-01-frontloaded-board-batch.md). The
+[`E-01`](lanes/requests/E-01-frontloaded-board-batch.md). The
 esp32sim release build and the retained upstream 3,000-step comparison are
 ready offline. Lane E validated the A-01 identity bundle and completed two
 independent upstream 8,000-step JTAG sessions. Both had no PC divergence and
 zero timing resynchronizations, and both retained the same one register
 difference at step 15. The full result and claim boundary are in
-[`E-01-jtag-lockstep`](../../docs/lanes/receipts/E-01-jtag-lockstep.md).
+[`E-01-jtag-lockstep`](lanes/receipts/E-01-jtag-lockstep.md).
 No flash write occurred. Lane E restarted the installed ESP-IDF 6.1 gate
 harness and released the board.
 
@@ -209,7 +209,7 @@ and physical landmark evidence. No lane C request is currently filed.
 
 The integrated boot now accepts the first `esp_rom_regi2c_write_mask` DR1
 callback. All lanes are stopped; the course-correction section above and
-[`docs/roadmap.md`](../../docs/roadmap.md) define the restart plan and
+[`docs/roadmap.md`](roadmap.md) define the restart plan and
 lane redirections.
 
 ## Persistent fixtures

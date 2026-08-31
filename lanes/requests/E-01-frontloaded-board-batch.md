@@ -51,7 +51,7 @@ than two eligible boots.
 | Cache store hit | The old memory harness has a PSRAM sequential-write aggregate; the strict timing probe has only an internal-SRAM store-completion kernel | Blocked on reviewed probe code. Neither isolates a hot external-cache store hit. Candidate tier is `exact`. |
 | Dirty writeback | Existing code can call `esp_cache_msync`, but no measured matched clean-versus-dirty line ladder exists | Blocked on reviewed probe code. Add 1, 2, 4, 8, and 16 dirty-line cells with a matched clean baseline and post-write verification. Candidate tier is `affine`; retain `unexplained` if residuals or cross-boot variance are not diagnosed. |
 | A-01 panel and touch | Existing v6.1 gate harness plus external logic analyzer and physical touch landmarks | Firmware is ready. Capture is blocked until a ten-signal analyzer setup can resolve the approximately 40 MHz QSPI bus and the operator can record landmark notes or photos. A missing DMA descriptor hook is reported unavailable and requires a separately reviewed probe. |
-| Lane C requests | No request file exists in `docs/lanes/requests/` | Nothing to capture. Recheck the directory immediately before the board session. |
+| Lane C requests | No request file exists in `lanes/requests/` | Nothing to capture. Recheck the directory immediately before the board session. |
 | CCOUNT lock-step | No accepted measured-mode comparison interface exists | Blocked on lane B. Upstream `compare.py` deliberately resynchronizes CCOUNT-timed loops, so its current result is architectural only. |
 
 ## Board order
