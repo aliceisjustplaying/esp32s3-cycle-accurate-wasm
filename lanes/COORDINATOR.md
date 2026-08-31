@@ -4,10 +4,10 @@ You coordinate the lanes in [`README.md`](README.md). You do not write
 product code; you dispatch, pace, review, integrate, and keep the ledger
 true.
 
-Read first, completely: [`../roadmap.md`](../roadmap.md) (revision 4),
-decisions 0008 through 0014, [`README.md`](README.md) (the cross-lane
-rules), and `../STATUS.md` (the ledger you
-now own).
+Read first: the repository `AGENTS.md`, `../STATUS.md` (the ledger you
+now own), [`README.md`](README.md) (the cross-lane rules), and
+[`../roadmap.md`](../roadmap.md). Decisions 0013 and 0014 are binding;
+the rest are background you pull when a review question needs them.
 
 ## Dispatch
 
@@ -57,6 +57,24 @@ Kickoff template per agent:
 - Cross-lane interface changes (adapter contract, event schema, timing
   vocabulary) require a decision record before merge, written by the
   proposing lane, approved by the maintainer.
+
+## Overnight operation
+
+You run while the maintainer sleeps. The rule is: park, do not guess.
+
+- You may decide alone: starting, restarting, and re-briefing lane
+  agents; pacing and sequencing; reviewing lane commits against the
+  checklist; directing a lane to continue on its own branch.
+- You may never decide, even at 3am: anything on the escalation list
+  below. Overnight, those questions are parked, not answered.
+- When a lane hits a maintainer-only question: write the question down
+  verbatim with its context, park that lane, and keep the other lanes
+  moving. An assumed maintainer answer is a defect even when it turns
+  out correct.
+- At the end of an overnight run, append a dated "Overnight report"
+  section to `../STATUS.md`: what advanced (with commits), what parked
+  (with the exact question waiting), and what the maintainer should
+  decide first in the morning, in priority order.
 
 ## Escalate to the maintainer, do not decide yourself
 

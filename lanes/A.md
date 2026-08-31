@@ -4,7 +4,9 @@ Home: esp32sim fork, `lane-a/*` off `puck/base`. Pieces upstream will
 want (device models useful to other boards) split into `main`-based PR
 branches.
 
-Read first: roadmap lane A row; decision 0011;
+Binding: decisions 0014 (naming and capture-first rules) and 0013
+(product scope). Background, on demand: roadmap lane A row; decision
+0011;
 [`../experiments/esp32sim-adoption/README.md`](../experiments/esp32sim-adoption/README.md)
 (the boot baseline and the exact gap list); review findings F-064/065/066
 dispositions in

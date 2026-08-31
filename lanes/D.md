@@ -5,8 +5,9 @@ contribution upstream's own roadmap asks for (its item 4 ends with "the
 wasm backend for the browser build"). Coordinate scope with the upstream
 author once contact is established.
 
-Read first: decision 0010 (the real-time requirement and the measured
-basis); roadmap lane D row;
+Binding: decision 0012 (interpreter mandatory, conformance gates JIT
+observation). Background, on demand: decision 0010 (the real-time
+requirement and the measured basis); roadmap lane D row;
 [`../experiments/esp32s3-browser-speed/README.md`](../experiments/esp32s3-browser-speed/README.md)
 (the yardstick: 109 MIPS interpreter in V8, about 4,600 emulated-MIPS
 ceiling, negligible block-compile cost); upstream `docs/speed-plan.md`

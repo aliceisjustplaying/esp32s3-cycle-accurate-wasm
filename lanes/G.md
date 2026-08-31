@@ -10,7 +10,8 @@ Rust fmt/test/clippy matrix, and mandatory fail-closed decoder
 conformance corpora with visible case counts and hashes; deliberate
 boundary defects were proven to fail. Nothing is pushed yet.
 
-Read first: roadmap lane G row; review findings F-047, F-048, F-052,
+Binding: fail-closed conformance per decision 0014 and the rules in
+AGENTS.md. Background, on demand: roadmap lane G row; review findings F-047, F-048, F-052,
 F-053, F-054 and their dispositions in
 [`../reviews/2026-08-31-external/RESPONSE.md`](../reviews/2026-08-31-external/RESPONSE.md).
 

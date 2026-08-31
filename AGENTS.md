@@ -3,6 +3,14 @@
 These rules are the project's culture, carried in the repository so no
 external skill or tool configuration is required to follow them.
 
+## Read this much, no more
+
+Binding documents for any task: this file, `STATUS.md`, your lane brief
+in `lanes/`, and the decisions your brief names as binding. Everything
+else (older decisions, reviews, experiment READMEs) is background: pull
+it on demand when a specific question arises. Do not read the whole
+repository before starting work.
+
 ## Claims and evidence
 
 - Every measured or adopted number carries a receipt: a committed file,
@@ -33,6 +41,12 @@ external skill or tool configuration is required to follow them.
   its governing decision is out. No speculative config surface, no
   formats for artifacts that do not exist yet, no contracts for
   forbidden implementations.
+- META FREEZE: no new decisions, no new lanes, no new briefs, no
+  repository restructuring until measured mode executes its first
+  instruction under the adapter in the esp32sim fork. `STATUS.md`
+  updates and receipts are exempt. A blocked agent parks and reports;
+  it does not grow the meta. This project has ballooned into documents
+  instead of code before; this rule is the stop.
 - TypeScript work is minimized: the product's web shell is a thin
   transport and UI client. No TypeScript execution engine is ever built
   (decision 0013). The product is Rust; C belongs to firmware.
@@ -52,8 +66,10 @@ external skill or tool configuration is required to follow them.
 - Stop and report at your exit criteria, on any blocked decision, or
   when a finding contradicts a decision record. Do not start another
   lane's work.
-- The physical board has one owner at a time; hardware requests go
-  through the maintainer (lane E). Never open the serial port or JTAG
+- The physical board has one owner at a time; hardware needs are queued
+  as entries in `STATUS.md`'s "Waiting on" section (the earlier
+  per-request ticket files in `lanes/requests/` are a retired format,
+  kept as receipts). Never open the serial port or JTAG
   opportunistically.
 - Upstream-first for esp32sim: fixes and capabilities upstream would
   want are built as upstream-shaped pull requests; the fork carries only

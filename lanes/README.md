@@ -6,8 +6,9 @@ one lane letter, and the instruction to read that lane's brief and
 everything it links before writing code.
 
 Read order for every lane: the repository `AGENTS.md`, then
-[`../roadmap.md`](../roadmap.md) (revision 4),
-then the decisions it cites (0008 through 0014), then your brief.
+[`../STATUS.md`](../STATUS.md), then your brief and the decisions it
+names as binding. The roadmap and remaining decisions are background,
+pulled on demand.
 
 ## Repositories
 

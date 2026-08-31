@@ -3,7 +3,8 @@
 Home: esp32sim fork, `lane-c/*` off `puck/base`. Blocked by lane B's
 adapter and measured-mode core; starts when B's spike spec is accepted.
 
-Read first: decisions 0008 and 0012; roadmap lane C row; the contended
+Binding: decisions 0014 (event order and scheduler contract) and 0008.
+Background, on demand: 0012; roadmap lane C row; the contended
 receipt cohorts under
 `../timing/evidence/` (`*_core1_contended`
 cells); decision 0007's original blocker list for historical context.

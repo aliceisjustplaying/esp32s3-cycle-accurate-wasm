@@ -3,7 +3,8 @@
 Home: the esp32sim fork (the web shell and release). Blocked by lanes C
 and D; last to start.
 
-Read first: roadmap lane F row; decision 0011 "The role of puck"; the
+Binding: decision 0013 (product identity). Background, on demand:
+roadmap lane F row; the
 external review's "Definition of done for the first credible beta" in
 [`../reviews/2026-08-31-external/`](../reviews/2026-08-31-external/)
 (adopted as this lane's checklist) and the deferred release-gate items in

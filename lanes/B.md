@@ -5,12 +5,11 @@ complete and dispositioned: decision 0014 is the normative contract, and
 the spike's draft documents on `lane-b/design-spike` are historical
 artifacts. This lane is now in the implementation phase.
 
-Read first: decisions 0014 (the accepted contract, including its cut
-list), 0013 (product identity), 0012 (trust model, observation
-contract), 0008 (cost tiers); roadmap revision 4 lane B row; the timing
-lab (`../timing/README.md`) as cost
-evidence, noting 0014 rejects schema-1 `timing.json` for measured totals
-and assigns schema 2 to this lane.
+Binding: decisions 0014 (the accepted contract, including its cut list)
+and 0008 (cost tiers). Background, on demand: 0013, 0012, the roadmap's
+lane B row, and the timing lab (`../timing/README.md`) as cost evidence;
+note 0014 rejects schema-1 `timing.json` for measured totals and assigns
+schema 2 to this lane.
 
 Hard constraints:
 - Observation is defined at the CPU backend level. A `Bus`-trait wrapper

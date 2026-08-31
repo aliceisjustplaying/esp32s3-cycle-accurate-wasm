@@ -5,7 +5,8 @@ Home: tinydraw (probe projects, capture tooling) and the esp32sim fork's
 requests here. Hardware-serialized by nature; a second board, when
 present, serves this queue first.
 
-Read first: roadmap lane E row; decision 0008;
+Binding: decision 0008 (receipt and tier rules). Background, on demand:
+roadmap lane E row;
 `tinydraw/calibration/esp32s3-core-timing/README.md` and
 `esp32s3-memory-timing/` (methods and results); upstream `hw/difftest.sh`
 and `hw/compare.py` (the JTAG lock-step method).
