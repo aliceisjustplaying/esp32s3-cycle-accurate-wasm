@@ -1,6 +1,7 @@
 # Lane F: integration and ship
 
-Home: puck. Blocked by lanes C and D; last to start.
+Home: the esp32sim fork (the web shell and release). Blocked by lanes C
+and D; last to start.
 
 Read first: roadmap lane F row; decision 0011 "The role of puck"; the
 external review's "Definition of done for the first credible beta" in
@@ -8,8 +9,9 @@ external review's "Definition of done for the first credible beta" in
 (adopted as this lane's checklist) and the deferred release-gate items in
 its `RESPONSE.md`.
 
-Scope: wrap the adapter-backed machine in puck's UX (panel, recorder,
-freeze, regression) or its successor, on merit; the correlation suite
+Scope: the fork-owned thin web UI shell over the versioned Wasm
+interface, reusing selected UI and browser pieces from the puck archive
+with provenance (decision 0013); the correlation suite
 passing at decision-0008 bounds as the release criterion; then the
 release battery: SBOM, attestations, secret scanning, CSP and isolation
 headers, branch-policy audit, capability matrix, docs, publishing.

@@ -18,9 +18,9 @@ silicon under the tiered claim vocabulary of
 - [`roadmap.md`](roadmap.md): the plan, revision 4. Start here.
 - [`STATUS.md`](STATUS.md): the running ledger of what happened and what
   is authoritative.
-- [`decisions/`](decisions/): the numbered decision journal (0008
-  onward; 0001 through 0007 predate this project and live in the puck
-  archive, see [`PROVENANCE.md`](PROVENANCE.md)).
+- [`decisions/`](decisions/): the numbered decision journal (0006
+  onward; 0001 through 0005 belong to puck the instrument and live in
+  the puck archive, see [`PROVENANCE.md`](PROVENANCE.md)).
 - [`lanes/`](lanes/): one implementation brief per roadmap lane, plus
   the coordinator brief. An agent's complete handoff is this repository
   and one lane letter.

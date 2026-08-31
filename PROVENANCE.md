@@ -9,9 +9,11 @@ the full commit history of everything here.
 
 What came from where:
 
-- `decisions/` from the archive's `docs/decisions/` (0008 through 0014;
-  0001 through 0007 are puck-the-instrument's own decisions and remain
+- `decisions/` from the archive's `docs/decisions/` (0006 through 0014;
+  0001 through 0005 are puck-the-instrument's own decisions and remain
   only in the archive).
+- `research/` from the archive's `docs/research/` (the execution-core
+  survey cited by decision 0007).
 - `roadmap.md` from `docs/roadmap.md`, `lanes/` from `docs/lanes/`,
   `reviews/` from `docs/reviews/`.
 - `STATUS.md` from `experiments/esp32s3-flexe-wasm/STATUS.md`.

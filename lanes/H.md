@@ -1,26 +1,26 @@
-# Lane H: boundary hardening
+# Lane H: boundary review
 
-Home: the puck archive's codebase and, going forward, the fork's public
-surfaces. Cloud-viable, independent. Scoped strictly
-by decision 0012's trust model: the public gallery and external-bundle
-paths get the armor; local runs of the developer's own firmware get
-correctness checks, not sandboxing theater.
+Home: the esp32sim fork. Scope folded per decisions 0012, 0013, and
+0014: hardening lands where third-party material actually executes, and
+the product's untrusted-input seam is the adapter, not a separate layer.
 
-Read first: decision 0012; review findings F-011 through F-014 and F-074
-with dispositions; in the puck archive
-(`aliceisjustplaying/puck`, branch `codex/esp32s3-timing-model`):
-`docs/findings-first-adversarial-pass.md` (the original tick-loop
-findings, same spirit), `src/abiGuard.ts` and `src/wasiLite.ts` (the
-existing partial armor to unify, not rebuild).
+Work, in order:
 
-Scope: one shared guest-output validator used by live, headless, replay,
-and verifier paths (validated value objects, never raw guest pointers);
-WASI-lite hardening (checked u64 arithmetic, iovec caps, bounded UTF-8,
-deterministic clock/random, explicit errno); per-run quotas rejected
-before allocation; typed-array view refresh after memory growth;
-panic-free untrusted paths with typed errors. Grow the hostile corpus to
-cover each new check.
+1. Review lane B's primary validated-output seam as it lands: decision
+   0014 places guest-output validation, quota enforcement, and bounded
+   construction inside the adapter before `BackendEvent` creation.
+   Hostile-input tests at that boundary (malformed artifacts, oversized
+   payloads, quota edges, truncation) belong here.
+2. When lane F builds the product's public web shell, harden its
+   surfaces: input validation on the thin TypeScript client (defense in
+   depth, the Rust seam remains primary), memory-view refresh after
+   growth, panic-free untrusted paths with typed errors.
+
+Background reading in the puck archive (`aliceisjustplaying/puck`,
+branch `codex/esp32s3-timing-model`): the original tick-loop findings
+(`docs/findings-first-adversarial-pass.md`) and the donor armor
+(`src/abiGuard.ts`, `src/wasiLite.ts`), which inform but do not bind the
+fork's implementation.
 
 Exit: the hostile corpus produces the same typed failure in every host
-mode with no crash, hang, allocation spike, or partial artifact; raw
-guest numerics are confined to the ABI module.
+mode with no crash, hang, allocation spike, or partial artifact.

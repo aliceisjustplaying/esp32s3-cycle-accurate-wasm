@@ -50,7 +50,9 @@ workloads, distribution agreement on RTC and long-window PSRAM paths.
   agreement; this project's correlation suite for cycle-level agreement in
   measured mode; the interpreter-versus-JIT bit-identity rule for engine
   changes; the puck differential harness for pixel-level behavior.
-- **UI:** puck's page, recorder, freeze, and regression layers wrap the
+- **UI:** donor pieces from the puck archive (page, recorder, freeze,
+  and regression layers) selectively port into the fork's thin web
+  shell and wrap the
   machine where useful. Upstream ships its own web UI; convergence or
   replacement is decided late, on merit (see 0011, "The role of puck").
 - **Upstream relationship:** contributions upstream where wanted (wasm
@@ -62,7 +64,7 @@ workloads, distribution agreement on RTC and long-window PSRAM paths.
 
 Per-lane implementation briefs, including each lane's home repository,
 branch convention, reading list, constraints, and exit criteria, live in
-[`docs/lanes/`](lanes/README.md). The complete handoff to an implementing
+[`lanes/`](lanes/README.md). The complete handoff to an implementing
 agent is a checkout of this repository, one lane letter, and that lane's
 brief.
 
@@ -75,10 +77,10 @@ brief.
 | D | wasm JIT backend, upstream-shaped: reach browser real time; re-measure against the browser-speed probes as guards accrue | 12 to 24, long-tail risk | Correctness yes; M1 perf gates local | Lane A working browser baseline |
 | E | Silicon oracle operations: run upstream's JTAG lock-step harness against this project's board; extend it with CCOUNT-delta comparison for measured mode; remaining probe families (arbitration discrimination, PSRAM long-window distributions, cache store and writeback) | 6 to 12, hardware-serialized | Authoring and analysis only | Lane B for CCOUNT comparisons |
 | F | Integration and ship: fork-owned thin web UI shell over the versioned Wasm interface, reusing selected puck UI and browser pieces with provenance, correlation suite passing at the 0008 bounds, docs, publishing; the external review's release-gate battery (SBOM, attestations, secret scanning, CSP, branch-policy audit, capability matrix) is this lane's checklist | 8 to 14 | Mostly | Lanes C, D |
-| G | CI as the executable specification: required jobs for typecheck, unit, hostile, regression, browser smoke, Rust fmt/test/clippy, and fail-closed decoder conformance with committed mandatory corpus and case counts (review F-047/F-048/F-052/F-053/F-054) | 4 to 8 | Fully | Nothing |
-| H | Boundary hardening scoped by decision 0012's trust model: one shared guest-output validator across live, headless, replay, and verifier paths; WASI-lite hardening; quotas; memory-view refresh; panic-free untrusted paths (review F-011 through F-014, F-074) | 6 to 12 | Fully | Nothing |
+| G | CI as the executable specification, on the fork: pinned actions, Rust fmt/test/clippy matrix, fail-closed decoder conformance with committed mandatory corpora and visible case counts (review F-047/F-048/F-052/F-053/F-054); largely built, awaiting the maintainer's rustfmt disposition, see STATUS.md | 4 to 8 | Fully | Nothing |
+| H | Boundary review, folded per decision 0013: review lane B's primary validated-output seam (decision 0014 places validation and quotas inside the adapter), hostile-input tests at that boundary, then harden the product's public web surface when lane F builds it (review F-011 through F-014, F-074) | 2 to 6 | Fully | Lane B's seam, then lane F |
 
-Total roughly 45 to 90 agent-hours (revision 1 estimated 50 to 100; lanes
+Total roughly 40 to 85 agent-hours (revision 1 estimated 50 to 100; lanes
 1 and 3 collapsed into lane A's adoption cost; lanes G and H were added
 from the accepted external-review findings, see
 [`docs/reviews/2026-08-31-external/RESPONSE.md`](reviews/2026-08-31-external/RESPONSE.md)). The critical path is

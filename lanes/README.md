@@ -50,12 +50,12 @@ then the decisions it cites (0008 through 0014), then your brief.
 
 | Lane | Brief | Home |
 | --- | --- | --- |
-| 0 | [0.md](0.md) | tinydraw + puck (LOCAL ONLY, needs the board) |
+| 0 | [0.md](0.md) | tinydraw + this repo (LOCAL ONLY, needs the board) |
 | A | [A.md](A.md) | esp32sim fork |
 | B | [B.md](B.md) | esp32sim fork |
 | C | [C.md](C.md) | esp32sim fork |
 | D | [D.md](D.md) | esp32sim fork (upstream-shaped) |
 | E | [E.md](E.md) | tinydraw + esp32sim fork (board-owner lane) |
-| F | [F.md](F.md) | puck |
-| G | [G.md](G.md) | puck + esp32sim fork |
-| H | [H.md](H.md) | puck |
+| F | [F.md](F.md) | esp32sim fork (web shell) |
+| G | [G.md](G.md) | esp32sim fork |
+| H | [H.md](H.md) | esp32sim fork, after lane B's seam |

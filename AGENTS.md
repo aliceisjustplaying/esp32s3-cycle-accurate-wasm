@@ -37,6 +37,14 @@ external skill or tool configuration is required to follow them.
   transport and UI client. No TypeScript execution engine is ever built
   (decision 0013). The product is Rust; C belongs to firmware.
 
+## Where things go
+
+- If a test executes it, it belongs in the esp32sim fork (code, test
+  corpora, fixtures the build consumes). If it justifies a claim or a
+  decision, it belongs here (receipts, evidence, decisions, reviews).
+- Probe firmware belongs in tinydraw. The puck archive receives nothing
+  new, ever.
+
 ## Process
 
 - One agent per lane, one clone or worktree per agent.

@@ -10,6 +10,14 @@ Read first: roadmap lane A row; decision 0011;
 dispositions in
 [`../reviews/2026-08-31-external/RESPONSE.md`](../reviews/2026-08-31-external/RESPONSE.md).
 
+Current state: capture request
+[`A-01`](requests/A-01-v2-controller-and-identity.md) is specified and
+executable, and its chip-identity portion is captured and accepted (see
+[`../STATUS.md`](../STATUS.md)). The logic-analyzer bus capture (QSPI,
+TE, I2C, touch interrupt) is still outstanding and gates all panel and
+touch modeling. A synchronous GP-SPI board-response hook exists as an
+unmerged upstream-shaped candidate at esp32sim commit `246c699`.
+
 Scope: a `BoardModel` for the Waveshare ESP32-S3-Touch-AMOLED-1.8 at the
 maintainer's revision exactly: CO5300-class QSPI panel device (GRAM, TE
 timing, scan-out position), CST816S-family touch as an I2C device,
