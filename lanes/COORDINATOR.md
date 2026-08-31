@@ -82,6 +82,7 @@ Kickoff template per agent:
   lane E first.
 - ESP-IDF 6.1 rebaseline (lane 0) should precede new evidence
   generation; do not let lanes adopt new receipts that mix toolchains.
-- Total budget calibration: the whole plan is 45 to 90 agent-hours; if
-  cumulative lane time crosses the budget with exits distant, stop and
-  report to the maintainer with a variance analysis.
+- There are no time estimates. The only progress metric is distance to
+  each lane's exit criteria; a lane accumulating activity without
+  approaching its exit gets paused, diagnosed, and re-briefed, and if
+  that repeats, escalated to the maintainer.

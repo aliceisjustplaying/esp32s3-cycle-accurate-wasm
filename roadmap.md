@@ -68,26 +68,25 @@ branch convention, reading list, constraints, and exit criteria, live in
 agent is a checkout of this repository, one lane letter, and that lane's
 brief.
 
-| Lane | Scope | Agent-hours | Cloud-viable | Blocked by |
-| --- | --- | --- | --- | --- |
-| 0 | ESP-IDF 6.1 rebaseline of this project's receipts and fixtures (checklist below) | 2 to 4, plus one board session | No, needs the board | Nothing; unchanged by 0011 |
-| A | Adoption and exact-board fidelity: pin esp32sim and fork; the `--board none` boot baseline is already recorded (`experiments/esp32sim-adoption/`). Implement the AMOLED-1.8 `BoardModel` for the maintainer's board revision exactly: CO5300-class QSPI panel device with GRAM, TE timing, and scan-out position (the GP-SPI2 master itself is already modeled upstream) (validated against the firmware's stated `te_edge=rising clock_mhz=40` contract, the measured 40 MHz receipts, and tinydraw's tearing classifiers), CST816S-family touch, QMI8658, PCF85063A, TCA9554 (upstream has it); adopt chip identity (efuses, strap, MAC, revision 2) from the physical board via upstream's JTAG flow. Radio, battery analog, and temperature stay out of scope. | 8 to 16 | Mostly; identity adoption and visual checks local | Nothing |
-| B | Measured mode and the fork-owned Rust adapter per decision 0014: versioned `backend-api` crate and contract tests, measured interpreter scheduler (deferred completion-phase access, pending instructions, device deadlines, budgets, slice invariance), observation at the CPU backend level (a `Bus` wrapper alone is insufficient, review F-031), timing-profile schema 2 importer and tier-carrying ledger per decision 0008, per-block cost sums, cache and line-fill models, window-exception and loop-alignment costs; one-shot differential gate against the existing TypeScript timing machine (receipt, then retire it), with a cross-mode conformance program gating any JIT participation | 10 to 20 | Fully | Nothing (spike accepted, implementation phase) |
+| Lane | Scope | Cloud-viable | Blocked by |
+| --- | --- | --- | --- |
+| 0 | ESP-IDF 6.1 rebaseline of this project's receipts and fixtures (checklist below) | No, needs the board | Nothing; unchanged by 0011 |
+| A | Adoption and exact-board fidelity: pin esp32sim and fork; the `--board none` boot baseline is already recorded (`experiments/esp32sim-adoption/`). Implement the AMOLED-1.8 `BoardModel` for the maintainer's board revision exactly: CO5300-class QSPI panel device with GRAM, TE timing, and scan-out position (the GP-SPI2 master itself is already modeled upstream) (validated against the firmware's stated `te_edge=rising clock_mhz=40` contract, the measured 40 MHz receipts, and tinydraw's tearing classifiers), CST816S-family touch, QMI8658, PCF85063A, TCA9554 (upstream has it); adopt chip identity (efuses, strap, MAC, revision 2) from the physical board via upstream's JTAG flow. Radio, battery analog, and temperature stay out of scope. | Mostly; identity adoption and visual checks local | Nothing |
+| B | Measured mode and the fork-owned Rust adapter per decision 0014: versioned `backend-api` crate and contract tests, measured interpreter scheduler (deferred completion-phase access, pending instructions, device deadlines, budgets, slice invariance), observation at the CPU backend level (a `Bus` wrapper alone is insufficient, review F-031), timing-profile schema 2 importer and tier-carrying ledger per decision 0008, per-block cost sums, cache and line-fill models, window-exception and loop-alignment costs; one-shot differential gate against the existing TypeScript timing machine (receipt, then retire it), with a cross-mode conformance program gating any JIT participation | Fully | Nothing (spike accepted, implementation phase) |
 | C | Contention and co-simulation: measured-mode dual-core quanta, MSPI arbitration, interrupt-delivery timing; correlate against the contended receipt cohorts | 8 to 16 | Authoring yes; correlation runs local | Lane B core |
 | D | wasm JIT backend, upstream-shaped: reach browser real time; re-measure against the browser-speed probes as guards accrue | 12 to 24, long-tail risk | Correctness yes; M1 perf gates local | Lane A working browser baseline |
 | E | Silicon oracle operations: run upstream's JTAG lock-step harness against this project's board; extend it with CCOUNT-delta comparison for measured mode; remaining probe families (arbitration discrimination, PSRAM long-window distributions, cache store and writeback) | 6 to 12, hardware-serialized | Authoring and analysis only | Lane B for CCOUNT comparisons |
-| F | Integration and ship: fork-owned thin web UI shell over the versioned Wasm interface, reusing selected puck UI and browser pieces with provenance, correlation suite passing at the 0008 bounds, docs, publishing; the external review's release-gate battery (SBOM, attestations, secret scanning, CSP, branch-policy audit, capability matrix) is this lane's checklist | 8 to 14 | Mostly | Lanes C, D |
-| G | CI as the executable specification, on the fork: pinned actions, Rust fmt/test/clippy matrix, fail-closed decoder conformance with committed mandatory corpora and visible case counts (review F-047/F-048/F-052/F-053/F-054); largely built, awaiting the maintainer's rustfmt disposition, see STATUS.md | 4 to 8 | Fully | Nothing |
-| H | Boundary review, folded per decision 0013: review lane B's primary validated-output seam (decision 0014 places validation and quotas inside the adapter), hostile-input tests at that boundary, then harden the product's public web surface when lane F builds it (review F-011 through F-014, F-074) | 2 to 6 | Fully | Lane B's seam, then lane F |
+| F | Integration and ship: fork-owned thin web UI shell over the versioned Wasm interface, reusing selected puck UI and browser pieces with provenance, correlation suite passing at the 0008 bounds, docs, publishing; the external review's release-gate battery (SBOM, attestations, secret scanning, CSP, branch-policy audit, capability matrix) is this lane's checklist | Mostly | Lanes C, D |
+| G | CI as the executable specification, on the fork: pinned actions, Rust fmt/test/clippy matrix, fail-closed decoder conformance with committed mandatory corpora and visible case counts (review F-047/F-048/F-052/F-053/F-054); largely built, awaiting the maintainer's rustfmt disposition, see STATUS.md | Fully | Nothing |
+| H | Boundary review, folded per decision 0013: review lane B's primary validated-output seam (decision 0014 places validation and quotas inside the adapter), hostile-input tests at that boundary, then harden the product's public web surface when lane F builds it (review F-011 through F-014, F-074) | Fully | Lane B's seam, then lane F |
 
-Total roughly 40 to 85 agent-hours (revision 1 estimated 50 to 100; lanes
-1 and 3 collapsed into lane A's adoption cost; lanes G and H were added
-from the accepted external-review findings, see
-[`docs/reviews/2026-08-31-external/RESPONSE.md`](reviews/2026-08-31-external/RESPONSE.md)). The critical path is
-B then C for accuracy, and D for browser real time; the two paths are
-independent of each other. **Demo milestone: lane A alone boots the real
-board image with the panel drawing in the browser at interpreter speed,
-6 to 12 agent-hours in.**
+Lanes G and H were added from the accepted external-review findings, see
+[`RESPONSE.md`](reviews/2026-08-31-external/RESPONSE.md). The critical
+path is B then C for accuracy, and D for browser real time; the two
+paths are independent of each other. **Demo milestone: lane A alone
+boots the real board image with the panel drawing in the browser at
+interpreter speed.** Progress is measured against exit criteria, not
+time estimates.
 
 The lane B design spike is complete: its draft was reviewed, trimmed,
 and accepted as decision 0014, which is now the normative contract
