@@ -86,8 +86,11 @@ Fixture ELFs are machine-local to the maintainer (tinydraw
 
 ## Waiting on
 
-- The esp32sim author's reply to the maintainer's contact (gates SPEED
-  and the upstream-versus-fork split for measured mode).
+- The esp32sim author's reply to the maintainer's contact. This pauses
+  SPEED only, as a courtesy: the browser JIT is on his own roadmap, so
+  we hold off to avoid duplicating work without talking first. The
+  maintainer can end the wait at any time and green-light building it
+  in the fork.
 - A maintainer board session with the external logic analyzer for the
   bus capture (gates BOARD's timing-accuracy claims about the panel;
   demo modeling proceeds without it).
