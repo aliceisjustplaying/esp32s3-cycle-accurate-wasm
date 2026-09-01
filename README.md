@@ -21,9 +21,9 @@ silicon under the tiered claim vocabulary of
 - [`decisions/`](decisions/): the numbered decision journal (0006
   onward; 0001 through 0005 belong to puck the instrument and live in
   the puck archive, see [`PROVENANCE.md`](PROVENANCE.md)).
-- [`lanes/`](lanes/): one implementation brief per roadmap lane, plus
-  the coordinator brief. An agent's complete handoff is this repository
-  and one lane letter.
+- [`lanes/`](lanes/): one implementation brief per lane (CORE, BOARD,
+  SPEED, SHIP), plus the coordinator brief. An agent's complete handoff
+  is this repository and one lane name.
 - [`reviews/`](reviews/): archived external reviews with maintainer
   dispositions.
 - [`timing/`](timing/): the timing lab: hardware-measured cost receipts
@@ -46,6 +46,7 @@ silicon under the tiered claim vocabulary of
 
 ## Onboarding an agent
 
-Read [`AGENTS.md`](AGENTS.md), then [`roadmap.md`](roadmap.md), then the
-decisions it cites, then your lane brief in [`lanes/`](lanes/). The
-coordinator brief is [`lanes/COORDINATOR.md`](lanes/COORDINATOR.md).
+Read [`AGENTS.md`](AGENTS.md), then [`STATUS.md`](STATUS.md), then your
+lane brief in [`lanes/`](lanes/) and the decisions it names as binding.
+Everything else is background, pulled on demand. The coordinator brief
+is [`lanes/COORDINATOR.md`](lanes/COORDINATOR.md).

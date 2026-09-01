@@ -2,9 +2,11 @@
 
 Home: esp32sim fork, upstream-shaped: branch from `main`, built as a
 contribution upstream's own roadmap asks for (its item 4 ends with "the
-wasm backend for the browser build"). Waits for upstream contact to
-resolve before work starts; coordinate scope with the author once it
-does.
+wasm backend for the browser build"). This lane does not wait on
+upstream: contact with the author is open as a courtesy, and if he
+replies, scope is coordinated; otherwise the work proceeds here,
+upstream-shaped so it can be offered later. Dispatch order is set by
+the coordinator's sequence.
 
 Binding: decision 0012 (the interpreter is mandatory everywhere; JIT
 observation is gated by the cross-mode conformance program). Background,

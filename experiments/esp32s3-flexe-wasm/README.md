@@ -1,3 +1,7 @@
+> ARCHIVE MATERIAL. Extracted from the puck-era checkout (see
+> [PROVENANCE](../../PROVENANCE.md)). Evidence and reference only: any build or run
+> commands in this document executed in that repository, not this one.
+
 # flexe WebAssembly feasibility probe
 
 Current integration status, fixture locations, and active work lanes are kept

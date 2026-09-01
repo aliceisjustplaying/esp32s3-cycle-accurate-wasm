@@ -29,8 +29,9 @@ next only when the previous reaches its stated stopping point or parks:
    branch are historical artifacts.
 4. CORE phase 2, only after phase 1 exits.
 
-SPEED waits for upstream contact to resolve; do not dispatch it. Do not
-dispatch anything not listed here.
+SPEED is not in the current sequence; it no longer waits on upstream,
+but dispatch it only when the maintainer adds it. Do not dispatch
+anything not listed here.
 
 Kickoff template per agent:
 
@@ -87,9 +88,9 @@ You run while the maintainer sleeps. The rule is: park, do not guess.
 ## Escalate to the maintainer, do not decide yourself
 
 - Anything requiring the physical board (schedule through lane BOARD).
-- The upstream relationship: which work goes to joakimeriksson/esp32sim
-  as PRs versus stays fork-carried, and anything the author's reply
-  changes.
+- The upstream relationship: which work is offered to
+  joakimeriksson/esp32sim as PRs, and anything the author's reply
+  changes. No work waits on that reply.
 - New or amended decision records; golden or baseline updates; changes
   to acceptance bounds.
 - Spending money, new hardware, new accounts, licensing questions.

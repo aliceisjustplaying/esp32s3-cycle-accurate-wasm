@@ -49,16 +49,15 @@ workloads, distribution agreement on RTC and long-window PSRAM paths.
 - **Verification:** upstream's JTAG lock-step harness for architectural
   agreement; this project's correlation suite for cycle-level agreement in
   measured mode; the interpreter-versus-JIT bit-identity rule for engine
-  changes; the puck differential harness for pixel-level behavior.
-- **UI:** donor pieces from the puck archive (page, recorder, freeze,
-  and regression layers) selectively port into the fork's thin web
-  shell and wrap the
-  machine where useful. Upstream ships its own web UI; convergence or
-  replacement is decided late, on merit (see 0011, "The role of puck").
+  changes; pixel-level behavior checks built on donor concepts from the
+  puck archive's differential harness.
+- **UI:** the fork owns the thin web shell (decision 0013); donor pieces
+  from the puck archive (page, recorder, freeze, and regression layers)
+  port into it selectively, with provenance.
 - **Upstream relationship:** contributions upstream where wanted (wasm
   JIT backend, boards, peripheral gaps), fork-carried where not (measured
   mode, if upstream prefers staying instruction-level). Contact with the
-  author is open.
+  author is open as a courtesy; no work waits for a reply.
 
 ## Lane plan at a glance
 
@@ -99,8 +98,9 @@ oracle), the QEMU oracle as primary semantics referee (now tie-breaker).
 
 Carried over unchanged: decision 0008's tiers and every adopted cost; the
 timing lab and its evidence; the receipts pipeline and one-owner board
-rule; the browser-speed probes as the performance yardstick; lane zero;
-the hardware-versus-cloud boundaries below.
+rule; the browser-speed probes as the performance yardstick; the
+toolchain-currency work (now inside lane BOARD); the
+hardware-versus-cloud boundaries below.
 
 ## Toolchain currency
 
@@ -170,7 +170,7 @@ firmware. A second board serves lane BOARD first.
   first; the fork carries only what upstream declines, in a clean patch
   stack with `PROVENANCE.md` from day one.
 - Emulator networking defaults to none; live egress is opt-in and never
-  available to gallery or external-bundle execution (decision 0012).
+  available to the execution of third-party material (decision 0012).
 - No browser TypeScript or other product caller imports esp32sim
   internals; all machine access crosses the fork-owned Rust adapter, and
   dependency lint enforces it (decisions 0013, 0014).

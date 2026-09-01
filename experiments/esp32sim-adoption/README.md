@@ -1,3 +1,7 @@
+> ARCHIVE MATERIAL. Extracted from the puck-era checkout (see
+> [PROVENANCE](../../PROVENANCE.md)). Evidence and reference only: any build or run
+> commands in this document executed in that repository, not this one.
+
 # esp32sim adoption: first boot receipt
 
 Date: 2026-08-31. The lane A baseline measurement for decision

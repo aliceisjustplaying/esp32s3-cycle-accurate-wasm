@@ -3,9 +3,11 @@
 This repository was extracted on 2026-08-31 from the puck fork,
 https://github.com/aliceisjustplaying/puck, branch
 `codex/esp32s3-timing-model` at commit
-`b10b0e56` (the frozen archive of this project's incubation). Files were
-copied verbatim with path retargeting only; the archive branch retains
-the full commit history of everything here.
+`b10b0e56` (the frozen archive of this project's incubation). The
+initial import copied files verbatim with path retargeting; this
+repository's own git history records everything that evolved afterward
+(the lane collapse, the current-state rewrites). The archive branch
+retains the pre-extraction history.
 
 What came from where:
 

@@ -1,3 +1,7 @@
+> ARCHIVE MATERIAL. Extracted from the puck-era checkout (see
+> [PROVENANCE](../../PROVENANCE.md)). Evidence and reference only: any build or run
+> commands in this document executed in that repository, not this one.
+
 # ESP32-S3 timing evidence
 
 The `receipts/` directory and `esp32s3-rev02-tinydraw-d81e2ea-candidate.json`
