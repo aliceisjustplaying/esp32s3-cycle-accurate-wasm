@@ -16,13 +16,15 @@ Incubation history lives in the puck archive (see
 Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
 1, then CORE phase 2.
 
-- **CORE**: the measured-mode design spike is dispositioned as decision
-  0014; implementation has not started and goes to a blank-slate agent
-  per [`lanes/COORDINATOR.md`](lanes/COORDINATOR.md). Schema-1
-  `timing.json` is rejected for measured totals (it loses the affine
-  MMIO intercept, the committed evidence is `3n - 8`); timing-profile
-  schema 2 belongs to CORE. Phase 2 (dual-core contention) waits for
-  phase 1's exit.
+- **CORE**: phase 1 is implemented and parked on esp32sim branch
+  `core/measured-phase1` at `e5dea08`. The versioned adapter, fake and
+  esp32sim contract suites, measured interpreter scheduler, schema-2
+  timing importer, receipt-complete ledgers, exact active-device deadlines,
+  real backend adapter, stop precedence, quota refusals, and measured block
+  cost cache are green under `cargo test --workspace`. The one-shot
+  differential gate cannot run because its authoritative shared raw replay
+  bundle is not committed. Phase 1 has therefore not exited, and phase 2
+  (dual-core contention) remains undispatched.
 - **SPEED**: not in the current sequence; dispatched when the
   maintainer adds it.
 - **SHIP**: not dispatched. Boundary review starts when CORE's
@@ -101,3 +103,48 @@ lane BOARD, serviced in maintainer-scheduled sessions:
 - Bus capture with the external logic analyzer (about 40 MHz QSPI, TE,
   I2C, touch interrupt). Needed before timing-accuracy claims about the
   panel; demo modeling proceeds without it.
+
+## Overnight report, 2026-09-01
+
+Advanced:
+
+- BOARD identified the exact V2 touch controller as CST820 and archived the
+  receipt in program-office commits `d3d7cbe` and `c64351e`. TinyDraw probe
+  commit `4db22a6` and esp32sim demo commits `4886ec0`, `e128b82`, `fe8f720`,
+  and `2c0b320` produced the visible browser UI and a scripted visible touch
+  stroke. The IDF 6.1 gate harness was restored and the board released.
+- CORE phase 1 advanced on esp32sim branch `core/measured-phase1` through
+  `88f526d`, `bab791e`, `8dcf27e`, `b2aed7f`, `a96a4e0`, `21edb94`,
+  `8d7bc78`, `cdfc693`, `04f6813`, `49fb685`, `a4340d5`, `fe7cd05`, and
+  `e5dea08`. Coordinator review reran `cargo test --workspace`: 58 tests and
+  all doc tests passed. No baseline was generated or changed.
+
+Parked, exact questions:
+
+- CORE: “May CORE generate and commit the canonical shared replay bundle
+  containing the 1,228 raw trace records with SHA-256
+  `e025823c09a8c5558dbd2147bde05e8396c6d0f4b6103ca77947d11b4bc27d2d`
+  and 30 ordered ROM callback events for gate ELF SHA-256
+  `4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8`, or
+  will the maintainer provide it?”
+- Upstream relationship: “Should esp32sim branch
+  `board/tinydraw-v2-demo` at `2c0b320` be offered to
+  joakimeriksson/esp32sim as a PR, and if so in what commit grouping?”
+
+Morning decisions, in priority order:
+
+1. Answer CORE's replay-bundle question. It gates the phase-1 exit and all
+   phase-2 dispatch.
+2. Decide whether and how to offer the BOARD demo branch upstream.
+
+Confusing or contradictory documents:
+
+- CORE phase 1 requires the shared-trace differential, but only summary
+  counts and hashes are committed; the donor test also names paths removed
+  during the product split.
+- The coordinator brief generally says to advance after a lane parks, while
+  its phase-2 rule says phase 2 starts only after phase 1 exits. The specific
+  phase-2 rule was followed, so phase 2 was not dispatched.
+- BOARD's exit text names `TINYDRAW_LIVE_FAIL presenter=1 touch=1` as the
+  milestone even though a passing run emits `TINYDRAW_LIVE_STROKE` and
+  `TINYDRAW_LIVE_DONE` and correctly emits no `TINYDRAW_LIVE_FAIL` marker.
