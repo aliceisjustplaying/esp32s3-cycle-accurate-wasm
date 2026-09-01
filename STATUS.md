@@ -1,6 +1,6 @@
 # Status
 
-Last updated 2026-08-31. Authoritative documents: [`roadmap.md`](roadmap.md)
+Last updated 2026-09-01. Authoritative documents: [`roadmap.md`](roadmap.md)
 (revision 4) and [`decisions/`](decisions/) 0006 through 0014, with
 [0013](decisions/0013-product-identity-fork-owns-the-product.md) (the
 esp32sim fork owns the product) and
@@ -52,6 +52,17 @@ Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
   `0xA9=0x02` at I2C address `0x15`; the exact V2 board's controller is
   adopted as CST820, matching the vendor's V2 board identification
   ([receipt](lanes/receipts/board-touch-identity-2026-09-01/README.md)).
+  The demo-first milestone is complete on esp32sim branch
+  `board/tinydraw-v2-demo` at `2c0b320`: the IDF 6.1 gate harness boots at
+  interpreter speed, the CO5300 panel visibly draws the TinyDraw UI, and a
+  scripted browser drag crosses the CST820 model and commits a visible stroke
+  with 22 touch events, one down, one up, and zero touch or presentation
+  failures
+  ([receipt](lanes/receipts/board-tinydraw-v2-demo-2026-09-01/README.md)).
+  The modeled 60 Hz TE cadence is demo-only and not timing evidence; the
+  external logic-analyzer capture remains required before timing-accuracy
+  claims. The physical board was restored to the IDF 6.1 gate harness,
+  verified booting, and released.
   A synchronous GP-SPI
   board-response hook is pushed as an upstream-shaped candidate at
   `lane-a/gp-spi-device-hook` (`246c699`). Two independent 8,000-step
