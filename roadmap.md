@@ -34,7 +34,7 @@ workloads, distribution agreement on RTC and long-window PSRAM paths.
   is this project's addition: calibrated cycle accounting through
   `advance_ccount`, per-block base costs in the block cache, cache and
   MSPI models, window-exception costs, and tighter dual-core interleaving
-  quanta. Both modes share one core; fast mode's speed is never taxed by
+  quanta. Both modes share one engine; fast mode's speed is never taxed by
   measured mode's bookkeeping. Observation is defined at the CPU backend
   level per decision 0012: the native JIT fast path bypasses the `Bus`
   trait (review F-031, `xtensa-lx7/src/block.rs:143,187`), so measured
@@ -61,16 +61,14 @@ Per-lane implementation briefs, including each lane's home repository,
 branch convention, reading list, constraints, and exit criteria, live in
 [`lanes/`](lanes/README.md). The complete handoff to an implementing
 agent is a checkout of this repository, one lane name, and that lane's
-brief. On 2026-08-31 the maintainer collapsed the original ten lanes
-(0, A through H) into four; the briefs carry the mapping, and older
-documents' lane-letter references resolve through it.
+brief.
 
 | Lane | Scope | Cloud-viable | Blocked by |
 | --- | --- | --- | --- |
 | CORE | Measured execution per decisions 0014 and 0008: the versioned `backend-api` crate and contract tests, measured interpreter scheduler, timing-profile schema 2 importer and tiered ledger, measured cost payload, one-shot TypeScript differential gate; then phase 2, dual-core contention (interleave quanta as a decision record, MSPI arbitration, litmus firmware, contended-cohort correlation) | Fully | Nothing (phase 2 by phase 1) |
 | BOARD | The exact Waveshare board and its silicon evidence: capture-first device models (CO5300-class panel, touch, sensors, TCA9554 wiring), chip-identity adoption, the JTAG lock-step oracle, probe families, and the toolchain-currency remainder (first-line diagnosis, weak identities) | Modeling yes, captures no | Captures gate panel and touch modeling |
-| SPEED | wasm JIT backend, upstream-shaped: browser real time with `--no-jit` bit-identity, measured against the browser-speed receipts, decision 0010's profiling checkpoint | Correctness yes, M1 gates local | Upstream contact |
-| SHIP | CI (built, awaiting the rustfmt disposition), boundary review of CORE's validator seam with hostile-input tests, then the thin web shell, correlation suite at 0008 bounds, and the release battery | Fully | Shell and release by CORE and SPEED | Nothing; unchanged by 0011 |
+| SPEED | wasm JIT backend, upstream-shaped: browser real time with `--no-jit` bit-identity, measured against the browser-speed receipts, decision 0010's profiling checkpoint | Correctness yes, M1 gates local | The maintainer adding it to the dispatch sequence |
+| SHIP | CI (built; landing the approved reformat and branches remains), boundary review of CORE's validator seam with hostile-input tests, then the thin web shell, correlation suite at 0008 bounds, and the release battery | Fully | Shell and release by CORE and SPEED |
 
 SHIP's CI and boundary workstreams grew from the accepted
 external-review findings, see
@@ -81,10 +79,9 @@ milestone: lane BOARD alone boots the real board image with the panel
 drawing in the browser at interpreter speed.** Progress is measured
 against exit criteria, not time estimates.
 
-The measured-mode design spike is complete: its draft was reviewed,
-trimmed, and accepted as decision 0014, which is now the normative
-contract (interpreter-only, single core, networking off, fail closed).
-CORE is in the implementation phase against that record.
+Decision 0014 is the normative measured-mode contract
+(interpreter-only, single core, networking off, fail closed); CORE
+implements against it.
 
 ## Toolchain currency
 
@@ -146,7 +143,7 @@ first.
   out, deterministically.
 - Upstream courtesy: fixes and capabilities upstream wants go upstream
   first; the fork carries only what upstream declines, in a clean patch
-  stack with `PROVENANCE.md` from day one.
+  stack recorded in its `PROVENANCE.md`.
 - Emulator networking defaults to none; live egress is opt-in and never
   available to the execution of third-party material (decision 0012).
 - No browser TypeScript or other product caller imports esp32sim
@@ -156,4 +153,6 @@ first.
   and UI client; no TypeScript execution engine is ever built.
 - Goldens carry semantic assertions and provenance sidecars; a
   conformance test whose corpus is missing fails, never skips.
-- The correlation suite's first pass is scheduled; its residue is not.
+- A correlation-suite pass is planned work; closing every residual
+  mismatch it finds is not promised, only tier-labeling them per
+  decision 0008.

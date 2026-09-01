@@ -23,9 +23,9 @@ pulled on demand.
 - **esp32sim fork**: `aliceisjustplaying/esp32sim`. `main` is a clean
   upstream mirror, never committed to. `puck/base` is the pinned base
   (`2114ffc`) plus fork-carried commits; see its `PROVENANCE.md` for the
-  branch conventions. Lane work branches: `lane-<letter>/<topic>`, from
-  `puck/base`, or from `main` when the work is an upstream-shaped pull
-  request.
+  branch conventions. Lane work branches: `<lane>/<topic>` in lowercase
+  (`core/`, `board/`, `speed/`, `ship/`), from `puck/base`, or from
+  `main` when the work is an upstream-shaped pull request.
 - **tinydraw**: `aliceisjustplaying/tinydraw`. Calibration probe projects
   and capture tooling only.
 - **puck archive**: `aliceisjustplaying/puck`, branch
@@ -38,14 +38,14 @@ pulled on demand.
 - Every measured or adopted number carries a receipt (file path or
   committed evidence); refusals name their decision-0008 tier candidate.
 - The physical board has one owner at a time. Lanes that need hardware
-  file a request with the maintainer; they do not open the serial port or
-  JTAG opportunistically.
+  queue the task in `../STATUS.md`'s "Hardware queue"; they do not open
+  the serial port or JTAG opportunistically.
 - Fail closed: unknown costs stay unknown, missing corpora fail tests,
   unsupported operations are refused, never faked.
 - Upstream-first for esp32sim changes upstream would want; the fork
   carries only what upstream declines.
-- No em dashes in this repository's files. TypeScript for puck tooling,
-  Rust for the emulator, C only for firmware.
+- No em dashes in this repository's files. Rust for the emulator, C
+  only for firmware, TypeScript only for the thin web shell.
 - Stop and report at your exit criteria, on any blocked decision, or when
   a finding contradicts a decision record. Do not start another lane's
   work.
@@ -58,5 +58,5 @@ pulled on demand.
 | --- | --- | --- |
 | CORE | [CORE.md](CORE.md) | esp32sim fork; measured execution, phases 1 and 2 |
 | BOARD | [BOARD.md](BOARD.md) | esp32sim fork + tinydraw; the physical board, its devices and evidence (captures are LOCAL) |
-| SPEED | [SPEED.md](SPEED.md) | esp32sim fork, upstream-shaped; waits on upstream contact |
+| SPEED | [SPEED.md](SPEED.md) | esp32sim fork, upstream-shaped; dispatched when the maintainer adds it |
 | SHIP | [SHIP.md](SHIP.md) | esp32sim fork; CI now, boundary review with CORE, shell and release last |

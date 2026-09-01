@@ -13,9 +13,8 @@ Incubation history lives in the puck archive (see
 
 ## Lane state
 
-On 2026-08-31 the maintainer collapsed the original ten lanes into
-four: CORE (was B, C), BOARD (was 0, A, E), SPEED (was D), SHIP (was F,
-G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
+Dispatch sequence set by the maintainer: SHIP's CI, then BOARD's demo,
+then CORE phase 1, then CORE phase 2.
 
 - **CORE**: the measured-mode design spike is dispositioned as decision
   0014; implementation has not started and goes to a blank-slate agent
@@ -33,11 +32,8 @@ G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
   mismatches), boundary defects proven to fail. The rustfmt disposition
   is approved (2026-08-31): one isolated mechanical reformat commit,
   then the CI branches land. Boundary review starts when CORE's
-  validator seam lands; shell and release wait for CORE and SPEED. The
-  maintainer set a strict sequence for the current runs: SHIP's CI,
-  then BOARD's demo, then CORE phase 1, then phase 2.
-- **BOARD**, absorbing the completed toolchain flag day and the silicon
-  service: the ESP-IDF 6.1 flag day is complete. All
+  validator seam lands; shell and release wait for CORE and SPEED.
+- **BOARD**: the ESP-IDF 6.1 flag day is complete. All
   fixtures rebuilt and pinned on v6.1 with xtensa-esp-elf 15.2.0 (hashes
   below). Four timing boots recovered 802 passing receipts across 210
   identities; 204 meet the strict two-independent-receipt criterion.
@@ -85,8 +81,11 @@ G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
 Fixture ELFs are machine-local to the maintainer (tinydraw
 `out/fixtures/`), a known cloud-lane limitation recorded in the roadmap.
 
-## Waiting on
+## Hardware queue
 
-- A maintainer board session with the external logic analyzer for the
-  bus capture (gates BOARD's timing-accuracy claims about the panel;
-  demo modeling proceeds without it).
+Tasks needing the physical board or the maintainer's hands, owned by
+lane BOARD, serviced in maintainer-scheduled sessions:
+
+- Bus capture with the external logic analyzer (about 40 MHz QSPI, TE,
+  I2C, touch interrupt). Needed before timing-accuracy claims about the
+  panel; demo modeling proceeds without it.

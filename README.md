@@ -15,9 +15,9 @@ silicon under the tiered claim vocabulary of
 
 ## Map
 
-- [`roadmap.md`](roadmap.md): the plan, revision 4. Start here.
-- [`STATUS.md`](STATUS.md): the running ledger of what happened and what
-  is authoritative.
+- [`roadmap.md`](roadmap.md): the plan.
+- [`STATUS.md`](STATUS.md): what is true now, what governs, and the
+  hardware queue.
 - [`decisions/`](decisions/): the numbered decision journal (0006
   onward; 0001 through 0005 belong to puck the instrument and live in
   the puck archive, see [`PROVENANCE.md`](PROVENANCE.md)).

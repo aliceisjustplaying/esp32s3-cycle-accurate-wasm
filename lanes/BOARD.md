@@ -29,6 +29,41 @@ scoped to their pins. A synchronous GP-SPI board-response hook is pushed
 as an upstream-shaped candidate at `lane-a/gp-spi-device-hook`
 (`246c699`).
 
+## Priority: demo first
+
+The first objective is the roadmap's demo milestone: the TinyDraw V2
+gate-harness image visibly drawing, with working touch, in the browser,
+at interpreter speed. That means panel device, touch device, and board
+wiring, before any other BOARD work except the touch-identity probe
+below.
+
+For the demo, the firmware's observable contract is the model source:
+the driver code in tinydraw is the transaction list, the datasheet
+fills gaps, and the live board is the referee (run the real firmware on
+real hardware and compare behavior). The electrical logic-analyzer
+capture is required before any timing-accuracy claim about the panel
+(TE phase, scan-out, tearing); it does not gate demo modeling. The
+touch controller's name comes from hardware: flash a small probe that
+reads the chip-ID registers over I2C and commit the output as a
+receipt; until then it is unnamed in every schema.
+
+## Local hardware mode
+
+Agents run on the maintainer's machine with the board attached by USB.
+Rules:
+
+- Verify the port before every use (`ls /dev/cu.usb*`); never assume.
+- One agent owns the board at a time; the owner is named in the
+  overnight report.
+- Allowed: serial console, OpenOCD over the built-in USB-JTAG, flashing
+  probe firmware and images built from pinned sources.
+- Forbidden, always: efuse writes, strap changes, anything
+  irreversible.
+- Every hardware interaction produces a logged receipt (command,
+  firmware hash, raw output).
+- At session end: reflash the ESP-IDF 6.1 gate-harness image, verify it
+  boots, release the port.
+
 ## Device modeling
 
 A `BoardModel` for the Waveshare ESP32-S3-Touch-AMOLED-1.8 at the

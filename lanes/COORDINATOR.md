@@ -11,11 +11,11 @@ the rest are background you pull when a review question needs them.
 
 ## Dispatch
 
-Current operating mode (maintainer, 2026-08-31): no cloud agents; all
-agents run locally on the maintainer's machine, and the physical board
-is attached by USB overnight. The maintainer has set a STRICT SEQUENCE;
-dispatch one lane at a time, each agent in its own clone, and start the
-next only when the previous reaches its stated stopping point or parks:
+Operating mode: no cloud agents; all agents run locally on the
+maintainer's machine, and the physical board is attached by USB
+overnight. Dispatch in this strict sequence, one lane at a time, each
+agent in its own clone; start the next only when the previous reaches
+its stated stopping point or parks:
 
 1. SHIP, CI workstream only. The rustfmt disposition is approved; the
    brief has the instructions. Stops when CI lands or parks on
@@ -23,10 +23,9 @@ next only when the previous reaches its stated stopping point or parks:
 2. BOARD, demo-first, local hardware mode per its brief; it owns the
    board while running. Stops at the demo milestone (TinyDraw drawing
    with touch in the browser) or parks with its blocker named.
-3. CORE phase 1, with a BLANK-SLATE agent (a fresh agent, not the spike
-   agent resumed); its prompt must state that decision 0014's cut list
-   is binding and the spike drafts on the fork's `lane-b/design-spike`
-   branch are historical artifacts.
+3. CORE phase 1, with a fresh agent; its prompt must state that
+   decision 0014's cut list is binding and that the draft documents on
+   the fork's `lane-b/design-spike` branch are not requirements.
 4. CORE phase 2, only after phase 1 exits.
 
 SPEED is not in the current sequence; dispatch it only when the
@@ -36,18 +35,16 @@ Kickoff template per agent:
 
 > Clone https://github.com/aliceisjustplaying/esp32s3-cycle-accurate-wasm
 > and check out the latest commit on branch main. You are the lane X
-> agent. Read AGENTS.md, then lanes/X.md and everything it links before
-> writing code. Stop and report at your exit criteria or on any blocked
-> decision.
+> agent. Read AGENTS.md, STATUS.md, then lanes/X.md and everything it
+> links before writing code. Stop and report at your exit criteria or
+> on any blocked decision.
 
 ## Pacing and review
 
-- One agent per lane, one clone or worktree per agent, no exceptions:
-  shared worktrees have already caused one near-collision.
+- One agent per lane, one clone or worktree per agent, no exceptions.
 - Watch the honest metric per lane: progress against exit criteria, not
   activity. A lane grinding without approaching its exit gets paused and
-  re-briefed (the ROM-whitelist lane is the cautionary tale; see
-  decision 0009).
+  re-briefed.
 - Do not parallelize SPEED (single artifact) or BOARD's hardware work
   (single board); they are serial by nature.
 - Review every lane PR for: receipts on every number, decision-0008 tier
@@ -60,8 +57,8 @@ Kickoff template per agent:
   Decision 0014's cut list is the precedent; cite it. A lane that wants
   cut material back proposes a decision amendment first, with the
   concrete need named.
-- Merge lane work granularly; keep STATUS.md's course-correction section
-  current after every milestone or handoff.
+- Merge lane work granularly; keep STATUS.md's lane state current after
+  every milestone or handoff.
 - Cross-lane interface changes (adapter contract, event schema, timing
   vocabulary) require a decision record before merge, written by the
   proposing lane, approved by the maintainer.

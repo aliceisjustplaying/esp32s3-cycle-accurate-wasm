@@ -1,10 +1,10 @@
 # Lane CORE: measured execution
 
 Home: esp32sim fork, `core/*` branches off `puck/base`, one agent, own
-clone. The design spike is complete and dispositioned; decision 0014 is
-the normative contract and this lane starts with a BLANK-SLATE agent.
-The spike drafts on the fork's `lane-b/design-spike` branch are
-historical artifacts, useful as code archaeology, never as requirements.
+clone. Decision 0014 is the normative contract. The fork's
+`lane-b/design-spike` branch holds draft documents with useful code
+archaeology (which esp32sim seams do what); they are not requirements,
+and anything on 0014's cut list stays out no matter what they say.
 
 Binding: decisions 0014 (the accepted contract, including its cut list)
 and 0008 (cost tiers). Background, on demand: 0013, 0012, the roadmap,
@@ -65,7 +65,7 @@ anchored to the measured dispatcher costs (ESP-IDF 6.1 values: level-1
 entry/resume 227/143, level-3 222/139); race-sensitive litmus firmware;
 correlation against the contended receipt cohorts in
 `../timing/evidence/` (the `*_core1_contended` cells). New capture needs
-go to lane BOARD through STATUS's waiting-on list.
+go to lane BOARD through STATUS's hardware queue.
 
 No arbitration guesses adopted without receipts: interval or
 distribution tiers exist for policies that cannot be identified exactly.

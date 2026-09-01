@@ -21,16 +21,16 @@ mandatory fail-closed decoder conformance corpora with visible case
 counts and hashes (10 Xtensa, 9 RISC-V, zero mismatches); deliberate
 boundary defects were proven to fail.
 
-The rustfmt disposition is RESOLVED (maintainer, 2026-08-31): approved.
-Apply the fork-wide reformat as one isolated, mechanical-only commit on
-its own branch (no hand edits mixed in), then land the CI branches on
-top and configure the fork's required checks. If required-checks
-configuration needs repository settings the agent cannot reach, park
-that single step and finish the rest. Golden discipline throughout:
-semantic assertions and provenance sidecars accompany fixtures; a
-conformance test whose corpus is missing fails, never skips. Nothing
-beyond this workstream tonight: boundary review waits for CORE's seam,
-shell and release wait for CORE and SPEED.
+The fork-wide rustfmt reformat is approved: apply it as one isolated,
+mechanical-only commit on its own branch (no hand edits mixed in), then
+land the CI branches on top and configure the fork's required checks.
+If required-checks configuration needs repository settings the agent
+cannot reach, park that single step and finish the rest. Golden
+discipline throughout: semantic assertions and provenance sidecars
+accompany fixtures; a conformance test whose corpus is missing fails,
+never skips. Nothing beyond this workstream until the coordinator
+advances the sequence: boundary review waits for CORE's seam, shell and
+release wait for CORE and SPEED.
 
 CI exit: a deliberately injected defect in each boundary fails its
 required job on the fork's CI; conformance case counts and corpus

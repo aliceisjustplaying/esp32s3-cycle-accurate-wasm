@@ -66,7 +66,7 @@ repository before starting work.
   when a finding contradicts a decision record. Do not start another
   lane's work.
 - The physical board has one owner at a time; hardware needs are queued
-  as entries in `STATUS.md`'s "Waiting on" section. Never open the
+  as entries in `STATUS.md`'s "Hardware queue" section. Never open the
   serial port or JTAG opportunistically.
 - Upstream-first for esp32sim: fixes and capabilities upstream would
   want are built as upstream-shaped pull requests; the fork carries only
