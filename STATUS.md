@@ -23,17 +23,18 @@ G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
   `timing.json` stays rejected for measured totals (it loses the affine
   MMIO intercept, the committed evidence is `3n - 8`); timing-profile
   schema 2 belongs to CORE. Phase 2 (dual-core contention) waits for
-  phase 1's exit; its interleave decision record may be drafted early.
+  phase 1's exit.
 - **SPEED**: waiting on upstream contact before work starts.
 - **SHIP**: CI is built, verified, and pushed to the fork
   (`lane-g/ci-spec` at `6ba6a6d`, upstream-shaped `lane-g/upstream-ci`
   at `3b58cc6`): pinned actions, fail-closed decoder corpora with
   visible case counts and hashes (10 Xtensa, 9 RISC-V, zero
-  mismatches), boundary defects proven to fail. Blocker awaiting
-  maintainer disposition: pre-existing fork-wide rustfmt debt (893
-  hunks across 39 files at base `aa851249`). Boundary review starts
-  when CORE's validator seam lands; shell and release wait for CORE and
-  SPEED.
+  mismatches), boundary defects proven to fail. The rustfmt disposition
+  is approved (2026-08-31): one isolated mechanical reformat commit,
+  then the CI branches land. Boundary review starts when CORE's
+  validator seam lands; shell and release wait for CORE and SPEED. The
+  maintainer set a strict sequence for the current runs: SHIP's CI,
+  then BOARD's demo, then CORE phase 1, then phase 2.
 - **BOARD**, absorbing the completed toolchain flag day and the silicon
   service: the ESP-IDF 6.1 flag day is complete. All
   fixtures rebuilt and pinned on v6.1 with xtensa-esp-elf 15.2.0 (hashes
@@ -87,8 +88,6 @@ Fixture ELFs are machine-local to the maintainer (tinydraw
 
 - The esp32sim author's reply to the maintainer's contact (gates SPEED
   and the upstream-versus-fork split for measured mode).
-- Maintainer disposition on the fork-wide rustfmt rewrite (gates SHIP's
-  CI exit criterion).
 - A maintainer board session with the external logic analyzer for the
   bus capture (gates BOARD's timing-accuracy claims about the panel;
   demo modeling proceeds without it).

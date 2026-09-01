@@ -13,20 +13,24 @@ the rest are background you pull when a review question needs them.
 
 Current operating mode (maintainer, 2026-08-31): no cloud agents; all
 agents run locally on the maintainer's machine, and the physical board
-is attached by USB overnight. BOARD is dispatchable NOW in local
-hardware mode, demo-first, under the hardware rules in its brief; it
-owns the board while running. Startable in parallel with it, one agent
-each, one clone each: CORE (phase 1), and SHIP's CI workstream once the
-maintainer's rustfmt disposition lands (otherwise it parks on that
-question). SPEED waits for upstream contact to resolve; scaffolding may
-start only if the maintainer approves.
+is attached by USB overnight. The maintainer has set a STRICT SEQUENCE;
+dispatch one lane at a time, each agent in its own clone, and start the
+next only when the previous reaches its stated stopping point or parks:
 
-CORE starts with a BLANK-SLATE agent (a fresh agent, not the spike
-agent resumed); its prompt must state that decision 0014's cut list is
-binding and the spike drafts on the fork's `lane-b/design-spike` branch
-are historical artifacts. CORE phase 2's interleave decision record may
-be drafted in parallel, but phase 2 implementation waits for phase 1's
-exit.
+1. SHIP, CI workstream only. The rustfmt disposition is approved; the
+   brief has the instructions. Stops when CI lands or parks on
+   repository settings.
+2. BOARD, demo-first, local hardware mode per its brief; it owns the
+   board while running. Stops at the demo milestone (TinyDraw drawing
+   with touch in the browser) or parks with its blocker named.
+3. CORE phase 1, with a BLANK-SLATE agent (a fresh agent, not the spike
+   agent resumed); its prompt must state that decision 0014's cut list
+   is binding and the spike drafts on the fork's `lane-b/design-spike`
+   branch are historical artifacts.
+4. CORE phase 2, only after phase 1 exits.
+
+SPEED waits for upstream contact to resolve; do not dispatch it. Do not
+dispatch anything not listed here.
 
 Kickoff template per agent:
 

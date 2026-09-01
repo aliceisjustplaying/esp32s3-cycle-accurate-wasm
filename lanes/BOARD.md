@@ -51,10 +51,11 @@ branches).
 
 ## Silicon evidence service
 
-Every capture becomes a committed, hash-pinned receipt in the
-established format; two-boot cohorts for anything adopted; the board is
-never reflashed while a request is mid-capture. Open work, in rough
-order:
+Everything in this section runs on maintainer-scheduled sessions or
+after the demo milestone; the demo outranks all of it. Every capture
+becomes a committed, hash-pinned receipt in the established format;
+two-boot cohorts for anything adopted; the board is never reflashed
+while a request is mid-capture. Open work, in rough order:
 
 1. Diagnose the systematic one-cycle first-line cache probe shift (a
    pooling-probe diagnosis) and commit an adoption disposition; until
