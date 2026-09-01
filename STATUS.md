@@ -16,15 +16,19 @@ Incubation history lives in the puck archive (see
 Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
 1, then CORE phase 2.
 
-- **CORE**: phase 1 is implemented and parked on esp32sim branch
-  `core/measured-phase1` at `e5dea08`. The versioned adapter, fake and
-  esp32sim contract suites, measured interpreter scheduler, schema-2
-  timing importer, receipt-complete ledgers, exact active-device deadlines,
-  real backend adapter, stop precedence, quota refusals, and measured block
-  cost cache are green under `cargo test --workspace`. The one-shot
-  differential gate cannot run because its authoritative shared raw replay
-  bundle is not committed. Phase 1 has therefore not exited, and phase 2
-  (dual-core contention) remains undispatched.
+- **CORE**: phase 1 has not exited. Effective work on esp32sim branch
+  `core/measured-phase1` includes the versioned adapter contract, fake
+  contract suite, measured interpreter scheduler, schema-2 timing importer,
+  receipt-complete ledgers, active-device deadlines, the esp32sim backend
+  adapter, stop precedence, quota refusals, and measured block-cost cache
+  through `e5dea08`. The maintainer-authorized observation bundle is committed
+  at `8367594`. It records 1,228 trace observations and 30 ROM callbacks, but
+  it does not contain executable initial CPU, RAM, MMIO, and device state.
+  The missing exit gate is a differential that drives the recorded Flexe path
+  through the actual `Esp32SimBackend`, measured scheduler, timing importer,
+  and canonical product ledger. The first attempted differential did not do
+  that and was removed. Recovery requires a fresh CORE agent after the Rust
+  maintenance gate is green. Phase 2 remains undispatched.
 - **SPEED**: not in the current sequence; dispatched when the
   maintainer adds it.
 - **SHIP**: not dispatched. Boundary review starts when CORE's
@@ -92,8 +96,50 @@ Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
 - Gate-harness ELF SHA-256
   `4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8`
 
-Fixture ELFs are machine-local to the maintainer (tinydraw
-`out/fixtures/`), a known cloud-lane limitation recorded in the roadmap.
+Fixture ELFs remain machine-local to the maintainer. Their IDF 6.1 probe and
+calibration source is published on TinyDraw branch
+`codex/lane-0-idf61-probes` at `632c966`; the normal TinyDraw 2.2 product build
+has not yet been validated in the emulator.
+
+## Maintenance pause, 2026-09-01
+
+No lane work is authorized until the fork's Rust quality gate passes without
+warnings. The fork work is on esp32sim branch `maintenance/rust-safeguards`,
+starting at `c6463b5`, with Rust 1.98.0 pinned, workspace lints inherited by
+all seven crates, debug assertions and overflow checks enabled in release,
+and `scripts/pre-commit.sh` as the required local gate. This is fork policy;
+upstream suitability is not a constraint for this round.
+
+The remaining maintenance work is: finish all lint remediation; pass the gate
+from the repository root and by absolute path from another directory; add
+one-command normal TinyDraw build/run and emulator quickstart scripts; validate
+the normal TinyDraw 2.2 build in the emulator and on hardware; prepare a clean
+TinyDraw pull request containing the four published IDF 6.1 probe commits if
+that validation passes; then remove only branches proven merged or superseded.
+
+## Current document ambiguities to resolve
+
+1. "Replay bundle" was used for an observation log that cannot initialize the
+   emulator. CORE needs a precise executable checkpoint contract and a named
+   trace start before another agent can implement the real differential.
+2. The fake contract suite is a deterministic test of backend-neutral scheduler
+   rules. The documents did not clearly say that it cannot satisfy phase 1;
+   phase 1 requires the same path through the real esp32sim backend.
+3. BOARD has a demo milestone and a continuing evidence-service role. The
+   documents do not define whether "BOARD done" means the browser demo, normal
+   TinyDraw 2.2 manual validation, or the later logic-analyzer timing receipts.
+4. The 60 Hz TE signal is a demo cadence derived from the emulator clock, not a
+   hardware receipt. A logic-analyzer capture must define the pin, sample count,
+   operating state, and acceptance statistic before hardware cadence is adopted.
+5. "Unmodified TinyDraw V2" needs one pinned product revision and a decision on
+   whether the four IDF 6.1 probe and calibration commits belong in that product
+   revision. Hardware and emulator validation will supply the decision evidence.
+6. The safeguard specification names `clippy::transmute_int_to_ptr`, which does
+   not exist in pinned Rust 1.98.0. The fork uses the rustc lint
+   `integer_to_ptr_transmutes` for the same defect class.
+7. The earlier overnight report asked how to group BOARD work for upstream.
+   The maintainer has deferred that decision until the generic and TinyDraw-only
+   pieces are separated and tested.
 
 ## Hardware queue
 

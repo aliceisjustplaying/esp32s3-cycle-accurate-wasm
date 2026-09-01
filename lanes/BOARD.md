@@ -106,8 +106,11 @@ while a request is mid-capture. Open work, in rough order:
 6. CCOUNT-delta comparison in the lock-step flow (blocked on lane CORE's
    measured mode).
 
-Exit for device modeling: the TinyDraw gate-harness image boots with the
-panel drawing and scripted touch working (`TINYDRAW_LIVE_FAIL` reports
-presenter=1 touch=1), with visual and TE acceptance against hardware
-captures recorded as receipts. The evidence service does not exit; it
+Exit for the demo milestone: the TinyDraw gate-harness image boots with the
+panel visibly drawing and scripted touch working. A passing run emits
+`TINYDRAW_LIVE_STROKE` with zero presentation and touch failures, followed by
+`TINYDRAW_LIVE_STROKE_DONE committed=1 refresh=1 commit_failed=0`. It does not
+emit `TINYDRAW_LIVE_FAIL`. The demo-only TE cadence exercises the firmware
+contract but is not hardware timing evidence. Timing and scan-out claims wait
+for the logic-analyzer capture. The evidence service does not exit; it
 operates, and its milestones are receipts.

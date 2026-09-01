@@ -15,7 +15,8 @@ Operating mode: no cloud agents; all agents run locally on the
 maintainer's machine, and the physical board is attached by USB
 overnight. Dispatch in this strict sequence, one lane at a time, each
 agent in its own clone; start the next only when the previous reaches
-its stated stopping point or parks:
+its stated stopping point or parks. Phase 2 is the explicit exception: it
+starts only after phase 1 exits, not merely when phase 1 parks.
 
 1. BOARD, demo-first, local hardware mode per its brief; it owns the
    board while running. Stops at the demo milestone (TinyDraw drawing

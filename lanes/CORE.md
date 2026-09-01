@@ -46,6 +46,18 @@ the existing TypeScript timing machine (`../timing/`) and through
 measured mode once, compare ledgers, archive the receipt here, then
 retire the TypeScript machine as donor history.
 
+Recovery gate: the frozen 1,228-record observation bundle is hash-pinned, but
+it is not executable backend input. It does not contain the initial Xtensa
+register windows, PS, SAR, CCOUNT, RAM, MMIO, and device state required to
+force `Esp32SimBackend` through those boundaries. A recovery agent starts from
+the last reviewed measured implementation plus the unchanged bundle. Its first
+milestone is a minimal proof that the real adapter can initialize and execute
+one recorded boundary through `Esp32SimBackend`, `Esp32TimingSource`, the
+schema-2 importer, and the product ledger. No independent replay classifier,
+hard-coded donor costs, checkpoint format, or receipt work precedes that proof.
+If existing artifacts cannot produce it, the lane parks with the exact missing
+artifact or interface decision.
+
 Phase 1 exit: adapter contract tests green on both backends,
 slice-invariance included; measured mode reproduces the flexe boot
 replay's event accounting on shared traces; the one-shot differential
