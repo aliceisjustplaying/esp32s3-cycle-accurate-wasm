@@ -7,7 +7,7 @@ Read [`CORE.md`](CORE.md), decision 0014, and this file before touching code.
 
 Use a fresh clone of `aliceisjustplaying/esp32sim`. Create
 `core/measured-phase1-recovery` from `maintenance/rust-safeguards` at
-`04f1d38`. Replay only the effective CORE work through `8367594`, preserving
+`b138473`. Replay only the effective CORE work through `8367594`, preserving
 the provenance commits from `puck/base`. Do not replay `009b76b` or its revert
 `516b1ad`; their net code is intentionally absent. Resolve all safeguard
 diagnostics, run `scripts/pre-commit.sh`, and commit that integration before
