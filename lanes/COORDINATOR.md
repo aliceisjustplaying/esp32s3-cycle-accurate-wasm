@@ -20,9 +20,7 @@ its stated stopping point or parks:
 1. BOARD, demo-first, local hardware mode per its brief; it owns the
    board while running. Stops at the demo milestone (TinyDraw drawing
    with touch in the browser) or parks with its blocker named.
-2. CORE phase 1, with a fresh agent; its prompt must state that
-   decision 0014's cut list is binding and that the draft documents on
-   the fork's `lane-b/design-spike` branch are not requirements.
+2. CORE phase 1, with a fresh agent.
 3. CORE phase 2, only after phase 1 exits.
 
 SPEED is not in the current sequence; dispatch it only when the

@@ -1,10 +1,7 @@
 # Lane CORE: measured execution
 
 Home: esp32sim fork, `core/*` branches off `puck/base`, one agent, own
-clone. Decision 0014 is the normative contract. The fork's
-`lane-b/design-spike` branch holds draft documents with useful code
-archaeology (which esp32sim seams do what); they are not requirements,
-and anything on 0014's cut list stays out no matter what they say.
+clone. Decision 0014 is the normative contract.
 
 Binding: decisions 0014 (the accepted contract, including its cut list)
 and 0008 (cost tiers). Background, on demand: 0013, 0012, the roadmap,
