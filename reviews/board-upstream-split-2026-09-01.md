@@ -1,6 +1,6 @@
 # BOARD upstream split, 2026-09-01
 
-Reviewed esp32sim branch `board/tinydraw-v2-maintained` through `5f61d5f`.
+Reviewed esp32sim branch `board/tinydraw-v2-maintained` through `b7c9b87`.
 This is a classification for maintainer testing and a later upstream decision.
 No upstream pull request has been opened.
 
@@ -65,9 +65,11 @@ and board changes.
 5. Waveshare AMOLED 1.8 V2 wiring, CLI and browser support, and board docs.
 6. Optional TinyDraw launcher and paced-stroke example.
 
-BOARD's emulator implementation is done when one pinned normal TinyDraw
-product passes the paced multi-sample browser stroke and physical-hardware
-compatibility checks. The continuing evidence service remains open. Hardware
-timing claims remain blocked on a hash-pinned analyzer capture of QSPI, GPIO13
-TE, I2C, and GPIO21 touch interrupt with firmware hash, board revision, pin
-map, operating state, edge count, and reported timing statistics.
+BOARD's emulator implementation is done. TinyDraw `2643aa7` passed the paced
+multi-sample browser stroke on esp32sim `b7c9b87`, and the same normal product
+source passed on physical hardware. See the
+[normal-product receipt](../lanes/receipts/board-tinydraw-v2-normal-2026-09-01/README.md).
+The continuing evidence service remains open. Hardware timing claims remain
+blocked on a hash-pinned analyzer capture of QSPI, GPIO13 TE, I2C, and GPIO21
+touch interrupt with firmware hash, board revision, pin map, operating state,
+edge count, and reported timing statistics.
