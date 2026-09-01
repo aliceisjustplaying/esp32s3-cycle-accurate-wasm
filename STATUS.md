@@ -1,196 +1,257 @@
 # Status
 
-Last updated 2026-09-01. Authoritative documents: [`roadmap.md`](roadmap.md)
-(revision 4) and [`decisions/`](decisions/) 0006 through 0014, with
-[0013](decisions/0013-product-identity-fork-owns-the-product.md) (the
-esp32sim fork owns the product) and
-[0014](decisions/0014-measured-scheduler-and-adapter-contract.md) (the
-accepted measured scheduler and adapter contract) governing current work.
-Incubation history lives in the puck archive (see
-[`PROVENANCE.md`](PROVENANCE.md)); receipts live in [`timing/`](timing/),
-[`reviews/`](reviews/), [`experiments/`](experiments/), and
-[`lanes/receipts/`](lanes/receipts/).
+Last updated 2026-09-01. Authoritative documents are
+[`roadmap.md`](roadmap.md), decisions 0006 through 0014, and the current lane
+briefs. Decisions 0013 and 0014 govern product identity and the measured
+scheduler contract. Receipts live in `timing/`, `reviews/`, `experiments/`,
+and `lanes/receipts/`.
+
+## Authority and pause
+
+The repository is in a cleanup and organization round. The maintainer has
+explicitly said not to start new work without a new go. No fresh CORE agent,
+CORE phase 2, SPEED, SHIP, new evidence run, or upstream pull request is
+authorized during this pause.
+
+## Maintenance result
+
+The fork's Rust safeguard gate is complete on esp32sim branch
+`maintenance/rust-safeguards` at `b138473`. Rust 1.98.0 is pinned, all seven
+workspace members inherit the strict lint policy, and release builds retain
+debug assertions and overflow checks. `scripts/pre-commit.sh` passed from the
+repository root and by absolute path from the program-office checkout. There
+are zero compiler, Clippy, rustdoc, unfulfilled-expectation, or undocumented
+lint-exception diagnostics. Debug and release tests pass. The report is
+[`reviews/rust-safeguards-2026-09-01.md`](reviews/rust-safeguards-2026-09-01.md).
+
+The cleanup fixed one functional defect found by linting: NTP fractional
+seconds now use `(nanoseconds << 32) / 1_000_000_000`. Other changes preserve
+intentional wrapping, raw pointers, JIT contracts, hardware tables, and ABI
+behavior behind documented scoped expectations.
 
 ## Lane state
 
-Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
-1, then CORE phase 2.
+- **BOARD emulator implementation**: done on esp32sim branch
+  `board/tinydraw-v2-maintained` at `b7c9b87`. Generic synchronous GP-SPI and
+  MISO, GP-SPI2 DMA delivery, board-driven GPIO input, CST820, CO5300,
+  Waveshare V2 wiring, browser touch, and one-command TinyDraw workflows are
+  implemented. TinyDraw `2643aa7` passed a paced seven-sample browser stroke,
+  and the same normal product source passed on physical hardware. See the
+  [normal-product receipt](lanes/receipts/board-tinydraw-v2-normal-2026-09-01/README.md).
+  The earlier one-dot screenshot is not acceptance evidence.
+- **BOARD evidence service**: open but paused. Chip identity is accepted as
+  CST820. IDF 6.1 timing rebaseline, JTAG lock-step, and earlier receipts
+  remain valid at their recorded pins. Panel timing claims still require a
+  logic-analyzer capture. The modeled 60 Hz GPIO13 TE pulse remains an
+  approximate compatibility signal, not adopted hardware timing.
+- **CORE phase 1**: not exited and paused. Effective work on
+  `core/measured-phase1` includes the backend contract, supporting fake tests,
+  measured interpreter scheduler, schema-2 timing importer, receipt-complete
+  ledgers, active-device deadlines, real esp32sim backend adapter, stop
+  precedence, quota refusals, and block-cost cache through `e5dea08`. The
+  authorized observation input at `8367594` contains 1,228 trace records and
+  30 ordered ROM callbacks. Its program-office copy has SHA-256
+  `b53ce35fcf88e5da1a995bfdb76543993334ec2fc8cc7a8a21b63e5061f143ad`.
+  It lacks executable initial CPU, RAM, MMIO, and device state. The remaining
+  phase-1 gate must drive the actual `Esp32SimBackend`, measured scheduler,
+  schema-2 importer, and canonical product ledger. A fresh agent must use
+  [`lanes/CORE-RECOVERY.md`](lanes/CORE-RECOVERY.md) when the maintainer gives
+  a new go. No TypeScript implementation or TypeScript timing-rule port is
+  permitted.
+- **CORE phase 2**: undispatched and blocked on a genuine phase-1 exit.
+- **SPEED** and **SHIP**: undispatched. Their retained branches are not active
+  work.
 
-- **CORE**: phase 1 has not exited. Effective work on esp32sim branch
-  `core/measured-phase1` includes the versioned adapter contract, fake
-  contract suite, measured interpreter scheduler, schema-2 timing importer,
-  receipt-complete ledgers, active-device deadlines, the esp32sim backend
-  adapter, stop precedence, quota refusals, and measured block-cost cache
-  through `e5dea08`. The maintainer-authorized observation bundle is committed
-  at `8367594`. It records 1,228 trace observations and 30 ROM callbacks, but
-  it does not contain executable initial CPU, RAM, MMIO, and device state.
-  The missing exit gate is a differential that drives the recorded Flexe path
-  through the actual `Esp32SimBackend`, measured scheduler, timing importer,
-  and canonical product ledger. The first attempted differential did not do
-  that and was removed. Recovery requires a fresh CORE agent after the Rust
-  maintenance gate is green. Phase 2 remains undispatched.
-- **SPEED**: not in the current sequence; dispatched when the
-  maintainer adds it.
-- **SHIP**: not dispatched. Boundary review starts when CORE's
-  validator seam lands; shell and release wait for CORE and SPEED. CI
-  belongs to the release workstream; its material waits untouched on
-  fork branches `lane-g/ci-spec` (`6ba6a6d`) and `lane-g/upstream-ci`
-  (`3b58cc6`). The fork tree is rustfmt-clean at `puck/base`
-  (`3051793`).
-- **BOARD**: the ESP-IDF 6.1 flag day is complete. All
-  fixtures rebuilt and pinned on v6.1 with xtensa-esp-elf 15.2.0 (hashes
-  below). Four timing boots recovered 802 passing receipts across 210
-  identities; 204 meet the strict two-independent-receipt criterion.
-  Silicon-architectural headlines unchanged (35-cycle window pair,
-  1.000 cycles per straight-line instruction, +1 loop alignment at +3
-  mod 4). IDF-owned timing moved as recorded: level-1 interrupt
-  entry/resume 228/142 to 227/143, level-3 223/138 to 222/139, median
-  boot to first output 0.582 s to 0.472 s. Evidence:
-  [`timing/evidence/idf61-rebaseline-3db3985/`](timing/evidence/idf61-rebaseline-3db3985/README.md).
-  Open: a systematic one-cycle first-line cache probe shift is retained
-  as a diagnostic, not adopted; that cost class stays blocked in the
-  importer until the pooling-probe diagnosis and adoption disposition
-  land. Six identities remain below strict recovery (two with zero
-  receipts, four with one) after repeated USB capture truncation.
-  Continuing BOARD: chip identity is captured and accepted (request
-  record [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md)).
-  The on-device identity probe read `0xA7=0xB7`, `0xA8=0x41`, and
-  `0xA9=0x02` at I2C address `0x15`; the exact V2 board's controller is
-  adopted as CST820, matching the vendor's V2 board identification
-  ([receipt](lanes/receipts/board-touch-identity-2026-09-01/README.md)).
-  The demo-first milestone is complete on esp32sim branch
-  `board/tinydraw-v2-demo` at `2c0b320`: the IDF 6.1 gate harness boots at
-  interpreter speed, the CO5300 panel visibly draws the TinyDraw UI, and a
-  scripted browser drag crosses the CST820 model and commits a visible stroke
-  with 22 touch events, one down, one up, and zero touch or presentation
-  failures
-  ([receipt](lanes/receipts/board-tinydraw-v2-demo-2026-09-01/README.md)).
-  The modeled 60 Hz TE cadence is demo-only and not timing evidence; the
-  external logic-analyzer capture remains required before timing-accuracy
-  claims. The physical board was restored to the IDF 6.1 gate harness,
-  verified booting, and released.
-  A synchronous GP-SPI
-  board-response hook is pushed as an upstream-shaped candidate at
-  `lane-a/gp-spi-device-hook` (`246c699`). Two independent 8,000-step
-  JTAG lock-step sessions against upstream esp32sim passed: no PC
-  divergence, zero timing resynchronizations, one persistent register
-  difference at step 15
-  ([receipt](lanes/receipts/E-01-jtag-lockstep.md)); no flash writes,
-  board restored and released. Open BOARD work, in rough order: the
-  first-line cache pooling diagnosis and adoption disposition; the six
-  identities below strict two-receipt recovery; the logic-analyzer bus
-  capture (about 40 MHz QSPI, TE, I2C, touch interrupt), which gates
-  timing-accuracy claims about the panel (demo modeling proceeds
-  firmware-contract-first per the BOARD brief, with the board attached
-  locally); strict two-boot assembly of the long-window
-  PSRAM cells; arbitration and cache store/writeback probes (blocked on
-  reviewed probe code); CCOUNT lock-step comparison (blocked on CORE's
-  measured mode).
+## TinyDraw pull request
 
-## Persistent fixtures (ESP-IDF v6.1, TinyDraw `3db39856`)
+TinyDraw pull request 4 is open:
+<https://github.com/aliceisjustplaying/tinydraw/pull/4>.
 
-- Panel-probe ELF SHA-256
-  `143e9f5185d010a8b5344ee5ed2c82a99928dba6839a84d746219d9045de468f`
-- Vector demo ELF SHA-256
-  `1b0475db6ab30e1e6b6ee07ae77ae46b21c874cac64a736e5ba86604a68234ce`
-- Gate-harness ELF SHA-256
-  `4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8`
+Branch `maintenance/idf61-probes` at `2643aa7` contains the four requested
+IDF 6.1 probe and receipt commits, the current ESP-IDF touch API fix, a
+four-file formatting cleanup, and duplicate static-link removal. It passes 31
+debug, 31 release, and 13 sanitizer tests. The clean normal-product build has
+zero compiler or deprecation warnings. Physical hardware reaches READY and
+LIVE_SETTLE without failures, and the emulator commits the seven-sample
+stroke.
 
-Fixture ELFs remain machine-local to the maintainer. Their IDF 6.1 probe and
-calibration source is published on TinyDraw branch
-`codex/lane-0-idf61-probes` at `632c966`; the normal TinyDraw 2.2 product build
-has not yet been validated in the emulator.
+The installed ESP-IDF 6.1 SDK emits five CMake component-ownership warnings
+about its own cyclic private include relationship between `esp_wifi` and
+`wpa_supplicant`. These are not TinyDraw source warnings. Removing them would
+require expanding scope into the installed SDK or selecting a different SDK
+revision.
 
-## Maintenance pause, 2026-09-01
+No further TinyDraw commit is expected for normal emulator operation. A later
+BOARD hardware-evidence request may add a narrowly scoped probe or capture
+tool.
 
-No lane work is authorized until the fork's Rust quality gate passes without
-warnings. The fork work is on esp32sim branch `maintenance/rust-safeguards`,
-starting at `c6463b5`, with Rust 1.98.0 pinned, workspace lints inherited by
-all seven crates, debug assertions and overflow checks enabled in release,
-and `scripts/pre-commit.sh` as the required local gate. This is fork policy;
-upstream suitability is not a constraint for this round.
+## One-command operation
 
-The remaining maintenance work is: finish all lint remediation; pass the gate
-from the repository root and by absolute path from another directory; add
-one-command normal TinyDraw build/run and emulator quickstart scripts; validate
-the normal TinyDraw 2.2 build in the emulator and on hardware; prepare a clean
-TinyDraw pull request containing the four published IDF 6.1 probe commits if
-that validation passes; then remove only branches proven merged or superseded.
+From esp32sim branch `board/tinydraw-v2-maintained`:
 
-## Current document ambiguities to resolve
+```text
+./scripts/tinydraw-v2.sh run /path/to/tinydraw
+./scripts/tinydraw-v2.sh smoke /path/to/tinydraw
+./scripts/tinydraw-v2.sh flash /path/to/tinydraw /dev/cu.usbmodem101
+```
 
-1. "Replay bundle" was used for an observation log that cannot initialize the
-   emulator. CORE needs a precise executable checkpoint contract and a named
-   trace start before another agent can implement the real differential.
-2. The fake contract suite is a deterministic test of backend-neutral scheduler
-   rules. The documents did not clearly say that it cannot satisfy phase 1;
-   phase 1 requires the same path through the real esp32sim backend.
-3. BOARD has a demo milestone and a continuing evidence-service role. The
-   documents do not define whether "BOARD done" means the browser demo, normal
-   TinyDraw 2.2 manual validation, or the later logic-analyzer timing receipts.
-4. The 60 Hz TE signal is a demo cadence derived from the emulator clock, not a
-   hardware receipt. A logic-analyzer capture must define the pin, sample count,
-   operating state, and acceptance statistic before hardware cadence is adopted.
-5. "Unmodified TinyDraw V2" needs one pinned product revision and a decision on
-   whether the four IDF 6.1 probe and calibration commits belong in that product
-   revision. Hardware and emulator validation will supply the decision evidence.
-6. The safeguard specification names `clippy::transmute_int_to_ptr`, which does
-   not exist in pinned Rust 1.98.0. The fork uses the rustc lint
-   `integer_to_ptr_transmutes` for the same defect class.
-7. The earlier overnight report asked how to group BOARD work for upstream.
-   The maintainer has deferred that decision until the generic and TinyDraw-only
-   pieces are separated and tested.
+`run` builds and opens the normal product in the browser. `smoke` performs the
+paced stroke and fails closed on missing markers or crashes. `flash` builds
+and flashes the normal product. `./scripts/pre-commit.sh` runs the complete
+Rust safeguard gate. The plain-English repository breakdown is
+[`reviews/current-state-2026-09-01.md`](reviews/current-state-2026-09-01.md).
+
+## Upstream classification
+
+No esp32sim upstream pull request has been opened. The tested work is split in
+[`reviews/board-upstream-split-2026-09-01.md`](reviews/board-upstream-split-2026-09-01.md):
+
+1. Generic synchronous GP-SPI and MISO.
+2. Generic GP-SPI2 DMA delivery.
+3. Generic board-driven GPIO input.
+4. Reusable CST820 and CO5300 models.
+5. Waveshare AMOLED 1.8 V2 wiring, CLI, browser support, and board docs.
+6. Optional TinyDraw launcher and paced-stroke integration example.
+
+The maintainer will test first and then decide which groups to offer upstream.
+
+## Branch cleanup
+
+Deleted after merge or supersession proof:
+
+- esp32sim remote `board/tinydraw-v2-demo`, superseded by
+  `board/tinydraw-v2-maintained`;
+- esp32sim remote `maintenance/lints-*` branches after their commits were
+  integrated into `maintenance/rust-safeguards`;
+- corresponding local lint and old BOARD pointers after `git cherry` or
+  range-diff verification;
+- program-office remote receipt branches after their receipts landed on
+  `main`;
+- program-office remote `core/phase1-differential` after the only effective
+  artifact, the hash-identical shared observation input, landed on `main`.
+
+Retained deliberately:
+
+- esp32sim `maintenance/rust-safeguards` and
+  `board/tinydraw-v2-maintained`, which are the reviewed working heads;
+- esp32sim `core/measured-phase1`, the source of effective unfinished CORE
+  work for a future fresh recovery;
+- esp32sim `lane-a/gp-spi-device-hook`, `lane-b/design-spike`,
+  `lane-g/ci-spec`, `lane-g/upstream-ci`, and `puck/base`, which still anchor
+  candidate, design, release, or provenance material;
+- TinyDraw `codex/lane-0-idf61-probes` and `board/touch-identity-probe`, which
+  anchor published fixture and hardware-identity evidence;
+- TinyDraw `maintenance/idf61-probes`, the open pull-request branch.
+
+## Persistent historical fixtures
+
+The IDF 6.1 timing fixtures remain pinned to TinyDraw `3db39856`:
+
+- panel-probe ELF SHA-256
+  `143e9f5185d010a8b5344ee5ed2c82a99928dba6839a84d746219d9045de468f`;
+- vector demo ELF SHA-256
+  `1b0475db6ab30e1e6b6ee07ae77ae46b21c874cac64a736e5ba86604a68234ce`;
+- gate-harness ELF SHA-256
+  `4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8`.
+
+Their source is published on TinyDraw branch `codex/lane-0-idf61-probes` at
+`632c966`. These fixtures are historical evidence inputs. Normal-product
+validation now uses TinyDraw `2643aa7` as recorded above.
+
+## Remaining ambiguities and parked questions
+
+1. CORE executable boundary: “What exact instruction boundary and complete
+   initial CPU, RAM, MMIO, and device state define the executable Flexe replay
+   checkpoint for the real measured-path differential?”
+2. TE evidence contract: “For the GPIO13 TE analyzer capture, what operating
+   state, edge count, statistic, and acceptance bound should be adopted before
+   replacing the approximate compatibility cadence with hardware timing?”
+3. esp32sim upstream relationship: “After maintainer testing, which of the six
+   reviewed groups should be offered upstream, and should reusable CST820 and
+   CO5300 models be separated from Waveshare board wiring?”
+4. TinyDraw pull request: “After maintainer testing, should TinyDraw pull
+   request 4 be merged as the seven-commit series now validated on hardware
+   and in the emulator?”
+5. SDK-owned warnings: “Does the zero-warning requirement include patching or
+   repinning the installed ESP-IDF SDK to suppress its five
+   `esp_wifi`/`wpa_supplicant` CMake ownership warnings?”
+
+Resolved document ambiguities:
+
+- the 1,228-record artifact is called an observation input, not a complete
+  replay checkpoint;
+- fake backend tests are supporting unit tests and cannot satisfy CORE phase
+  1;
+- BOARD emulator implementation is done at the normal-product gate, while its
+  evidence service remains open;
+- “unmodified TinyDraw” means no emulator-specific source path, with the same
+  normal product source validated on hardware and emulator;
+- Rust 1.98 uses rustc `integer_to_ptr_transmutes` because the requested
+  `clippy::transmute_int_to_ptr` lint name does not exist.
 
 ## Hardware queue
 
-Tasks needing the physical board or the maintainer's hands, owned by
-lane BOARD, serviced in maintainer-scheduled sessions:
+Paused pending a new maintainer go:
 
-- Bus capture with the external logic analyzer (about 40 MHz QSPI, TE,
-  I2C, touch interrupt). Needed before timing-accuracy claims about the
-  panel; demo modeling proceeds without it.
+- hash-pinned logic-analyzer capture of about 40 MHz QSPI, GPIO13 TE, I2C, and
+  GPIO21 touch interrupt;
+- first-line cache pooling diagnosis and six below-threshold receipt
+  identities;
+- long-window PSRAM, arbitration, and cache store or writeback probes after
+  reviewed probe code exists;
+- CCOUNT lock-step comparison after CORE measured mode exists.
 
-## Overnight report, 2026-09-01
+The board currently runs the normal TinyDraw V2 product built from `2643aa7`.
+The serial port is released.
 
-Advanced:
+## Overnight report, 2026-09-01, maintenance continuation
 
-- BOARD identified the exact V2 touch controller as CST820 and archived the
-  receipt in program-office commits `d3d7cbe` and `c64351e`. TinyDraw probe
-  commit `4db22a6` and esp32sim demo commits `4886ec0`, `e128b82`, `fe8f720`,
-  and `2c0b320` produced the visible browser UI and a scripted visible touch
-  stroke. The IDF 6.1 gate harness was restored and the board released.
-- CORE phase 1 advanced on esp32sim branch `core/measured-phase1` through
-  `88f526d`, `bab791e`, `8dcf27e`, `b2aed7f`, `a96a4e0`, `21edb94`,
-  `8d7bc78`, `cdfc693`, `04f6813`, `49fb685`, `a4340d5`, `fe7cd05`, and
-  `e5dea08`. Coordinator review reran `cargo test --workspace`: 58 tests and
-  all doc tests passed. No baseline was generated or changed.
+Advanced with commits:
+
+- esp32sim Rust safeguards landed through `b138473`: ten granular commits from
+  `c6463b5` through `b138473`, with the complete gate green.
+- esp32sim BOARD maintenance landed through `b7c9b87`: generic device and DMA
+  support, CST820, CO5300, Waveshare wiring, browser touch, one-command normal
+  product workflows, a fail-closed paced seven-sample stroke gate, and the
+  inherited Rust safeguards.
+- TinyDraw pull request 4 advanced through `2643aa7`: four published probe
+  commits plus `f5c239b`, `000dcdd`, and `2643aa7`. Host, sanitizer, clean
+  product, hardware, and emulator checks pass.
+- program-office commits `717db3f`, `70894c8`, `6771e6c`, `3469547`,
+  `821aaf0`, and `6c27ed5` added the fresh CORE recovery brief, authorized
+  observation input, safeguard report, upstream split, and corrected lane
+  rules. Later granular cleanup commits archive the normal-product receipt,
+  current-state overview, BOARD exit, and this ledger.
 
 Parked, exact questions:
 
-- CORE: “May CORE generate and commit the canonical shared replay bundle
-  containing the 1,228 raw trace records with SHA-256
-  `e025823c09a8c5558dbd2147bde05e8396c6d0f4b6103ca77947d11b4bc27d2d`
-  and 30 ordered ROM callback events for gate ELF SHA-256
-  `4e121a3642a6f18766cfe96c2be6adc8a0017fba4afa82105d642168ea40e2c8`, or
-  will the maintainer provide it?”
-- Upstream relationship: “Should esp32sim branch
-  `board/tinydraw-v2-demo` at `2c0b320` be offered to
-  joakimeriksson/esp32sim as a PR, and if so in what commit grouping?”
+- CORE: “What exact instruction boundary and complete initial CPU, RAM, MMIO,
+  and device state define the executable Flexe replay checkpoint for the real
+  measured-path differential?”
+- Upstream: “After maintainer testing, which of the six reviewed esp32sim
+  groups should be offered upstream, and in what pull-request grouping?”
+- SDK: “Does the zero-warning requirement include patching or repinning the
+  installed ESP-IDF SDK to suppress its five SDK-owned CMake warnings?”
 
-Morning decisions, in priority order:
+Morning decision order:
 
-1. Answer CORE's replay-bundle question. It gates the phase-1 exit and all
-   phase-2 dispatch.
-2. Decide whether and how to offer the BOARD demo branch upstream.
+1. Test TinyDraw pull request 4 and decide whether its seven validated commits
+   should merge.
+2. Decide whether SDK-owned CMake warnings are inside this repository cleanup
+   scope.
+3. Give an explicit go before any new CORE or BOARD evidence work starts.
+4. When CORE is authorized, define or approve the executable replay boundary.
+5. After BOARD testing, choose the esp32sim upstream grouping.
 
-Confusing or contradictory documents:
+Confusing or contradictory documents found and corrected:
 
-- CORE phase 1 requires the shared-trace differential, but only summary
-  counts and hashes are committed; the donor test also names paths removed
-  during the product split.
-- The coordinator brief generally says to advance after a lane parks, while
-  its phase-2 rule says phase 2 starts only after phase 1 exits. The specific
-  phase-2 rule was followed, so phase 2 was not dispatched.
-- BOARD's exit text names `TINYDRAW_LIVE_FAIL presenter=1 touch=1` as the
-  milestone even though a passing run emits `TINYDRAW_LIVE_STROKE` and
-  `TINYDRAW_LIVE_DONE` and correctly emits no `TINYDRAW_LIVE_FAIL` marker.
+- the old status called the authorized observation input a replay bundle even
+  though it cannot initialize the emulator;
+- the BOARD brief described only the gate-harness demo and did not define the
+  later normal-product completion gate;
+- the old status simultaneously described maintenance as incomplete after the
+  final safeguard head was already green;
+- the demo receipt documented a passing marker mismatch that has since been
+  corrected in the BOARD brief;
+- “unmodified TinyDraw V2” was not explicit about allowing ordinary upstream
+  maintenance changes while forbidding an emulator-specific product fork.
