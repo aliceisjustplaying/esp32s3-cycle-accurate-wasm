@@ -1,5 +1,9 @@
 # esp32s3-cycle-accurate-wasm
 
+**Archived.** Superseded by the
+[esp32sim fork](https://github.com/aliceisjustplaying/esp32sim),
+branch `alice`.
+
 The program office for a browser-hosted, wasm-based, cycle-accurate
 ESP32-S3 emulator. The product itself is built in our
 [esp32sim fork](https://github.com/aliceisjustplaying/esp32sim); this
