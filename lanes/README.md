@@ -59,4 +59,4 @@ pulled on demand.
 | CORE | [CORE.md](CORE.md) | esp32sim fork; measured execution, phases 1 and 2 |
 | BOARD | [BOARD.md](BOARD.md) | esp32sim fork + tinydraw; the physical board, its devices and evidence (captures are LOCAL) |
 | SPEED | [SPEED.md](SPEED.md) | esp32sim fork, upstream-shaped; dispatched when the maintainer adds it |
-| SHIP | [SHIP.md](SHIP.md) | esp32sim fork; CI now, boundary review with CORE, shell and release last |
+| SHIP | [SHIP.md](SHIP.md) | esp32sim fork; boundary review with CORE, shell and release last |

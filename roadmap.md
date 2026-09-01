@@ -68,10 +68,10 @@ brief.
 | CORE | Measured execution per decisions 0014 and 0008: the versioned `backend-api` crate and contract tests, measured interpreter scheduler, timing-profile schema 2 importer and tiered ledger, measured cost payload, one-shot TypeScript differential gate; then phase 2, dual-core contention (interleave quanta as a decision record, MSPI arbitration, litmus firmware, contended-cohort correlation) | Fully | Nothing (phase 2 by phase 1) |
 | BOARD | The exact Waveshare board and its silicon evidence: capture-first device models (CO5300-class panel, touch, sensors, TCA9554 wiring), chip-identity adoption, the JTAG lock-step oracle, probe families, and the toolchain-currency remainder (first-line diagnosis, weak identities) | Modeling yes, captures no | Captures gate panel and touch modeling |
 | SPEED | wasm JIT backend, upstream-shaped: browser real time with `--no-jit` bit-identity, measured against the browser-speed receipts, decision 0010's profiling checkpoint | Correctness yes, M1 gates local | The maintainer adding it to the dispatch sequence |
-| SHIP | CI (built; landing the approved reformat and branches remains), boundary review of CORE's validator seam with hostile-input tests, then the thin web shell, correlation suite at 0008 bounds, and the release battery | Fully | Shell and release by CORE and SPEED |
+| SHIP | Boundary review of CORE's validator seam with hostile-input tests; then the thin web shell, correlation suite at 0008 bounds, and the release battery (which includes CI) | Fully | CORE's seam; shell and release by CORE and SPEED |
 
-SHIP's CI and boundary workstreams grew from the accepted
-external-review findings, see
+The review dispositions behind SHIP's checks and boundary workstreams
+are in
 [`RESPONSE.md`](reviews/2026-08-31-external/RESPONSE.md). The critical
 path is CORE phase 1 then phase 2 for accuracy, and SPEED for browser
 real time; the two paths are independent of each other. **Demo

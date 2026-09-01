@@ -1,7 +1,7 @@
-# Lane SHIP: CI, boundaries, shell, release
+# Lane SHIP: boundaries, shell, release
 
-Home: esp32sim fork. Cloud-viable. Three workstreams in dependency
-order; the first is active now.
+Home: esp32sim fork. Two workstreams in dependency order; neither is
+dispatched until lane CORE's seam exists.
 
 Binding: decision 0013 (product identity) and the fail-closed rules in
 `AGENTS.md`. Background, on demand: decision 0014 (the adapter owns
@@ -12,32 +12,13 @@ and, in the puck archive, the original tick-loop findings and donor
 armor (`src/abiGuard.ts`, `src/wasiLite.ts`), which inform but do not
 bind.
 
-## 1. CI (active)
+The tree is rustfmt-clean; keep it that way (`cargo fmt --check`,
+`cargo clippy`, `cargo test` before pushing). GitHub CI and the
+decoder-conformance material on the `lane-g/ci-spec` and
+`lane-g/upstream-ci` branches belong to the release workstream; leave
+those branches untouched until then.
 
-Current state: built and verified; branches are pushed to the fork
-(`lane-g/ci-spec` at `6ba6a6d`, upstream-shaped `lane-g/upstream-ci` at
-`3b58cc6`): pinned actions, the Rust fmt/test/clippy matrix, and
-mandatory fail-closed decoder conformance corpora with visible case
-counts and hashes (10 Xtensa, 9 RISC-V, zero mismatches); deliberate
-boundary defects were proven to fail.
-
-The fork-wide rustfmt reformat is approved: apply it as one isolated,
-mechanical-only commit on its own branch (no hand edits mixed in), then
-land the CI branches on top and configure the fork's required checks.
-If required-checks configuration needs repository settings the agent
-cannot reach, park that single step and finish the rest. Golden
-discipline throughout: semantic assertions and provenance sidecars
-accompany fixtures; a conformance test whose corpus is missing fails,
-never skips. Nothing beyond this workstream until the coordinator
-advances the sequence: boundary review waits for CORE's seam, shell and
-release wait for CORE and SPEED.
-
-CI exit: a deliberately injected defect in each boundary fails its
-required job on the fork's CI; conformance case counts and corpus
-hashes are visible in required logs; a clean checkout reproduces
-documented artifacts.
-
-## 2. Boundary review (as lane CORE's seam lands)
+## 1. Boundary review (as lane CORE's seam lands)
 
 Review the primary validated-output seam decision 0014 places inside the
 adapter (validation, quotas, bounded construction before `BackendEvent`
@@ -51,7 +32,7 @@ Boundary exit: the hostile corpus produces the same typed failure in
 every host mode with no crash, hang, allocation spike, or partial
 artifact.
 
-## 3. Shell and release (blocked by lanes CORE and SPEED)
+## 2. Shell and release (blocked by lanes CORE and SPEED)
 
 The fork-owned thin web UI shell over the versioned Wasm interface,
 reusing selected UI and browser pieces from the puck archive with

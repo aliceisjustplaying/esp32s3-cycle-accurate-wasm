@@ -13,8 +13,8 @@ Incubation history lives in the puck archive (see
 
 ## Lane state
 
-Dispatch sequence set by the maintainer: SHIP's CI, then BOARD's demo,
-then CORE phase 1, then CORE phase 2.
+Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
+1, then CORE phase 2.
 
 - **CORE**: the measured-mode design spike is dispositioned as decision
   0014; implementation has not started and goes to a blank-slate agent
@@ -25,14 +25,12 @@ then CORE phase 1, then CORE phase 2.
   phase 1's exit.
 - **SPEED**: not in the current sequence; dispatched when the
   maintainer adds it.
-- **SHIP**: CI is built, verified, and pushed to the fork
-  (`lane-g/ci-spec` at `6ba6a6d`, upstream-shaped `lane-g/upstream-ci`
-  at `3b58cc6`): pinned actions, fail-closed decoder corpora with
-  visible case counts and hashes (10 Xtensa, 9 RISC-V, zero
-  mismatches), boundary defects proven to fail. The rustfmt disposition
-  is approved (2026-08-31): one isolated mechanical reformat commit,
-  then the CI branches land. Boundary review starts when CORE's
-  validator seam lands; shell and release wait for CORE and SPEED.
+- **SHIP**: not dispatched. Boundary review starts when CORE's
+  validator seam lands; shell and release wait for CORE and SPEED. CI
+  belongs to the release workstream; its material waits untouched on
+  fork branches `lane-g/ci-spec` (`6ba6a6d`) and `lane-g/upstream-ci`
+  (`3b58cc6`). The fork tree is rustfmt-clean at `puck/base`
+  (`3051793`).
 - **BOARD**: the ESP-IDF 6.1 flag day is complete. All
   fixtures rebuilt and pinned on v6.1 with xtensa-esp-elf 15.2.0 (hashes
   below). Four timing boots recovered 802 passing receipts across 210
