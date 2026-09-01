@@ -1,27 +1,24 @@
 # ESP32-S3 cycle-model roadmap
 
-Date: 2026-08-31, revision 4. Revision 3 folded in the external review;
-revision 4 adopts decisions
+Date: 2026-08-31, revision 4.
+
+The product is a browser-hosted cycle-accurate ESP32-S3 emulator built
+from our [esp32sim](https://github.com/joakimeriksson/esp32sim) fork,
+scoped to the complete SoC plus the exact Waveshare
+ESP32-S3-Touch-AMOLED-1.8 board; the first useful milestone is real
+TinyDraw firmware boot, draw, and touch in the browser. Governing
+decisions:
 [0013](decisions/0013-product-identity-fork-owns-the-product.md)
 (product identity: the fork owns the product, puck is the donor,
-evidence, and decision repository) and
+evidence, and decision repository),
 [0014](decisions/0014-measured-scheduler-and-adapter-contract.md) (the
-accepted, trimmed measured scheduler and adapter contract). The final
-product is a browser-hosted cycle-accurate ESP32-S3 emulator built from
-our esp32sim fork, scoped to the complete SoC plus the exact Waveshare
-ESP32-S3-Touch-AMOLED-1.8 board; the first useful milestone is real
-TinyDraw firmware boot, draw, and touch in the browser. Revision 2
-followed decision
-[0011](decisions/0011-adopt-esp32sim-execution-foundation.md) adopted
-[esp32sim](https://github.com/joakimeriksson/esp32sim) as the execution
-foundation. Companion to decisions
+measured scheduler and adapter contract),
+[0011](decisions/0011-adopt-esp32sim-execution-foundation.md) (esp32sim
+as the execution foundation), and
 [0008](decisions/0008-tiered-cost-vocabulary-and-acceptance-bounds.md)
-(cost tiers), [0009](decisions/0009-execute-the-real-rom.md) (real ROM),
-[0010](decisions/0010-jit-first-engine-real-time-requirement.md)
-(engine requirements, now satisfied through 0011), and to
-[`STATUS.md`](STATUS.md).
+(cost tiers). Current state lives in [`STATUS.md`](STATUS.md).
 
-## Definition of done (unchanged)
+## Definition of done
 
 The product boots the board's real merged firmware image (real ELF plus
 the real mask ROM) on an emulated dual-core ESP32-S3 with display, touch,
@@ -30,7 +27,7 @@ accounting that passes a silicon correlation suite at the decision-0008
 tiers: exact on SRAM-resident kernels, within 1 percent on frame-scale
 workloads, distribution agreement on RTC and long-window PSRAM paths.
 
-## Architecture after 0011
+## Architecture
 
 - **Execution:** esp32sim's `xtensa-lx7` core and `esp32s3` SoC, pinned by
   commit. Fast mode is upstream's behavior, unchanged. **Measured mode**
@@ -56,8 +53,7 @@ workloads, distribution agreement on RTC and long-window PSRAM paths.
   port into it selectively, with provenance.
 - **Upstream relationship:** contributions upstream where wanted (wasm
   JIT backend, boards, peripheral gaps), fork-carried where not (measured
-  mode, if upstream prefers staying instruction-level). Contact with the
-  author is open as a courtesy; no work waits for a reply.
+  mode, if upstream prefers staying instruction-level).
 
 ## Lane plan at a glance
 
@@ -90,51 +86,33 @@ trimmed, and accepted as decision 0014, which is now the normative
 contract (interpreter-only, single core, networking off, fail closed).
 CORE is in the implementation phase against that record.
 
-## What retired, what carries over
-
-Retired by 0011: the old lanes 1 (ROM and peripherals) and 3 (build the
-interpreter), the flexe capability lanes (frozen as reference corpus and
-oracle), the QEMU oracle as primary semantics referee (now tie-breaker).
-
-Carried over unchanged: decision 0008's tiers and every adopted cost; the
-timing lab and its evidence; the receipts pipeline and one-owner board
-rule; the browser-speed probes as the performance yardstick; the
-toolchain-currency work (now inside lane BOARD); the
-hardware-versus-cloud boundaries below.
-
 ## Toolchain currency
 
-The project tracks the latest stable ESP-IDF. The board and fixtures build
-with v6.1 as of the 2026-08-31 flag day (lane BOARD). An IDF
-bump is a provenance event, not a chore: every hardware receipt pins the
-IDF version, sdkconfig hash, and compiler, and a new compiler changes
-codegen and can shift measured costs.
+The project tracks the latest stable ESP-IDF; the board and fixtures
+build with v6.1. An IDF bump is a provenance event, not a chore: every
+hardware receipt pins the IDF version, sdkconfig hash, and compiler,
+because a new compiler changes codegen and can shift measured costs.
+Bump rules (lane BOARD):
 
-The bump was lane zero of the restart. Its receipt and fixture checklist was:
-
-- rebuild the fixture ELFs under 6.1 and re-pin hashes, addresses, and
-  the ISA inventory;
-- rerun the existing receipt cohorts and confirm the silicon-architectural
+- rebuild the fixture ELFs under the new version and re-pin hashes,
+  addresses, and the ISA inventory;
+- rerun the receipt cohorts and confirm the silicon-architectural
   numbers (window pair, issue rate, loop alignment, cache ladders, MMIO
-  costs) are bit-identical: they are chip claims and should not move, and
-  any shift is a probe diagnostic, not a chip change;
+  costs) are bit-identical: they are chip claims and should not move,
+  and any shift is a probe diagnostic, not a chip change;
 - re-measure and re-pin everything that times IDF's own code (interrupt
   entry and resume through the dispatcher, boot-to-app_main), which is
   expected to change;
-- one flag day, no mixing: v6.0.2 receipts remain valid historical
-  evidence for their pinned toolchain, all new evidence is 6.1, and the
-  6.0.2-versus-6.1 delta is retained as a toolchain-sensitivity receipt.
+- one flag day, no mixing: each receipt is valid only for its pinned
+  toolchain, and the cross-version delta is itself a
+  toolchain-sensitivity receipt.
 
-The flag day rebuilt and re-pinned the fixtures and ISA inventories, retained
-the IDF-owned interrupt and boot deltas, and confirmed the architectural
-headline values. The strict receipt criterion remains incomplete for six
-explicit RTC/reset groups after four boots because of systematic USB capture
-truncation. The immutable ledger and artifacts are in
-[`idf61-rebaseline-3db3985`](timing/evidence/idf61-rebaseline-3db3985/README.md).
-
-esp32sim itself is version-agnostic about application firmware (it boots
-unmodified images), so lane zero concerns this project's receipts and
-fixtures, not the emulator.
+The current baseline ledger is
+[`idf61-rebaseline-3db3985`](timing/evidence/idf61-rebaseline-3db3985/README.md);
+open items are in [`STATUS.md`](STATUS.md). esp32sim itself is
+version-agnostic about application firmware (it boots unmodified
+images), so this section concerns this project's receipts and fixtures,
+not the emulator.
 
 ## Hardware access and cloud lanes
 
@@ -148,12 +126,12 @@ verification loops, not development:
 | SPEED | Correctness | M1 performance gates (cloud numbers are directional) |
 | SHIP | Fully | Final differential-harness runs before release |
 
-The receipts pipeline remains the interface: cloud lanes consume
-committed, hash-pinned evidence from git and emit hardware request specs;
-the single board-owner lane services the queue. The fixture-distribution
-enabler from revision 1 still applies (fixture ELFs as release artifacts
-or committed extracts) and now also covers the esp32sim fork's test
-firmware. A second board serves lane BOARD first.
+The receipts pipeline is the interface: cloud lanes consume committed,
+hash-pinned evidence from git and queue hardware needs in `STATUS.md`;
+lane BOARD services the queue. Fixture ELFs become release artifacts or
+committed extracts before any cloud dispatch that needs them, including
+the esp32sim fork's test firmware. A second board serves lane BOARD
+first.
 
 ## Standing rules
 

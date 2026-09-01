@@ -1,4 +1,4 @@
-# Lane CORE: measured execution (formerly lanes B and C)
+# Lane CORE: measured execution
 
 Home: esp32sim fork, `core/*` branches off `puck/base`, one agent, own
 clone. The design spike is complete and dispositioned; decision 0014 is

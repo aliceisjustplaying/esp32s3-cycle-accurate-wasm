@@ -20,14 +20,12 @@ G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
 - **CORE**: the measured-mode design spike is dispositioned as decision
   0014; implementation has not started and goes to a blank-slate agent
   per [`lanes/COORDINATOR.md`](lanes/COORDINATOR.md). Schema-1
-  `timing.json` stays rejected for measured totals (it loses the affine
+  `timing.json` is rejected for measured totals (it loses the affine
   MMIO intercept, the committed evidence is `3n - 8`); timing-profile
   schema 2 belongs to CORE. Phase 2 (dual-core contention) waits for
   phase 1's exit.
-- **SPEED**: not in the current sequence. It does not wait on upstream:
-  contact with the author was a courtesy, the work proceeds in the fork
-  when dispatched, and it stays upstream-shaped so it can be offered
-  later.
+- **SPEED**: not in the current sequence; dispatched when the
+  maintainer adds it.
 - **SHIP**: CI is built, verified, and pushed to the fork
   (`lane-g/ci-spec` at `6ba6a6d`, upstream-shaped `lane-g/upstream-ci`
   at `3b58cc6`): pinned actions, fail-closed decoder corpora with
@@ -55,9 +53,9 @@ G, H). The briefs in [`lanes/`](lanes/README.md) carry the mapping.
   land. Six identities remain below strict recovery (two with zero
   receipts, four with one) after repeated USB capture truncation.
   Continuing BOARD: chip identity is captured and accepted (request
-  record [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md), a
-  retired format kept as a receipt); the touch controller stays unnamed
-  until the capture identifies it (decision 0014). A synchronous GP-SPI
+  record [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md));
+  the touch controller is unnamed until the on-device probe identifies
+  it (decision 0014). A synchronous GP-SPI
   board-response hook is pushed as an upstream-shaped candidate at
   `lane-a/gp-spi-device-hook` (`246c699`). Two independent 8,000-step
   JTAG lock-step sessions against upstream esp32sim passed: no PC

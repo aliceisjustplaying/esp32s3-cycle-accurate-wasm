@@ -5,9 +5,10 @@ is: a checkout of this repository (branch `main`),
 one lane name, and the instruction to read that lane's brief and
 everything it links before writing code.
 
-Older documents (decisions, reviews, receipts) reference the original
-ten lanes by letter; they map to the four current lanes as: 0, A, E to
-BOARD; B, C to CORE; D to SPEED; F, G, H to SHIP.
+Older documents (decisions, reviews, receipts) reference lanes by
+letter; the letters map to the current lanes as: 0, A, E to BOARD; B, C
+to CORE; D to SPEED; F, G, H to SHIP. The `requests/` and `receipts/`
+directories here hold committed hardware-session records.
 
 Read order for every lane: the repository `AGENTS.md`, then
 [`../STATUS.md`](../STATUS.md), then your brief and the decisions it

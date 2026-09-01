@@ -1,4 +1,4 @@
-# Lane BOARD: the exact board and its silicon evidence (formerly lanes 0, A, E)
+# Lane BOARD: the exact board and its silicon evidence
 
 Home: esp32sim fork (`board/*` branches off `puck/base`; upstream-shaped
 device models branch from `main`) plus tinydraw for probe firmware. This
@@ -15,8 +15,9 @@ lock-step flow (`hw/difftest.sh`, `hw/compare.py`), and the probe
 methods in tinydraw `calibration/`.
 
 Current state (see `../STATUS.md`): chip identity is captured and
-accepted (request record: `requests/A-01-v2-controller-and-identity.md`,
-a retired format kept as a receipt). Two independent 8,000-step JTAG
+accepted (request record:
+`requests/A-01-v2-controller-and-identity.md`). Two independent
+8,000-step JTAG
 lock-step sessions against upstream esp32sim passed with no PC
 divergence, zero timing resynchronizations, and one persistent register
 difference at step 15

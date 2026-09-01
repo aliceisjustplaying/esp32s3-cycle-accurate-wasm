@@ -45,8 +45,7 @@ repository before starting work.
   repository restructuring until measured mode executes its first
   instruction under the adapter in the esp32sim fork. `STATUS.md`
   updates and receipts are exempt. A blocked agent parks and reports;
-  it does not grow the meta. This project has ballooned into documents
-  instead of code before; this rule is the stop.
+  it does not grow the meta.
 - TypeScript work is minimized: the product's web shell is a thin
   transport and UI client. No TypeScript execution engine is ever built
   (decision 0013). The product is Rust; C belongs to firmware.
@@ -67,10 +66,8 @@ repository before starting work.
   when a finding contradicts a decision record. Do not start another
   lane's work.
 - The physical board has one owner at a time; hardware needs are queued
-  as entries in `STATUS.md`'s "Waiting on" section (the earlier
-  per-request ticket files in `lanes/requests/` are a retired format,
-  kept as receipts). Never open the serial port or JTAG
-  opportunistically.
+  as entries in `STATUS.md`'s "Waiting on" section. Never open the
+  serial port or JTAG opportunistically.
 - Upstream-first for esp32sim: fixes and capabilities upstream would
   want are built as upstream-shaped pull requests; the fork carries only
   what upstream declines.

@@ -1,4 +1,4 @@
-# Lane SHIP: CI, boundaries, shell, release (formerly lanes F, G, H)
+# Lane SHIP: CI, boundaries, shell, release
 
 Home: esp32sim fork. Cloud-viable. Three workstreams in dependency
 order; the first is active now.
@@ -12,7 +12,7 @@ and, in the puck archive, the original tick-loop findings and donor
 armor (`src/abiGuard.ts`, `src/wasiLite.ts`), which inform but do not
 bind.
 
-## 1. CI (active; formerly lane G)
+## 1. CI (active)
 
 Current state: built and verified; branches are pushed to the fork
 (`lane-g/ci-spec` at `6ba6a6d`, upstream-shaped `lane-g/upstream-ci` at
@@ -37,7 +37,7 @@ required job on the fork's CI; conformance case counts and corpus
 hashes are visible in required logs; a clean checkout reproduces
 documented artifacts.
 
-## 2. Boundary review (as lane CORE's seam lands; formerly lane H)
+## 2. Boundary review (as lane CORE's seam lands)
 
 Review the primary validated-output seam decision 0014 places inside the
 adapter (validation, quotas, bounded construction before `BackendEvent`
@@ -51,7 +51,7 @@ Boundary exit: the hostile corpus produces the same typed failure in
 every host mode with no crash, hang, allocation spike, or partial
 artifact.
 
-## 3. Shell and release (blocked by lanes CORE and SPEED; formerly lane F)
+## 3. Shell and release (blocked by lanes CORE and SPEED)
 
 The fork-owned thin web UI shell over the versioned Wasm interface,
 reusing selected UI and browser pieces from the puck archive with

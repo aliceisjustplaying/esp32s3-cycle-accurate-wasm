@@ -1,12 +1,10 @@
-# Lane SPEED: the wasm JIT backend (formerly lane D)
+# Lane SPEED: the wasm JIT backend
 
 Home: esp32sim fork, upstream-shaped: branch from `main`, built as a
 contribution upstream's own roadmap asks for (its item 4 ends with "the
-wasm backend for the browser build"). This lane does not wait on
-upstream: contact with the author is open as a courtesy, and if he
-replies, scope is coordinated; otherwise the work proceeds here,
-upstream-shaped so it can be offered later. Dispatch order is set by
-the coordinator's sequence.
+wasm backend for the browser build"), so it is built upstream-shaped
+and can be offered there when ready. Dispatch order is set by the
+coordinator's sequence.
 
 Binding: decision 0012 (the interpreter is mandatory everywhere; JIT
 observation is gated by the cross-mode conformance program). Background,
