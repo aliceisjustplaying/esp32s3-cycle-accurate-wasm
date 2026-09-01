@@ -69,13 +69,17 @@ behavior behind documented scoped expectations.
 TinyDraw pull request 4 is open:
 <https://github.com/aliceisjustplaying/tinydraw/pull/4>.
 
-Branch `maintenance/idf61-probes` at `2643aa7` contains the four requested
+Branch `maintenance/idf61-probes` at `0835e5b` contains the four requested
 IDF 6.1 probe and receipt commits, the current ESP-IDF touch API fix, a
-four-file formatting cleanup, and duplicate static-link removal. It passes 31
-debug, 31 release, and 13 sanitizer tests. The clean normal-product build has
-zero compiler or deprecation warnings. Physical hardware reaches READY and
-LIVE_SETTLE without failures, and the emulator commits the seven-sample
-stroke.
+four-file formatting cleanup, duplicate static-link removal, boot-probe
+correctness fixes, and corrected calibration contracts. All 16 inline review
+threads were audited: 11 unique valid findings were fixed, five were duplicate
+reports, and the unrelated generic docstring quota was rejected. It passes 31
+debug, 31 release, and 13 sanitizer tests. The clean normal-product and
+calibration builds have zero project warnings. Hardware reaches READY after
+normal-product restore, the calibration reaches `CALIBRATION_DONE`, and the
+emulator commits the seven-sample stroke. Review evidence is in
+[`lanes/receipts/tinydraw-pr4-review-2026-09-01/`](lanes/receipts/tinydraw-pr4-review-2026-09-01/README.md).
 
 The installed ESP-IDF 6.1 SDK emits five CMake component-ownership warnings
 about its own cyclic private include relationship between `esp_wifi` and
@@ -177,8 +181,8 @@ No maintainer ambiguity currently gates the proposed hardware batch.
 - The esp32sim upstream decision is deliberately deferred until most remaining
   work is complete. The intent is to offer broadly, with final grouping chosen
   after more implementation and maintainer testing.
-- TinyDraw pull request 4 is undergoing review-thread remediation before the
-  maintainer tests or merges it.
+- TinyDraw pull request 4 review-thread remediation is complete. Automated
+  re-review is pending before the maintainer tests or merges it.
 - The five SDK-owned CMake warnings are explicitly out of scope.
 
 Resolved document ambiguities:
@@ -211,7 +215,7 @@ Paused pending a new maintainer go:
 The complete proposed order and its current blockers are in
 [`reviews/hardware-measurement-inventory-2026-09-01.md`](reviews/hardware-measurement-inventory-2026-09-01.md).
 
-The board currently runs the normal TinyDraw V2 product built from `2643aa7`.
+The board currently runs the normal TinyDraw V2 product built from `0835e5b`.
 The serial port is released.
 
 ## Overnight report, 2026-09-01, maintenance continuation
@@ -224,9 +228,10 @@ Advanced with commits:
   support, CST820, CO5300, Waveshare wiring, browser touch, one-command normal
   product workflows, a fail-closed paced seven-sample stroke gate, and the
   inherited Rust safeguards.
-- TinyDraw pull request 4 advanced through `2643aa7`: four published probe
-  commits plus `f5c239b`, `000dcdd`, and `2643aa7`. Host, sanitizer, clean
-  product, hardware, and emulator checks pass.
+- TinyDraw pull request 4 advanced through `0835e5b`: four published probe
+  commits plus `f5c239b`, `000dcdd`, `2643aa7`, `76ccfb9`, and `0835e5b`.
+  Host, sanitizer, clean product, calibration, hardware, and emulator checks
+  pass.
 - program-office commits `717db3f`, `70894c8`, `6771e6c`, `3469547`,
   `821aaf0`, and `6c27ed5` added the fresh CORE recovery brief, authorized
   observation input, safeguard report, upstream split, and corrected lane

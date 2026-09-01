@@ -26,12 +26,13 @@ This is an inventory and proposed capture order. No new capture has started.
    identities have at least two complete receipts, or preserve a reproducible
    transport failure. The existing firmware has no selective rerun mode, so
    these are full-suite boots.
-2. **Rebaseline the core-timing calibration on IDF 6.1.** After TinyDraw pull
-   request 4 review fixes land, capture at least two complete boots of window
-   overflow and underflow, straight-line issue, loop alignment, and dispatcher
-   interrupt entry and resume. Preserve raw logs, ELF, sdkconfig, objdump
-   verification, toolchain versions, and hashes. The existing written results
-   are from IDF 6.0.2 and their raw logs are not in the pull request.
+2. **Complete the core-timing IDF 6.1 cohort.** TinyDraw pull request 4 review
+   fixes landed at `0835e5b`, and one complete hardware validation boot is
+   archived in the program office. Capture at least one more independent boot
+   of window overflow and underflow, straight-line issue, loop alignment, and
+   dispatcher interrupt entry and resume. Preserve raw logs, ELF, sdkconfig,
+   objdump verification, toolchain versions, and hashes. The older written
+   cohort is from IDF 6.0.2 and its raw logs are not in the pull request.
 3. **Boot-to-product markers.** Use the corrected boot-time probe for a reset
    cohort against the normal product, retaining each reset-to-ROM,
    reset-to-bootloader-entry, reset-to-READY, and reset-to-LIVE_SETTLE result.

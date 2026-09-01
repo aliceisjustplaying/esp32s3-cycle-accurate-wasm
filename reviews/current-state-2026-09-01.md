@@ -25,9 +25,9 @@ Pull request: <https://github.com/aliceisjustplaying/tinydraw/pull/4>
 
 Branch: `maintenance/idf61-probes`
 
-Head: `2643aa7`
+Head: `0835e5b`
 
-The pull request contains seven granular commits:
+The pull request contains nine granular commits:
 
 1. Update the ESP-IDF dependency lock to 6.1.
 2. Add the ESP32-S3 core-timing calibration probe source.
@@ -37,16 +37,30 @@ The pull request contains seven granular commits:
 6. Apply the repository's clang-format policy to the four files that failed
    the full-tree gate.
 7. Remove duplicate static linkage of `tinydraw_core`.
+8. Make the boot-time probe validate inputs, avoid serial-control transients,
+   timestamp nonblocking input, and fail when a marker is missing.
+9. Correct the calibration contracts: explicit CPU0 affinity, accurate
+   interrupt-resume labeling, scoped compiler flags, valid restore
+   instructions, and warning-free preservation of the deliberately unaligned
+   loop target.
 
 The first four commits publish the source and receipts that had previously
-existed only in local fixture work. The final three make the branch pass the
-current product build and quality gates. None adds emulator-only behavior.
+existed only in local fixture work. The remaining five make the branch pass
+the current product, probe, review, and quality gates. None adds emulator-only
+behavior.
 
 The normal product passes 31 debug tests, 31 release tests, 13 sanitizer
-tests, a clean ESP-IDF 6.1 build, physical flash and boot, and the emulator
-stroke gate. The installed ESP-IDF emits five CMake warnings about its own
+tests, clean ESP-IDF 6.1 product and calibration builds, physical flash and
+boot, and the emulator stroke gate. The installed ESP-IDF emits five CMake
+warnings about its own
 `esp_wifi` and `wpa_supplicant` private include cycle. TinyDraw compiler and
 deprecation warnings are zero.
+
+All 16 PR review threads were audited. Eleven unique valid findings were fixed,
+five were duplicates, and the generic AI docstring quota was not repository
+policy. Hardware remeasurement confirmed that the depth-32 result is
+378,358 cycles over 256 chains, or 1,477.961 cycles per chain, which correctly
+rounds to the documented 1,478.
 
 No further TinyDraw commit is currently expected. A later hardware evidence
 request may add a narrowly scoped probe or capture tool, but normal emulator
