@@ -1,0 +1,188 @@
+-- The CXX compiler identification is AppleClang 21.0.0.21000333
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Configuring done (1.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/tinydraw-pr-review.UrddkO/out/build/host-asan
+[1/148] Building CXX object core/CMakeFiles/tinydraw_pngenc.dir/__/third_party/pngenc/src/adler32.c.o
+[2/148] Building CXX object core/CMakeFiles/tinydraw_pngenc.dir/__/third_party/pngenc/src/zutil.c.o
+[3/148] Building CXX object core/CMakeFiles/tinydraw_pngenc.dir/__/third_party/pngenc/src/crc32.c.o
+[4/148] Building CXX object core/CMakeFiles/tinydraw_pngenc.dir/__/third_party/pngenc/src/PNGenc.cpp.o
+[5/148] Building CXX object core/CMakeFiles/tinydraw_pngenc.dir/__/third_party/pngenc/src/trees.c.o
+[6/148] Building CXX object core/CMakeFiles/tinydraw_pngenc.dir/__/third_party/pngenc/src/deflate.c.o
+[7/148] Linking CXX static library core/libtinydraw_pngenc.a
+[8/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/coordinate_transform.cpp.o
+[9/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/ink_stream.cpp.o
+[10/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/fat16_disk.cpp.o
+[11/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/coverage_tile.cpp.o
+[12/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/ribbon_renderer.cpp.o
+[13/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/perfect_freehand.cpp.o
+[14/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/vector_document.cpp.o
+[15/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/drawing_snapshot.cpp.o
+[16/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/demo_tape.cpp.o
+[17/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/ribbon_geometry.cpp.o
+[18/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/png_encoder.cpp.o
+[19/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/realistic_workload.cpp.o
+[20/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/camera.cpp.o
+[21/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/tile_undo_history.cpp.o
+[22/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/stroke_raster.cpp.o
+[23/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/raster_materializer.cpp.o
+[24/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/toolbar.cpp.o
+[25/148] Building CXX object core/CMakeFiles/tinydraw_core.dir/src/world_canvas.cpp.o
+[26/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/stroke_lod.cpp.o
+[27/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/stroke_macrogrid.cpp.o
+[28/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/settled_renderer.cpp.o
+[29/148] Linking CXX static library core/libtinydraw_core.a
+[30/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/vector_benchmark.cpp.o
+[31/148] Building CXX object core/CMakeFiles/tinydraw_vector_prototype.dir/src/viewport_renderer.cpp.o
+[32/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/authority_journal.cpp.o
+[33/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/chained_operation_builder.cpp.o
+[34/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/chrome_input.cpp.o
+[35/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/chrome.cpp.o
+[36/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/frame_scroller.cpp.o
+[37/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/demo_tape.cpp.o
+[38/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/idle_repair.cpp.o
+[39/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/incremental_document_replay.cpp.o
+[40/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/incremental_document.cpp.o
+[41/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/incremental_document_absorption.cpp.o
+[42/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/incremental_rasterizer.cpp.o
+[43/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/incremental_rasterizer_operations.cpp.o
+[44/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/materialized_canvas_cache.cpp.o
+[45/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/materialized_canvas_composition.cpp.o
+[46/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/materialized_canvas.cpp.o
+[47/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/materialized_canvas_staging.cpp.o
+[48/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/navigation_state.cpp.o
+[49/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/operation.cpp.o
+[50/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/operation_builder.cpp.o
+[51/148] Linking CXX static library core/libtinydraw_vector_prototype.a
+[52/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/operation_spatial_index.cpp.o
+[53/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/operation_log.cpp.o
+[54/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/tile_uniform.cpp.o
+[55/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/touch_event_buffer.cpp.o
+[56/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/svg_export.cpp.o
+[57/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/tile_producer.cpp.o
+[58/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/settled_tile.cpp.o
+[59/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/world_export.cpp.o
+[60/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/tile_payload_analysis.cpp.o
+[61/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/rerender_ledger.cpp.o
+[62/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2.dir/src/ink_trace.cpp.o
+[63/148] Linking CXX static library vector_v2/libtinydraw_vector_v2.a
+[64/148] Building CXX object vector_v2/CMakeFiles/tinydraw_ink_trace_check.dir/tools/ink_trace_check.cpp.o
+[65/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_journal_corpus_check.dir/tools/journal_corpus_check.cpp.o
+[66/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_idle_repair_benchmark.dir/tools/idle_repair_benchmark.cpp.o
+[67/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_history_benchmark.dir/tools/history_benchmark.cpp.o
+[68/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_settled_aa_benchmark.dir/tools/settled_aa_benchmark.cpp.o
+[69/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/operation_builder_test.cpp.o
+[70/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_cache_benchmark.dir/tools/materialized_canvas_cache_benchmark.cpp.o
+[71/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/chained_operation_builder_test.cpp.o
+[72/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_occupancy_history_benchmark.dir/tools/occupancy_history_benchmark.cpp.o
+[73/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/authority_journal_test.cpp.o
+[74/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/operation_spatial_index_test.cpp.o
+[75/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/incremental_document_test.cpp.o
+[76/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/operation_log_test.cpp.o
+[77/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/demo_tape_test.cpp.o
+[78/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/world_export_test.cpp.o
+[79/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/frame_scroller_test.cpp.o
+[80/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/ink_trace_test.cpp.o
+[81/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/live_ink_coordinator_test.cpp.o
+[82/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/svg_export_test.cpp.o
+[83/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_authority_tests.dir/tests/test_main.cpp.o
+[84/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/chrome_test.cpp.o
+[85/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/navigation_state_test.cpp.o
+[86/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/idle_repair_test.cpp.o
+[87/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/touch_event_buffer_test.cpp.o
+[88/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/incremental_rasterizer_bulk_test.cpp.o
+[89/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/panel_staging_test.cpp.o
+[90/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/incremental_rasterizer_mask_test.cpp.o
+[91/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_interaction_tests.dir/tests/test_main.cpp.o
+[92/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/incremental_rasterizer_test.cpp.o
+[93/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/test_main.cpp.o
+[94/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/materialized_canvas_cache_test.cpp.o
+[95/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/materialized_canvas_layout_test.cpp.o
+[96/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/rerender_ledger_test.cpp.o
+[97/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/materialized_canvas_revision_test.cpp.o
+[98/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/materialized_canvas_composition_test.cpp.o
+[99/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/tile_payload_analysis_test.cpp.o
+[100/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/settled_tile_test.cpp.o
+[101/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/materialized_canvas_in_place_test.cpp.o
+[102/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/materialized_canvas_occupancy_test.cpp.o
+[103/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_raster_census.dir/tools/raster_census.cpp.o
+[104/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_raster_census.dir/tools/raster_census_fuzz.cpp.o
+[105/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/camera_test.cpp.o
+[106/148] Building CXX object vector_v2/CMakeFiles/tinydraw_vector_v2_rendering_tests.dir/tests/tile_producer_test.cpp.o
+[107/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/demo_tape_test.cpp.o
+[108/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/coverage_tile_test.cpp.o
+[109/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/drawing_snapshot_test.cpp.o
+[110/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/host_input_test.cpp.o
+[111/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/ink_stream_test.cpp.o
+[112/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/fat16_disk_test.cpp.o
+[113/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/raster_materializer_test.cpp.o
+[114/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/png_encoder_test.cpp.o
+[115/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/perfect_freehand_test.cpp.o
+[116/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/stroke_lod_test.cpp.o
+[117/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/stroke_macrogrid_test.cpp.o
+[118/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/realistic_workload_test.cpp.o
+[119/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/settled_renderer_test.cpp.o
+[120/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/ribbon_geometry_test.cpp.o
+[121/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/ribbon_renderer_test.cpp.o
+[122/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/tile_undo_history_test.cpp.o
+[123/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/usb_export_session_test.cpp.o
+[124/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/stroke_raster_test.cpp.o
+[125/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/vector_document_test.cpp.o
+[126/148] Linking CXX executable vector_v2/tinydraw_ink_trace_check
+[127/148] Linking CXX executable vector_v2/tinydraw_vector_v2_idle_repair_benchmark
+[128/148] Linking CXX executable vector_v2/tinydraw_vector_v2_journal_corpus_check
+[129/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/vector_benchmark_test.cpp.o
+[130/148] Linking CXX executable vector_v2/tinydraw_vector_v2_settled_aa_benchmark
+[131/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/coordinate_transform_test.cpp.o
+[132/148] Linking CXX executable vector_v2/tinydraw_vector_v2_history_benchmark
+[133/148] Linking CXX executable vector_v2/tinydraw_vector_v2_cache_benchmark
+[134/148] Linking CXX executable vector_v2/tinydraw_vector_v2_occupancy_history_benchmark
+[135/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/world_canvas_test.cpp.o
+[136/148] Linking CXX executable vector_v2/tinydraw_vector_v2_authority_tests
+[137/148] Linking CXX executable vector_v2/tinydraw_vector_v2_interaction_tests
+[138/148] Linking CXX executable vector_v2/tinydraw_vector_v2_raster_census
+[139/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/toolbar_test.cpp.o
+[140/148] Linking CXX executable vector_v2/tinydraw_vector_v2_rendering_tests
+[141/148] Building CXX object tests/CMakeFiles/tinydraw_perf_characterization.dir/perf_characterization.cpp.o
+[142/148] Building CXX object tests/CMakeFiles/tinydraw_fat16_image.dir/fat16_image.cpp.o
+[143/148] Linking CXX executable tests/tinydraw_perf_characterization
+[144/148] Linking CXX executable tests/tinydraw_fat16_image
+[145/148] Building CXX object tests/CMakeFiles/tinydraw_tests.dir/viewport_renderer_test.cpp.o
+[146/148] Linking CXX executable tests/tinydraw_tests
+[147/148] Building CXX object tests/CMakeFiles/tinydraw_png_roundtrip.dir/png_roundtrip.cpp.o
+[148/148] Linking CXX executable tests/tinydraw_png_roundtrip
+Test project /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/tinydraw-pr-review.UrddkO/out/build/host-asan
+      Start  1: tinydraw_vector_v2_authority_tests
+ 1/13 Test  #1: tinydraw_vector_v2_authority_tests .............   Passed    2.74 sec
+      Start  2: tinydraw_vector_v2_interaction_tests
+ 2/13 Test  #2: tinydraw_vector_v2_interaction_tests ...........   Passed    3.33 sec
+      Start  3: tinydraw_vector_v2_rendering_tests
+ 3/13 Test  #3: tinydraw_vector_v2_rendering_tests .............   Passed   25.12 sec
+      Start  4: tinydraw_ink_trace_check_recorded
+ 4/13 Test  #4: tinydraw_ink_trace_check_recorded ..............   Passed    0.22 sec
+      Start  5: tinydraw_vector_v2_cold_replay_exactness
+ 5/13 Test  #5: tinydraw_vector_v2_cold_replay_exactness .......   Passed    4.86 sec
+      Start  6: tinydraw_vector_v2_fuzz_collinear_coalesce
+ 6/13 Test  #6: tinydraw_vector_v2_fuzz_collinear_coalesce .....   Passed    9.73 sec
+      Start  7: tinydraw_vector_v2_fuzz_collinear_regression
+ 7/13 Test  #7: tinydraw_vector_v2_fuzz_collinear_regression ...   Passed   45.47 sec
+      Start  8: tinydraw_vector_v2_fuzz_random_documents
+ 8/13 Test  #8: tinydraw_vector_v2_fuzz_random_documents .......   Passed    2.89 sec
+      Start  9: tinydraw_tests
+ 9/13 Test  #9: tinydraw_tests .................................   Passed    3.26 sec
+      Start 10: tinydraw_fat16_generate
+10/13 Test #10: tinydraw_fat16_generate ........................   Passed    0.32 sec
+      Start 11: tinydraw_fat16_fsck
+11/13 Test #11: tinydraw_fat16_fsck ............................   Passed    0.00 sec
+      Start 12: tinydraw_perf_characterization
+12/13 Test #12: tinydraw_perf_characterization .................   Passed    0.92 sec
+      Start 13: tinydraw_png_roundtrip
+13/13 Test #13: tinydraw_png_roundtrip .........................   Passed    0.33 sec
+
+100% tests passed out of 13
+
+Total Test time (real) =  99.19 sec
