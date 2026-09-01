@@ -16,7 +16,9 @@ authorized during this pause.
 ## Maintenance result
 
 The fork's Rust safeguard gate is complete on esp32sim branch
-`maintenance/rust-safeguards` at `b138473`. Rust 1.98.0 is pinned, all seven
+`maintenance/rust-safeguards` at `b138473`. Rust 1.98.0, the latest stable
+compiler released on 2026-08-20, is pinned. The existing Rust 2021 language
+edition is retained as required by the safeguard specification. All seven
 workspace members inherit the strict lint policy, and release builds retain
 debug assertions and overflow checks. `scripts/pre-commit.sh` passed from the
 repository root and by absolute path from the program-office checkout. There
@@ -158,23 +160,26 @@ Their source is published on TinyDraw branch `codex/lane-0-idf61-probes` at
 `632c966`. These fixtures are historical evidence inputs. Normal-product
 validation now uses TinyDraw `2643aa7` as recorded above.
 
-## Remaining ambiguities and parked questions
+## Resolved direction and active decisions
 
-1. CORE executable boundary: “What exact instruction boundary and complete
-   initial CPU, RAM, MMIO, and device state define the executable Flexe replay
-   checkpoint for the real measured-path differential?”
-2. TE evidence contract: “For the GPIO13 TE analyzer capture, what operating
-   state, edge count, statistic, and acceptance bound should be adopted before
-   replacing the approximate compatibility cadence with hardware timing?”
-3. esp32sim upstream relationship: “After maintainer testing, which of the six
-   reviewed groups should be offered upstream, and should reusable CST820 and
-   CO5300 models be separated from Waveshare board wiring?”
-4. TinyDraw pull request: “After maintainer testing, should TinyDraw pull
-   request 4 be merged as the seven-commit series now validated on hardware
-   and in the emulator?”
-5. SDK-owned warnings: “Does the zero-warning requirement include patching or
-   repinning the installed ESP-IDF SDK to suppress its five
-   `esp_wifi`/`wpa_supplicant` CMake ownership warnings?”
+No maintainer ambiguity currently gates the proposed hardware batch.
+
+- Flexe is a legacy experimental Xtensa interpreter from the frozen puck-era
+  feasibility work. It is not the current product. CORE recovery should boot
+  the current esp32sim machine deterministically from reset and select a named
+  reachable comparison boundary. Choosing that boundary and reconstructing
+  its state is an engineering task, not a maintainer question. A future agent
+  parks only if it can name exact state that cannot be derived.
+- The TE electrical capture contract already exists in request A-01: cold
+  reset through one known frame, at least 120 rising edges, the ten named
+  signals, precise analyzer settings, raw exports, and correlated firmware
+  markers. No new acceptance bound is being adopted before capture.
+- The esp32sim upstream decision is deliberately deferred until most remaining
+  work is complete. The intent is to offer broadly, with final grouping chosen
+  after more implementation and maintainer testing.
+- TinyDraw pull request 4 is undergoing review-thread remediation before the
+  maintainer tests or merges it.
+- The five SDK-owned CMake warnings are explicitly out of scope.
 
 Resolved document ambiguities:
 
@@ -193,13 +198,18 @@ Resolved document ambiguities:
 
 Paused pending a new maintainer go:
 
-- hash-pinned logic-analyzer capture of about 40 MHz QSPI, GPIO13 TE, I2C, and
-  GPIO21 touch interrupt;
-- first-line cache pooling diagnosis and six below-threshold receipt
-  identities;
-- long-window PSRAM, arbitration, and cache store or writeback probes after
-  reviewed probe code exists;
+- immediately available IDF 6.1 receipt-gap, core-timing, boot-time, and TE
+  diagnostic cohorts;
+- offline PSRAM long-window assembly before deciding whether to repeat it;
+- later reviewed arbitration, external-store, dirty-writeback,
+  instruction-PSRAM, and first-line pooling probes;
+- later logic-analyzer capture of about 40 MHz QSPI, GPIO13 TE, I2C, and
+  GPIO21 touch interrupt when an analyzer and physical landmarks are
+  available;
 - CCOUNT lock-step comparison after CORE measured mode exists.
+
+The complete proposed order and its current blockers are in
+[`reviews/hardware-measurement-inventory-2026-09-01.md`](reviews/hardware-measurement-inventory-2026-09-01.md).
 
 The board currently runs the normal TinyDraw V2 product built from `2643aa7`.
 The serial port is released.
@@ -223,25 +233,14 @@ Advanced with commits:
   rules. Later granular cleanup commits archive the normal-product receipt,
   current-state overview, BOARD exit, and this ledger.
 
-Parked, exact questions:
+Maintainer decisions received:
 
-- CORE: “What exact instruction boundary and complete initial CPU, RAM, MMIO,
-  and device state define the executable Flexe replay checkpoint for the real
-  measured-path differential?”
-- Upstream: “After maintainer testing, which of the six reviewed esp32sim
-  groups should be offered upstream, and in what pull-request grouping?”
-- SDK: “Does the zero-warning requirement include patching or repinning the
-  installed ESP-IDF SDK to suppress its five SDK-owned CMake warnings?”
-
-Morning decision order:
-
-1. Test TinyDraw pull request 4 and decide whether its seven validated commits
-   should merge.
-2. Decide whether SDK-owned CMake warnings are inside this repository cleanup
-   scope.
-3. Give an explicit go before any new CORE or BOARD evidence work starts.
-4. When CORE is authorized, define or approve the executable replay boundary.
-5. After BOARD testing, choose the esp32sim upstream grouping.
+- SDK-owned CMake warnings are out of scope.
+- esp32sim upstream pull requests are deferred until most remaining work is
+  complete; the intent is to upstream broadly after more testing.
+- hardware measurements should be front-loaded before longer agent work, after
+  the maintainer reviews the proposed inventory.
+- no fresh CORE work starts until an explicit go.
 
 Confusing or contradictory documents found and corrected:
 
