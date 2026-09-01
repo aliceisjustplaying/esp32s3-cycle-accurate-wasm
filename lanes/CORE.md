@@ -3,6 +3,9 @@
 Home: esp32sim fork, `core/*` branches off `puck/base`, one agent, own
 clone. Decision 0014 is the normative contract.
 
+Recovery work after the rejected 2026-09-01 exit also follows the concrete
+construction and first-result rules in [`CORE-RECOVERY.md`](CORE-RECOVERY.md).
+
 Binding: decisions 0014 (the accepted contract, including its cut list)
 and 0008 (cost tiers). Background, on demand: 0013, 0012, the roadmap,
 and the timing lab (`../timing/README.md`); note 0014 rejects schema-1
