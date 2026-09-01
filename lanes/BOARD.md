@@ -30,9 +30,17 @@ scoped to their pins. A synchronous GP-SPI board-response hook is pushed
 as an upstream-shaped candidate at `lane-a/gp-spi-device-hook`
 (`246c699`).
 
-## Priority: demo first
+The demo-first milestone and normal-product compatibility gate are complete.
+TinyDraw `2643aa7` passed a paced seven-sample stroke on esp32sim branch
+`board/tinydraw-v2-maintained` at `b7c9b87`, and the same normal product source
+passed on physical hardware
+([receipt](receipts/board-tinydraw-v2-normal-2026-09-01/README.md)). BOARD's
+emulator implementation is done. The silicon evidence service below remains
+open, and no panel timing-accuracy claim has been adopted.
 
-The first objective is the roadmap's demo milestone: the TinyDraw V2
+## Completed priority: demo first
+
+The first objective was the roadmap's demo milestone: the TinyDraw V2
 gate-harness image visibly drawing, with working touch, in the browser,
 at interpreter speed. That means panel device, touch device, and board
 wiring, before any other BOARD work except the touch-identity probe
@@ -114,5 +122,9 @@ panel visibly drawing and scripted touch working. A passing run emits
 `TINYDRAW_LIVE_STROKE_DONE committed=1 refresh=1 commit_failed=0`. It does not
 emit `TINYDRAW_LIVE_FAIL`. The demo-only TE cadence exercises the firmware
 contract but is not hardware timing evidence. Timing and scan-out claims wait
-for the logic-analyzer capture. The evidence service does not exit; it
-operates, and its milestones are receipts.
+for the logic-analyzer capture.
+
+Exit for BOARD emulator implementation: one pinned normal TinyDraw product
+passes the paced multi-sample browser stroke and physical-hardware
+compatibility checks. This exited at the pins recorded above. The evidence
+service does not exit; it operates, and its milestones are receipts.
