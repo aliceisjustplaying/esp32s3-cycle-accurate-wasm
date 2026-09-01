@@ -26,8 +26,10 @@ pulled on demand.
   branch conventions. Lane work branches: `<lane>/<topic>` in lowercase
   (`core/`, `board/`, `speed/`, `ship/`), from `puck/base`, or from
   `main` when the work is an upstream-shaped pull request.
-- **tinydraw**: `aliceisjustplaying/tinydraw`. Calibration probe projects
-  and capture tooling only.
+- **tinydraw**: `aliceisjustplaying/tinydraw`. The normal product is a pinned
+  emulator and hardware validation input. Calibration probes and capture tools
+  may be added there, but no emulator-only firmware variant or execution engine
+  is created.
 - **puck archive**: `aliceisjustplaying/puck`, branch
   `codex/esp32s3-timing-model`, frozen. The project's incubator and the
   donor codebase (UI, recorder, harness); read-only, ported from

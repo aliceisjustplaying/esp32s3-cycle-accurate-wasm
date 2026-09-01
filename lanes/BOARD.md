@@ -1,7 +1,8 @@
 # Lane BOARD: the exact board and its silicon evidence
 
 Home: esp32sim fork (`board/*` branches off `puck/base`; upstream-shaped
-device models branch from `main`) plus tinydraw for probe firmware. This
+device models branch from `main`) plus tinydraw for product validation
+and probe firmware. This
 lane owns the physical board: hardware sessions are maintainer-scheduled
 and serial, never opportunistic. A second board, when present, serves
 this lane first. Capture and probe work is LOCAL; device modeling
@@ -61,18 +62,19 @@ Rules:
   irreversible.
 - Every hardware interaction produces a logged receipt (command,
   firmware hash, raw output).
-- At session end: reflash the ESP-IDF 6.1 gate-harness image, verify it
-  boots, release the port.
+- At session end: record the image left on the board and release the port.
+  The maintainer has explicitly removed any restore-image requirement for this
+  device.
 
 ## Device modeling
 
 A `BoardModel` for the Waveshare ESP32-S3-Touch-AMOLED-1.8 at the
 maintainer's revision, exactly: CO5300-class QSPI panel device (GRAM, TE
-timing, scan-out position), the board's touch controller as an I2C
-device (it stays unnamed in every schema until the on-device ID probe
-identifies it), QMI8658, PCF85063A, and TCA9554 wiring (the device
-model exists upstream). The GP-SPI2 master is already modeled upstream;
-do not rebuild it. Modeling proceeds firmware-contract-first per the
+timing, scan-out position), the hardware-identified CST820 touch controller,
+QMI8658, PCF85063A, and TCA9554 wiring. The GP-SPI2 master is extended
+only where normal firmware proves a missing generic transaction or DMA
+contract; do not replace it with a board-specific controller. Modeling
+proceeds firmware-contract-first per the
 demo-first section above; the logic-analyzer capture (about 40 MHz
 QSPI, TE, I2C, touch interrupt) gates timing-accuracy claims, not demo
 modeling.
