@@ -47,9 +47,12 @@ Dispatch sequence set by the maintainer: BOARD's demo, then CORE phase
   land. Six identities remain below strict recovery (two with zero
   receipts, four with one) after repeated USB capture truncation.
   Continuing BOARD: chip identity is captured and accepted (request
-  record [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md));
-  the touch controller is unnamed until the on-device probe identifies
-  it (decision 0014). A synchronous GP-SPI
+  record [`A-01`](lanes/requests/A-01-v2-controller-and-identity.md)).
+  The on-device identity probe read `0xA7=0xB7`, `0xA8=0x41`, and
+  `0xA9=0x02` at I2C address `0x15`; the exact V2 board's controller is
+  adopted as CST820, matching the vendor's V2 board identification
+  ([receipt](lanes/receipts/board-touch-identity-2026-09-01/README.md)).
+  A synchronous GP-SPI
   board-response hook is pushed as an upstream-shaped candidate at
   `lane-a/gp-spi-device-hook` (`246c699`). Two independent 8,000-step
   JTAG lock-step sessions against upstream esp32sim passed: no PC

@@ -1,0 +1,236 @@
+Added environment variable ESP_IDF_VERSION = 6.1
+Added environment variable IDF_VERSION = 6.1.0
+Added environment variable IDF_TOOLS_PATH = /Users/sarah/.espressif/tools
+Added environment variable IDF_COMPONENT_LOCAL_STORAGE_URL = file:///Users/sarah/.espressif/tools
+Added environment variable IDF_PATH = /Users/sarah/.espressif/v6.1/esp-idf
+Added environment variable ESP_ROM_ELF_DIR = /Users/sarah/.espressif/tools/esp-rom-elfs/20241011/
+Added environment variable OPENOCD_SCRIPTS = /Users/sarah/.espressif/tools/openocd-esp32/v0.12.0-esp32-20260703/openocd-esp32/share/openocd/scripts
+Added environment variable IDF_PYTHON_ENV_PATH = /Users/sarah/.espressif/tools/python/v6.1/venv
+Added environment variable ESP_CLANG_LIBS_PATH = /Users/sarah/.espressif/tools/esp-clang-libs/esp-21.1.3_20260408/esp-clang/lib
+Added proper directory to PATH
+Activated virtual environment at /Users/sarah/.espressif/tools/python/v6.1/venv
+Environment setup complete for the current shell session.
+These changes will be lost when you close this terminal.
+You are now using IDF version 6.1.0.
+eim select v6.1
+[0/1] Re-running CMake...
+-- TinyDraw firmware variant=touch-identity-probe
+-- Minimal build - ON
+-- Building ESP-IDF components for target esp32s3
+NOTICE: 
+Following dependencies have new versions available:
+Dependency "espressif/esp_lcd_touch_cst816s": "1.1.1~2" -> "1.1.2"
+Consider running "idf.py update-dependencies" to update your lock file.
+NOTICE: Processing 8 dependencies:
+NOTICE: [1/8] espressif/cmake_utilities (0.5.3)
+NOTICE: [2/8] espressif/esp_lcd_co5300 (2.1.0)
+NOTICE: [3/8] espressif/esp_lcd_qemu_rgb (1.0.2)
+NOTICE: [4/8] espressif/esp_lcd_touch (1.2.1)
+NOTICE: [5/8] espressif/esp_lcd_touch_cst816s (1.1.1~2)
+NOTICE: [6/8] espressif/tinyusb (0.21.0~1)
+NOTICE: [7/8] waveshare/pcf85063a (2.0.0)
+NOTICE: [8/8] idf (6.1.0)
+-- KCONFIG_REPORT_VERBOSITY not set, using default
+-- Project sdkconfig file /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/sdkconfig
+Loading defaults file /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/sdkconfig.defaults...
+NOTE: Kconfig parser version: 1
+NOTE: Kconfig defaults policy: use sdkconfig
+NOTE: Status: Finished successfully
+-- Compiler supported targets: xtensa-esp-elf
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- App "tinydraw_esp32" version: 2.2.0-1-g4db22a6
+-- Setting up mbedtls configuration
+-- Linkage type is PUBLIC
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_wdt/esp32s3/rom.wdt.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_system/ld/esp32s3/memory.ld.in
+--   -> Preprocessing .in script: /Users/sarah/.espressif/v6.1/esp-idf/components/esp_system/ld/esp32s3/memory.ld.in
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_system/ld/esp32s3/sections.ld.in
+--   -> Preprocessing .in script: /Users/sarah/.espressif/v6.1/esp-idf/components/esp_system/ld/esp32s3/sections.ld.in
+--   -> Applying ldgen processing: /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/esp-idf/esp_system/ld/sections.ld.in
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.api.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.bt_funcs.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libgcc.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.version.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_master.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_50.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_smp.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_dtm.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_test.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.ble_scan.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom/esp32s3/ld/esp32s3.rom.libc.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/soc/esp32s3/ld/esp32s3.peripherals.ld
+-- Adding linker script /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_regi2c/esp32s3/rom.regi2c.ld
+-- ESP_LCD_CO5300: 2.1.0
+CMake Warning at /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:106 (message):
+  Private include directory
+  '/Users/sarah/.espressif/v6.1/esp-idf/components/esp_wifi/wifi_apps/roaming_app/include'
+  belongs to component esp_wifi but is being used by component
+  wpa_supplicant.  It is recommended to define the component dependency for
+  wpa_supplicant on the component esp_wifi, i.e.  'idf_component_register(...
+  PRIV_REQUIRES esp_wifi)' in the CMakeLists.txt of wpa_supplicant, and
+  specify the included directory as idf_component_register(...
+  PRIV_INCLUDE_DIRS <dir relative to component>) in the CMakeLists.txt of
+  component esp_wifi.
+Call Stack (most recent call first):
+  /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:130 (__component_validation_check_include_dirs)
+  /Users/sarah/.espressif/v6.1/esp-idf/CMakeLists.txt:356 (__component_validation_run_checks)
+
+
+CMake Warning at /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:106 (message):
+  Private include directory
+  '/Users/sarah/.espressif/v6.1/esp-idf/components/esp_wifi/wifi_apps/roaming_app/src'
+  belongs to component esp_wifi but is being used by component
+  wpa_supplicant.  It is recommended to define the component dependency for
+  wpa_supplicant on the component esp_wifi, i.e.  'idf_component_register(...
+  PRIV_REQUIRES esp_wifi)' in the CMakeLists.txt of wpa_supplicant, and
+  specify the included directory as idf_component_register(...
+  PRIV_INCLUDE_DIRS <dir relative to component>) in the CMakeLists.txt of
+  component esp_wifi.
+Call Stack (most recent call first):
+  /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:130 (__component_validation_check_include_dirs)
+  /Users/sarah/.espressif/v6.1/esp-idf/CMakeLists.txt:356 (__component_validation_run_checks)
+
+
+CMake Warning at /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:106 (message):
+  Private include directory
+  '/Users/sarah/.espressif/v6.1/esp-idf/components/esp_wifi/wifi_apps/include/apps_private'
+  belongs to component esp_wifi but is being used by component
+  wpa_supplicant.  It is recommended to define the component dependency for
+  wpa_supplicant on the component esp_wifi, i.e.  'idf_component_register(...
+  PRIV_REQUIRES esp_wifi)' in the CMakeLists.txt of wpa_supplicant, and
+  specify the included directory as idf_component_register(...
+  PRIV_INCLUDE_DIRS <dir relative to component>) in the CMakeLists.txt of
+  component esp_wifi.
+Call Stack (most recent call first):
+  /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:130 (__component_validation_check_include_dirs)
+  /Users/sarah/.espressif/v6.1/esp-idf/CMakeLists.txt:356 (__component_validation_run_checks)
+
+
+CMake Warning at /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:106 (message):
+  Private include directory
+  '/Users/sarah/.espressif/v6.1/esp-idf/components/wpa_supplicant/src'
+  belongs to component wpa_supplicant but is being used by component
+  esp_wifi.  It is recommended to define the component dependency for
+  esp_wifi on the component wpa_supplicant, i.e.  'idf_component_register(...
+  PRIV_REQUIRES wpa_supplicant)' in the CMakeLists.txt of esp_wifi, and
+  specify the included directory as idf_component_register(...
+  PRIV_INCLUDE_DIRS <dir relative to component>) in the CMakeLists.txt of
+  component wpa_supplicant.
+Call Stack (most recent call first):
+  /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:130 (__component_validation_check_include_dirs)
+  /Users/sarah/.espressif/v6.1/esp-idf/CMakeLists.txt:356 (__component_validation_run_checks)
+
+
+CMake Warning at /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:106 (message):
+  Private include directory
+  '/Users/sarah/.espressif/v6.1/esp-idf/components/wpa_supplicant/esp_supplicant/src'
+  belongs to component wpa_supplicant but is being used by component
+  esp_wifi.  It is recommended to define the component dependency for
+  esp_wifi on the component wpa_supplicant, i.e.  'idf_component_register(...
+  PRIV_REQUIRES wpa_supplicant)' in the CMakeLists.txt of esp_wifi, and
+  specify the included directory as idf_component_register(...
+  PRIV_INCLUDE_DIRS <dir relative to component>) in the CMakeLists.txt of
+  component wpa_supplicant.
+Call Stack (most recent call first):
+  /Users/sarah/.espressif/v6.1/esp-idf/tools/cmake/component_validation.cmake:130 (__component_validation_check_include_dirs)
+  /Users/sarah/.espressif/v6.1/esp-idf/CMakeLists.txt:356 (__component_validation_run_checks)
+
+
+-- Components: app_update bootloader bootloader_support cxx driver efuse esp_app_format esp_blockdev esp_bootloader_format esp_coex esp_common esp_driver_bitscrambler esp_driver_dma esp_driver_gpio esp_driver_i2c esp_driver_i2s esp_driver_parlio esp_driver_spi esp_driver_uart esp_driver_usb_serial_jtag esp_event esp_hal_ana_conv esp_hal_clock esp_hal_dma esp_hal_gpio esp_hal_gpspi esp_hal_i2c esp_hal_i2s esp_hal_lcd esp_hal_mspi esp_hal_parlio esp_hal_pmu esp_hal_regi2c esp_hal_rtc_timer esp_hal_security esp_hal_systimer esp_hal_timg esp_hal_touch_sens esp_hal_twai esp_hal_uart esp_hal_usb esp_hal_wdt esp_hw_support esp_lcd esp_libc esp_mm esp_netif esp_netif_stack esp_partition esp_phy esp_pm esp_psram esp_ringbuf esp_rom esp_security esp_stdio esp_system esp_timer esp_usb_cdc_rom_console esp_wifi espcoredump espressif__cmake_utilities espressif__esp_lcd_co5300 espressif__esp_lcd_qemu_rgb espressif__esp_lcd_touch espressif__esp_lcd_touch_cst816s espressif__tinyusb esptool_py freertos hal heap log lwip main mbedtls nvs_flash nvs_sec_provider partition_table pthread soc spi_flash vfs waveshare__pcf85063a wpa_supplicant xtensa
+-- Component paths: /Users/sarah/.espressif/v6.1/esp-idf/components/app_update /Users/sarah/.espressif/v6.1/esp-idf/components/bootloader /Users/sarah/.espressif/v6.1/esp-idf/components/bootloader_support /Users/sarah/.espressif/v6.1/esp-idf/components/cxx /Users/sarah/.espressif/v6.1/esp-idf/components/driver /Users/sarah/.espressif/v6.1/esp-idf/components/efuse /Users/sarah/.espressif/v6.1/esp-idf/components/esp_app_format /Users/sarah/.espressif/v6.1/esp-idf/components/esp_blockdev /Users/sarah/.espressif/v6.1/esp-idf/components/esp_bootloader_format /Users/sarah/.espressif/v6.1/esp-idf/components/esp_coex /Users/sarah/.espressif/v6.1/esp-idf/components/esp_common /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_bitscrambler /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_dma /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_gpio /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_i2c /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_i2s /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_parlio /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_spi /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_uart /Users/sarah/.espressif/v6.1/esp-idf/components/esp_driver_usb_serial_jtag /Users/sarah/.espressif/v6.1/esp-idf/components/esp_event /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_ana_conv /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_clock /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_dma /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_gpio /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_gpspi /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_i2c /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_i2s /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_lcd /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_mspi /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_parlio /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_pmu /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_regi2c /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_rtc_timer /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_security /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_systimer /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_timg /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_touch_sens /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_twai /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_uart /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_usb /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hal_wdt /Users/sarah/.espressif/v6.1/esp-idf/components/esp_hw_support /Users/sarah/.espressif/v6.1/esp-idf/components/esp_lcd /Users/sarah/.espressif/v6.1/esp-idf/components/esp_libc /Users/sarah/.espressif/v6.1/esp-idf/components/esp_mm /Users/sarah/.espressif/v6.1/esp-idf/components/esp_netif /Users/sarah/.espressif/v6.1/esp-idf/components/esp_netif_stack /Users/sarah/.espressif/v6.1/esp-idf/components/esp_partition /Users/sarah/.espressif/v6.1/esp-idf/components/esp_phy /Users/sarah/.espressif/v6.1/esp-idf/components/esp_pm /Users/sarah/.espressif/v6.1/esp-idf/components/esp_psram /Users/sarah/.espressif/v6.1/esp-idf/components/esp_ringbuf /Users/sarah/.espressif/v6.1/esp-idf/components/esp_rom /Users/sarah/.espressif/v6.1/esp-idf/components/esp_security /Users/sarah/.espressif/v6.1/esp-idf/components/esp_stdio /Users/sarah/.espressif/v6.1/esp-idf/components/esp_system /Users/sarah/.espressif/v6.1/esp-idf/components/esp_timer /Users/sarah/.espressif/v6.1/esp-idf/components/esp_usb_cdc_rom_console /Users/sarah/.espressif/v6.1/esp-idf/components/esp_wifi /Users/sarah/.espressif/v6.1/esp-idf/components/espcoredump /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/espressif__cmake_utilities /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/espressif__esp_lcd_co5300 /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/espressif__esp_lcd_qemu_rgb /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/espressif__esp_lcd_touch /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/espressif__esp_lcd_touch_cst816s /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/espressif__tinyusb /Users/sarah/.espressif/v6.1/esp-idf/components/esptool_py /Users/sarah/.espressif/v6.1/esp-idf/components/freertos /Users/sarah/.espressif/v6.1/esp-idf/components/hal /Users/sarah/.espressif/v6.1/esp-idf/components/heap /Users/sarah/.espressif/v6.1/esp-idf/components/log /Users/sarah/.espressif/v6.1/esp-idf/components/lwip /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/main /Users/sarah/.espressif/v6.1/esp-idf/components/mbedtls /Users/sarah/.espressif/v6.1/esp-idf/components/nvs_flash /Users/sarah/.espressif/v6.1/esp-idf/components/nvs_sec_provider /Users/sarah/.espressif/v6.1/esp-idf/components/partition_table /Users/sarah/.espressif/v6.1/esp-idf/components/pthread /Users/sarah/.espressif/v6.1/esp-idf/components/soc /Users/sarah/.espressif/v6.1/esp-idf/components/spi_flash /Users/sarah/.espressif/v6.1/esp-idf/components/vfs /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/esp32/managed_components/waveshare__pcf85063a /Users/sarah/.espressif/v6.1/esp-idf/components/wpa_supplicant /Users/sarah/.espressif/v6.1/esp-idf/components/xtensa
+-- Configuring done (7.6s)
+-- Generating done (0.5s)
+-- Build files have been written to: /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe
+[1/10] Performing build step for 'bootloader'
+[1/1] cd /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/bootloader && /Users/sarah/.espressif/tools/python/v6.1/venv/bin/python /Users/sarah/.espressif/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/bootloader/bootloader.bin
+Bootloader binary size 0x5820 bytes. 0x27e0 bytes (31%) free.
+[2/10] Building C object esp-idf/esp_app_format/CMakeFiles/__idf_esp_app_format.dir/esp_app_desc.c.obj
+[3/10] No install step for 'bootloader'
+[4/10] Completed 'bootloader'
+[5/10] Linking C static library esp-idf/esp_app_format/libesp_app_format.a
+[6/10] Generating esp-idf/esp_system/ld/sections.ld
+Skipping linker script generation, section names unchanged
+[7/10] Linking CXX executable tinydraw_esp32.elf
+[8/10] Generating binary image from built executable
+esptool v5.3.1
+Creating ESP32-S3 image...
+Merged 3 ELF sections.
+Successfully created ESP32-S3 image.
+Generated /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/tinydraw_esp32.bin
+[9/10] cd /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe && /Users/sarah/.espressif/tools/python/v6.1/venv/bin/python /Users/sarah/.espressif/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/partition_table/partition-table.bin /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/tinydraw_esp32.bin
+tinydraw_esp32.bin binary size 0x2ead0 bytes. Smallest app partition is 0x1c0000 bytes. 0x191530 bytes (90%) free.
+Adding "flash"'s dependency "all" to list of commands with default set of options.
+Executing action: all (aliases: build)
+Running ninja in directory /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe
+Executing "ninja all"...
+Executing action: flash
+Running ninja in directory /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe
+Executing "ninja flash"...
+[1/5] cd /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe && /Users/sarah/.espressif/tools/python/v6.1/venv/bin/python /Users/sarah/.espressif/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 partition --type app /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/partition_table/partition-table.bin /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/tinydraw_esp32.bin
+tinydraw_esp32.bin binary size 0x2ead0 bytes. Smallest app partition is 0x1c0000 bytes. 0x191530 bytes (90%) free.
+[2/5] Performing build step for 'bootloader'
+[1/1] cd /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/bootloader && /Users/sarah/.espressif/tools/python/v6.1/venv/bin/python /Users/sarah/.espressif/v6.1/esp-idf/components/partition_table/check_sizes.py --offset 0x8000 bootloader 0x0 /Users/sarah/Documents/Codex/2026-09-01/caffeinate-dims/work/board-lane.yWhVtp/tinydraw/out/build/esp32-touch-identity-probe/bootloader/bootloader.bin
+Bootloader binary size 0x5820 bytes. 0x27e0 bytes (31%) free.
+[3/5] No install step for 'bootloader'
+[4/5] Completed 'bootloader'
+[4/5] Running utility command for flash
+esptool --chip esp32s3 -p /dev/cu.usbmodem101 -b 460800 --before=default-reset --after=hard-reset write-flash --flash-mode dio --flash-freq 80m --flash-size 16MB 0x0 bootloader/bootloader.bin 0x8000 partition_table/partition-table.bin 0x10000 tinydraw_esp32.bin --skip-flashed
+esptool v5.3.1
+Serial port /dev/cu.usbmodem101:
+Connecting...
+Connected to ESP32-S3 on /dev/cu.usbmodem101:
+Chip type:          ESP32-S3 (QFN56) (revision v0.2)
+Features:           Wi-Fi, BT 5 (LE), Dual Core + LP Core, 240MHz, Embedded PSRAM 8MB (AP_3v3)
+Crystal frequency:  40MHz
+USB mode:           USB-Serial/JTAG
+MAC:                1c:db:d4:7b:85:c8
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+
+Writing 'bootloader/bootloader.bin' at 0x00000000...
+SHA digest in image updated.
+Comparing flash contents against new data...
+Flash will be erased from 0x00000000 to 0x00005fff...
+Compressed 22560 bytes to 14448...
+Writing at 0x00000000 [                              ]   0.0% 0/14448 bytes... 
+Writing at 0x00005820 [==============================] 100.0% 14448/14448 bytes... 
+Wrote 22560 bytes (14448 compressed) at 0x00000000 in 0.3 seconds (658.7 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Writing 'partition_table/partition-table.bin' at 0x00008000...
+Comparing flash contents against new data...
+'partition_table/partition-table.bin' at 0x00008000 already in flash, skipping write.
+
+Writing 'tinydraw_esp32.bin' at 0x00010000...
+Comparing flash contents against new data...
+Flash will be erased from 0x00010000 to 0x0003efff...
+Compressed 191184 bytes to 112143...
+Writing at 0x00010000 [                              ]   0.0% 0/112143 bytes... 
+Writing at 0x0001c513 [===>                          ]  14.6% 16384/112143 bytes... 
+Writing at 0x00022ad7 [=======>                      ]  29.2% 32768/112143 bytes... 
+Writing at 0x00028395 [============>                 ]  43.8% 49152/112143 bytes... 
+Writing at 0x0002de05 [================>             ]  58.4% 65536/112143 bytes... 
+Writing at 0x0003390d [====================>         ]  73.0% 81920/112143 bytes... 
+Writing at 0x00039b7c [=========================>    ]  87.7% 98304/112143 bytes... 
+Writing at 0x0003ead0 [==============================] 100.0% 112143/112143 bytes... 
+Wrote 191184 bytes (112143 compressed) at 0x00010000 in 1.3 seconds (1216.4 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Hard resetting via RTS pin...
+Done
