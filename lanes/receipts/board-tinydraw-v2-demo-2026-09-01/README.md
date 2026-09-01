@@ -32,6 +32,7 @@ TINYDRAW_VECTOR_V2_READY ... te_edges=2896 te_period_us=16667 te_high_us=8334 ..
 - esp32sim repository: `aliceisjustplaying/esp32sim`
 - esp32sim branch: `board/tinydraw-v2-demo`
 - esp32sim commit: `2c0b32088d0f40d4589946bc4577d69dcd3b96d1`
+- TinyDraw source branch: `codex/lane-0-idf61-probes`
 - TinyDraw fixture source: `632c966075de978d266f8ba53bde465961e1a201`
 - ESP-IDF: `v6.1.0`
 - execution: interpreter mode, `--no-jit`
